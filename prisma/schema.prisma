@@ -36,13 +36,14 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  account       Account[]
-  sessions      Session[]
+  id             String          @id @default(cuid())
+  name           String?
+  email          String?         @unique
+  emailVerified  DateTime?
+  image          String?
+  account        Account[]
+  sessions       Session[]
+  tweetCampaigns TweetCampaign[]
 }
 
 model VerificationToken {
@@ -51,4 +52,42 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+// Define the TweetCampaign model
+model TweetCampaign {
+  id           Int        @id @default(autoincrement())
+  title         String
+  description         String
+  owner        User       @relation(fields: [ownerId], references: [id])
+  ownerId      String
+  targetList   TargetList @relation(fields: [targetListId], references: [id])
+  targetListId Int
+  tweets       Tweet[]
+}
+
+// Define the Tweet model
+model Tweet {
+  id         Int           @id @default(autoincrement())
+  text       String
+  campaign   TweetCampaign @relation(fields: [campaignId], references: [id])
+  campaignId Int
+}
+
+// Define the TargetList model
+model TargetList {
+  id             Int             @id @default(autoincrement())
+  name           String
+  targets        Target[]
+  tweetCampaigns TweetCampaign[]
+  isPublic  Boolean
+}
+
+// Define the Target model
+model Target {
+  id            Int        @id @default(autoincrement())
+  name          String
+  twitterHandle String
+  targetList    TargetList @relation(fields: [targetListId], references: [id])
+  targetListId  Int
 }
