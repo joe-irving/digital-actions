@@ -12,7 +12,8 @@ export default defineNuxtConfig({
       githubClientId: ''
     },
     githubClientSecret: '',
-    sendgridApiKey: ''
+    sendgridApiKey: '',
+    authSecret: ''
   },
   modules: ['@nuxtjs/tailwindcss', 'nuxt-svgo', '@huntersofbook/naive-ui-nuxt', '@sidebase/nuxt-auth'],
   extends: ['@sidebase/core'],
