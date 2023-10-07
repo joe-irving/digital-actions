@@ -27,4 +27,5 @@
   "cSpell.ignoreWords": [
     "Nuxt"
   ],
+  "typescript.tsdk": "node_modules/typescript/lib",
 }

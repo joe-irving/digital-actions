@@ -6,6 +6,9 @@ export default defineNuxtConfig({
   auth: {
     globalAppMiddleware: true
   },
+  build: {
+    transpile: ['trpc-nuxt']
+  },
   runtimeConfig: {
     version: '0.0.1',
     public: {

@@ -8,7 +8,6 @@ export default eventHandler(async (event) => {
   //   headers: event.headers
   // })
   const session = await getServerSession(event)
-  return session
   if (!session) {
     return { authenticated: false }
   } else {
