@@ -1,4 +1,5 @@
 import GithubProvider from 'next-auth/providers/github'
+import Google from 'next-auth/providers/google'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import { PrismaClient } from '@prisma/client'
 import { NuxtAuthHandler } from '#auth'
@@ -14,6 +15,11 @@ export default NuxtAuthHandler({
     GithubProvider.default({
       clientId: runtimeConfig.public.githubClientId,
       clientSecret: runtimeConfig.githubClientSecret
+    }),
+    // @ts-expect-error You need to use .default here for it to work during SSR. May be fixed via Vite at some point
+    Google.default({
+      clientId: runtimeConfig.public.googleClientId,
+      clientSecret: runtimeConfig.googleClientSecret
     }),
     {
       id: 'sendgrid',

@@ -12,9 +12,11 @@ export default defineNuxtConfig({
   runtimeConfig: {
     version: '0.0.1',
     public: {
-      githubClientId: ''
+      githubClientId: '',
+      googleClientId: ''
     },
     githubClientSecret: '',
+    googleClientSecret: '',
     sendgridApiKey: '',
     authSecret: ''
   },

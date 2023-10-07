@@ -4,11 +4,12 @@ const { signIn, signOut, status } = useAuth()
 
 <template>
   <div>
-    <button v-if="status != 'authenticated'" @click="() => signIn()">
-      Log in!
-    </button>
-    <button v-else @click="signOut()">
+    {{ status }}
+    <button v-if="status === 'authenticated'" @click="signOut()">
       Log out
+    </button>
+    <button v-else @click="() => signIn()">
+      Log in!
     </button>
   </div>
 </template>
