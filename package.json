@@ -13,7 +13,9 @@
     "generate": "nuxt generate",
     "preview": "DATABASE_URL=file:./db.sqlite nuxt preview",
     "typecheck": "nuxt typecheck",
-    "prisma:studio": "prisma studio"
+    "prisma:studio": "prisma studio",
+    "prisma:format": "prisma format",
+    "prisma:migrate": "prisma migrate dev"
   },
   "devDependencies": {
     "@faker-js/faker": "^7.6.0",

@@ -36,14 +36,17 @@ model Session {
 }
 
 model User {
-  id             String          @id @default(cuid())
-  name           String?
-  email          String?         @unique
-  emailVerified  DateTime?
-  image          String?
-  account        Account[]
-  sessions       Session[]
-  tweetCampaigns TweetCampaign[]
+  id                       String                    @id @default(cuid())
+  created                  DateTime                  @default(now())
+  updated                  DateTime                  @default(now()) @updatedAt
+  name                     String?
+  email                    String?                   @unique
+  emailVerified            DateTime?
+  image                    String?
+  account                  Account[]
+  sessions                 Session[]
+  tweetCampaignPermissions TweetCampaignPermission[]
+  targetListPermissions    TargetListPermission[]
 }
 
 model VerificationToken {
@@ -56,19 +59,36 @@ model VerificationToken {
 
 // Define the TweetCampaign model
 model TweetCampaign {
-  id           Int        @id @default(autoincrement())
-  title         String
-  description         String
-  owner        User       @relation(fields: [ownerId], references: [id])
-  ownerId      String
-  targetList   TargetList @relation(fields: [targetListId], references: [id])
-  targetListId Int
-  tweets       Tweet[]
+  id                       Int                       @id @default(autoincrement())
+  created                  DateTime                  @default(now())
+  updated                  DateTime                  @default(now()) @updatedAt
+  title                    String
+  slug                     String                    @unique @default(uuid())
+  description              String
+  targetList               TargetList                @relation(fields: [targetListId], references: [id])
+  targetListId             Int
+  published                Boolean                   @default(true)
+  tweets                   Tweet[]
+  tweetCampaignPermissions TweetCampaignPermission[]
+}
+
+model TweetCampaignPermission {
+  id         Int           @id @default(autoincrement())
+  created    DateTime      @default(now())
+  updated    DateTime      @default(now()) @updatedAt
+  user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String
+  campaign   TweetCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  campaignId Int
+  // Define the type of permission (e.g., 'read', 'write', 'delete', etc.)
+  type       String
 }
 
 // Define the Tweet model
 model Tweet {
   id         Int           @id @default(autoincrement())
+  created    DateTime      @default(now())
+  updated    DateTime      @default(now()) @updatedAt
   text       String
   campaign   TweetCampaign @relation(fields: [campaignId], references: [id])
   campaignId Int
@@ -76,16 +96,33 @@ model Tweet {
 
 // Define the TargetList model
 model TargetList {
-  id             Int             @id @default(autoincrement())
+  id             Int                    @id @default(autoincrement())
+  created        DateTime               @default(now())
+  updated        DateTime               @default(now()) @updatedAt
   name           String
   targets        Target[]
   tweetCampaigns TweetCampaign[]
-  isPublic  Boolean
+  isPublic       Boolean
+  permissions    TargetListPermission[]
+}
+
+model TargetListPermission {
+  id           Int        @id @default(autoincrement())
+  created      DateTime   @default(now())
+  updated      DateTime   @default(now()) @updatedAt
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String
+  targetList   TargetList @relation(fields: [targetListId], references: [id], onDelete: Cascade)
+  targetListId Int
+  // Define the type of permission (e.g., 'read', 'write', 'delete', etc.)
+  type         String
 }
 
 // Define the Target model
 model Target {
   id            Int        @id @default(autoincrement())
+  created       DateTime   @default(now())
+  updated       DateTime   @default(now()) @updatedAt
   name          String
   twitterHandle String
   targetList    TargetList @relation(fields: [targetListId], references: [id])

@@ -5,17 +5,18 @@ const { $client } = useNuxtApp()
 
 // const user = await $client.user.me.useQuery()
 
-const { data: tweetCampaigns } = await $client.tweetCampaign.all.useQuery()
+const responseTest = await $client.tweetCampaign.getPublic.useQuery({ id: 14 })
 
 async function newTweetCampaign () {
   const newCamp = await $client.tweetCampaign.create.mutate({
     title: 'Some title',
     description: 'Some description',
-    targetListId: 1
+    targetListId: 1,
+    slug: 'some-slug'
   })
-  if (tweetCampaigns.value) {
-    tweetCampaigns.value.push(newCamp)
-  }
+  // if (tweetCampaigns.value) {
+  //   tweetCampaigns.value.push(newCamp)
+  // }
   return newCamp
 }
 </script>
@@ -27,6 +28,6 @@ async function newTweetCampaign () {
     <button @click="newTweetCampaign">
       New Tweet Campaign
     </button>
-    <pre>{{ tweetCampaigns }}</pre>
+    <pre>{{ responseTest }}</pre>
   </div>
 </template>
