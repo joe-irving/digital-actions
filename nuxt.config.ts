@@ -20,7 +20,7 @@ export default defineNuxtConfig({
     sendgridApiKey: '',
     authSecret: ''
   },
-  modules: ['@nuxtjs/tailwindcss', 'nuxt-svgo', '@huntersofbook/naive-ui-nuxt', '@sidebase/nuxt-auth'],
+  modules: ['@nuxtjs/tailwindcss', 'nuxt-svgo', '@bg-dev/nuxt-naiveui', '@sidebase/nuxt-auth'],
   extends: ['@sidebase/core'],
   typescript: {
     shim: false

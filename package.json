@@ -18,8 +18,8 @@
     "prisma:migrate": "prisma migrate dev"
   },
   "devDependencies": {
+    "@bg-dev/nuxt-naiveui": "^1.5.1",
     "@faker-js/faker": "^7.6.0",
-    "@huntersofbook/naive-ui-nuxt": "^0.5.1",
     "@nuxt/test-utils": "^3.0.0",
     "@nuxtjs/eslint-config-typescript": "^12.0.0",
     "@nuxtjs/tailwindcss": "^6.2.0",
@@ -32,7 +32,7 @@
     "eslint": "^8.31.0",
     "h3": "^1.0.2",
     "jsdom": "^21.0.0",
-    "nuxt": "3.0.0",
+    "nuxt": "3.7.4",
     "nuxt-svgo": "^1.1.0",
     "playwright": "^1.29.2",
     "prisma": "^4.8.1",
