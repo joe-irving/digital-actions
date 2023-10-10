@@ -4,11 +4,6 @@ import { PrismaClient } from '@prisma/client'
 import { getServerSession } from '#auth'
 
 let prisma: PrismaClient
-// declare module 'h3' {
-//   interface H3EventContext {
-//     prisma: PrismaClient
-//   }
-// }
 
 /** * Creates context for an incoming request * @link https://trpc.io/docs/context */
 export const createContext = async (event: H3Event) => {

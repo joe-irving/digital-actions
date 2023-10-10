@@ -39,15 +39,17 @@ const menuOptions = ref<MenuOption[]>([
         @collapse="collapsed = true"
         @expand="collapsed = false"
       >
-        <n-menu
-          :collapsed="collapsed"
-          :collapsed-width="64"
-          :collapsed-icon-size="22"
-          :options="menuOptions"
-        />
-        <!-- <div class="profile-box">
-          Avatar, name
-        </div> -->
+        <n-space justify="space-between" vertical :style="{height: '100vh'}">
+          <n-menu
+            :collapsed="collapsed"
+            :collapsed-width="64"
+            :collapsed-icon-size="22"
+            :options="menuOptions"
+          />
+          <div style="padding: 10px;">
+            <Profile />
+          </div>
+        </n-space>
       </n-layout-sider>
       <n-layout class="main-wrapper">
         <slot />
