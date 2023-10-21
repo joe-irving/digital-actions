@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
 import { publicProcedure, router } from '../trpc'
-import { PermissionLevel } from './types'
+import { PermissionLevel } from '~/types'
 
 export const targetList = router({
   create: publicProcedure.input(z.object({
@@ -10,7 +10,7 @@ export const targetList = router({
   })).mutation(async ({ input, ctx }) => {
     // is user authenticated
     if (!ctx.authenticated || !ctx.session || !ctx.session?.user) {
-      return new TRPCError({
+      throw new TRPCError({
         code: 'UNAUTHORIZED',
         message: 'Not logged in, cannot create target lists'
       })
@@ -31,7 +31,7 @@ export const targetList = router({
     })
     // add owner permissions
     if (!ctx.user) {
-      return new TRPCError({
+      throw new TRPCError({
         code: 'UNAUTHORIZED',
         message: 'No user associated with request'
       })
@@ -51,7 +51,7 @@ export const targetList = router({
     isPublic: z.boolean().nullable().default(null)
   })).mutation(async ({ input, ctx }) => {
     if (!ctx.authenticated || !ctx.session || !ctx.session?.user || !ctx.user) {
-      return new TRPCError({
+      throw new TRPCError({
         code: 'UNAUTHORIZED',
         message: 'Not logged in, cannot modify target lists'
       })
@@ -67,7 +67,7 @@ export const targetList = router({
       }
     })
     if (!permissions) {
-      return new TRPCError({
+      throw new TRPCError({
         code: 'UNAUTHORIZED',
         message: 'You do not have permissions to edit this tweet campaign'
       })
@@ -91,7 +91,9 @@ export const targetList = router({
   listPublic: publicProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.targetList.findMany({
       where: {
-        isPublic: true
+        isPublic: {
+          equals: true
+        }
       }
     })
   })

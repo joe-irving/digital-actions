@@ -15,9 +15,9 @@ enum PermissionLevel {
 // }
 
 export const tweetCampaign = router({
-  all: publicProcedure.query(async ({ ctx }) => {
+  userCampaigns: publicProcedure.query(async ({ ctx }) => {
     if (!ctx.authenticated || !ctx.session || !ctx.session?.user) {
-      return new TRPCError({
+      throw new TRPCError({
         code: 'UNAUTHORIZED',
         message: 'Not logged in, cannot load tweet campaigns'
       })
@@ -50,6 +50,7 @@ export const tweetCampaign = router({
             isPublic: true
           }
         },
+        _count: { select: { tweets: true } },
         tweetCampaignPermissions: {
           select: {
             user: {
@@ -138,9 +139,9 @@ export const tweetCampaign = router({
           {
             permissions: {
               some: {
-                userId: ctx.user?.id || undefined,
+                userId: ctx.user?.id,
                 type: {
-                  in: [PermissionLevel.READ, PermissionLevel.WRITE, PermissionLevel.OWNER].map(toString)
+                  in: ['read', 'write', 'owner']
                 }
               }
             }
@@ -152,7 +153,7 @@ export const tweetCampaign = router({
       }
     })
     if (!targetList) {
-      return new TRPCError({
+      throw new TRPCError({
         code: 'UNAUTHORIZED',
         message: 'You are not authorized to add that target list'
       })
@@ -206,7 +207,7 @@ export const tweetCampaign = router({
       return [PermissionLevel.OWNER.toString(), PermissionLevel.WRITE.toString()].includes(permission.type)
     })
     if (permissions.length === 0 || !hasPermission.includes(true)) {
-      return new TRPCError({
+      throw new TRPCError({
         code: 'UNAUTHORIZED',
         message: 'You do not have permissions to edit this tweet campaign'
       })

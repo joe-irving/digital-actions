@@ -47,7 +47,7 @@ const menuOptions = ref<MenuOption[]>([
             :options="menuOptions"
           />
           <div style="padding: 10px;">
-            <Profile />
+            <ProfileBox />
           </div>
         </n-space>
       </n-layout-sider>

@@ -1,14 +1,14 @@
 import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
 import { publicProcedure, router } from '../trpc'
-import { PermissionLevel } from './types'
+import { PermissionLevel } from '~/types'
 
 // const authorizedRequest = publicProcedure.input(z.object({
 //   campaignId: z.number().int()
 // })).use((opts) => {
 //   const { ctx, input } = opts
 //   if (!ctx.user || ctx.authenticated) {
-//     return new TRPCError({
+//     throw new TRPCError({
 //       code: 'UNAUTHORIZED',
 //       message: 'You need to be signed in to create tweets'
 //     })
@@ -24,7 +24,7 @@ import { PermissionLevel } from './types'
 //     }
 //   })
 //   if (!permissions) {
-//     return new TRPCError({
+//     throw new TRPCError({
 //       code: 'UNAUTHORIZED',
 //       message: 'You do not have permissions to add to that tweet campaign'
 //     })
@@ -38,7 +38,7 @@ export const tweetRouter = router({
     campaignId: z.number().int()
   })).mutation(async ({ input, ctx }) => {
     if (!ctx.user || ctx.authenticated) {
-      return new TRPCError({
+      throw new TRPCError({
         code: 'UNAUTHORIZED',
         message: 'You need to be signed in to create tweets'
       })
@@ -54,7 +54,7 @@ export const tweetRouter = router({
       }
     })
     if (!permissions) {
-      return new TRPCError({
+      throw new TRPCError({
         code: 'UNAUTHORIZED',
         message: 'You do not have permissions to add to that tweet campaign'
       })
@@ -77,7 +77,7 @@ export const tweetRouter = router({
     text: z.string()
   })).mutation(async ({ ctx, input }) => {
     if (!ctx.user || ctx.authenticated) {
-      return new TRPCError({
+      throw new TRPCError({
         code: 'UNAUTHORIZED',
         message: 'You need to be signed in to update tweets'
       })
@@ -97,7 +97,7 @@ export const tweetRouter = router({
       }
     })
     if (!permissions) {
-      return new TRPCError({
+      throw new TRPCError({
         code: 'UNAUTHORIZED',
         message: 'You do not have permissions to edit this tweet'
       })

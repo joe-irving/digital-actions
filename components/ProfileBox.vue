@@ -32,7 +32,7 @@ const { data: user } = $client.user.me.useQuery()
 .user-box {
     width: 100%;
     display: flex;
-    justify-content: start;
+    justify-content: flex-start;
     align-items: center;
     gap: 10px;
 
@@ -40,7 +40,7 @@ const { data: user } = $client.user.me.useQuery()
 .user {
     padding: 10px;
     display: flex;
-    justify-content: start;
+    justify-content: flex-start;
     align-items: center;
 }
 .sign-in-wrapper{
