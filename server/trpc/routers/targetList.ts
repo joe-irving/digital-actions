@@ -96,5 +96,29 @@ export const targetList = router({
         }
       }
     })
+  }),
+  listUserTargets: publicProcedure.query(async ({ ctx }) => {
+    const userId = ctx.user?.id || 'none'
+    return await ctx.prisma.targetList.findMany({
+      where: {
+        OR: [
+          {
+            permissions: {
+              some: {
+                type: {
+                  in: ['owner', 'write', 'read']
+                },
+                userId
+              }
+            }
+          },
+          {
+            isPublic: {
+              equals: true
+            }
+          }
+        ]
+      }
+    })
   })
 })

@@ -1,4 +1,4 @@
-# test-project-3-app
+# A digital actions app
 
 This is a [sidebase cheviot](https://sidebase.io/) app created by running `yarn create sidebase@latest`. This project uses the following technologies for a great developer- and user-experience:
 - [TypeScript](https://www.typescriptlang.org/)

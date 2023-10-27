@@ -20,9 +20,13 @@ export default defineNuxtConfig({
     sendgridApiKey: '',
     authSecret: ''
   },
-  modules: ['@nuxtjs/tailwindcss', 'nuxt-svgo', '@bg-dev/nuxt-naiveui', '@sidebase/nuxt-auth'],
+  modules: ['@nuxtjs/tailwindcss', 'nuxt-svgo', '@bg-dev/nuxt-naiveui', '@sidebase/nuxt-auth', '@nuxtjs/i18n'],
   extends: ['@sidebase/core'],
   typescript: {
     shim: false
+  },
+  i18n: {
+    locales: ['en'],
+    defaultLocale: 'en'
   }
 })

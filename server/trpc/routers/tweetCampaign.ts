@@ -126,6 +126,7 @@ export const tweetCampaign = router({
         }
       }
     })
+    // Change
     if (!user) {
       throw new TRPCError({
         code: 'FORBIDDEN',
@@ -141,7 +142,7 @@ export const tweetCampaign = router({
               some: {
                 userId: ctx.user?.id,
                 type: {
-                  in: ['read', 'write', 'owner']
+                  in: [PermissionLevel.OWNER, PermissionLevel.READ, PermissionLevel.WRITE]
                 }
               }
             }
