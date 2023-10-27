@@ -22,7 +22,7 @@ export const petitionCampaign = router({
       }
     })
     // Create the owner permissions
-    ctx.prisma.petitionCampaignPermission.create({
+    await ctx.prisma.petitionCampaignPermission.create({
       data: {
         userId: ctx.user.id,
         type: PermissionLevel.OWNER.toString(),
