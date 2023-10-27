@@ -31,7 +31,7 @@ const createCampaign = async () => {
 }
 
 // Form with name, description, target list (drop down from public) & slug
-const { data: publicTargetLists } = await $client.targetList.listPublic.useQuery()
+const { data: publicTargetLists } = await $client.targetList.listUserTargets.useQuery()
 const publicTargetOptions = computed(() => {
   if (!publicTargetLists.value) {
     return []
