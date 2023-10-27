@@ -3,12 +3,14 @@ import { user } from './userRouter'
 import { targetList } from './targetList'
 import { tweetCampaign } from './tweetCampaign'
 import { tweetRouter } from './tweets'
+import { petitionCampaign } from './petitionCampaign'
 
 export const appRouter = router({
   user,
   tweetCampaign,
   targetList,
-  tweetRouter
+  tweetRouter,
+  petitionCampaign
 })
 
 // export type definition of API

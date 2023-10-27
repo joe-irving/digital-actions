@@ -1,6 +1,7 @@
 {
   "menu": {
     "home": "Home",
-    "tweet_campaign": "Tweet Campaign"
+    "tweet_campaign": "Tweet Campaign",
+    "petition_campaign": "Petition Campaign"
   }
 }

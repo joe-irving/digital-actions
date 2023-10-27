@@ -24,6 +24,11 @@ const menuOptions = ref<MenuOption[]>([
     key: 'tweet-campaigns',
     label: createLabel($i18n.t('menu.tweet_campaign'), '/tweet'),
     icon: createIcon('cib:twitter')
+  },
+  {
+    key: 'petition-campaigns',
+    label: createLabel($i18n.t('menu.petition_campaign'), '/petition-campaign'),
+    icon: createIcon('mdi:clipboard-edit-outline')
   }
 ])
 </script>
