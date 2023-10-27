@@ -3,6 +3,8 @@ import type { MenuOption } from 'naive-ui'
 import { h } from 'vue'
 import { NuxtLink, NaiveIcon } from '#components'
 
+const { $i18n } = useNuxtApp()
+
 const createIcon = (icon: string) => {
   return () => h(NaiveIcon, { name: icon })
 }
@@ -15,12 +17,12 @@ const collapsed = ref(false)
 const menuOptions = ref<MenuOption[]>([
   {
     key: 'home',
-    label: createLabel('Home', '/'),
+    label: createLabel($i18n.t('menu.home'), '/'),
     icon: createIcon('dashicons:admin-home')
   },
   {
     key: 'tweet-campaigns',
-    label: createLabel('Tweet Campaign', '/tweet'),
+    label: createLabel($i18n.t('menu.tweet_campaign'), '/tweet'),
     icon: createIcon('cib:twitter')
   }
 ])
