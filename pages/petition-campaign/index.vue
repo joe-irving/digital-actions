@@ -12,6 +12,18 @@ const testCreate = () => {
 
 <template>
   <div>
+    <n-breadcrumb>
+      <n-breadcrumb-item>
+        <NuxtLink to="/">
+          <NaiveIcon name="dashicons:admin-home" />
+        </NuxtLink>
+      </n-breadcrumb-item>
+      <n-breadcrumb-item>
+        <NuxtLink to="/petition-campaign">
+          {{ $t('menu.petition_campaign') }}
+        </NuxtLink>
+      </n-breadcrumb-item>
+    </n-breadcrumb>
     <n-button @click="testCreate">
       Click me
     </n-button>
