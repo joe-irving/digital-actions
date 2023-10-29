@@ -24,7 +24,7 @@ const testCreate = () => {
         </NuxtLink>
       </n-breadcrumb-item>
     </n-breadcrumb>
-    <n-button @click="testCreate">
+    <n-button to="new">
       Click me
     </n-button>
   </div>

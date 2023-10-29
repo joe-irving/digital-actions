@@ -69,5 +69,8 @@ const menuOptions = ref<MenuOption[]>([
 .main-wrapper {
   height: 100vh;
   overflow-y: scroll;
+  /* padding-left: 10px;
+  padding-top: 10px;
+  padding-right: 10px; */
 }
 </style>

@@ -2,6 +2,11 @@
   "menu": {
     "home": "Home",
     "tweet_campaign": "Tweet Campaign",
-    "petition_campaign": "Petition Campaign"
+    "petition_campaign": "Petition Campaign",
+    "create_petition_campaign": "Create Petition Campaign",
+    "new": "New"
+  },
+  "petition_campaign": {
+    "create_new": "Create new petition campaign"
   }
 }
