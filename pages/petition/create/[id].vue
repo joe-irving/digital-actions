@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { StepsProps, InputInst, FormRules } from 'naive-ui'
+import { StepsProps, InputInst, FormRules, FormItemRule } from 'naive-ui'
 
 const { $i18n } = useNuxtApp()
 // Get id prop, if it is an int then get the campaign, if not create without link to campaign?
@@ -21,8 +21,8 @@ const emailInput = ref<InputInst | null>(null)
 const petition = ref({
   title: '',
   description: 'Example description',
-  image: '',
-  userEmail: ''
+  image: [],
+  email: ''
 })
 
 // const emailStatus = computed(() => {
@@ -58,7 +58,20 @@ const formRules = ref<FormRules>({
   title: {
     required: true,
     message: $i18n.t('petition_create.title_validator'),
-    trigger: ['input']
+    trigger: ['input', 'blur']
+  },
+  email: {
+    required: true,
+    trigger: ['blur'],
+    validator (rule: FormItemRule, value: string) {
+      console.log(value)
+      if (!value) {
+        return new Error($i18n.t('petition_create.email_required'))
+      } else if (!/^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i.test(value)) {
+        return new Error($i18n.t('petition_create.email_validator'))
+      }
+      return true
+    }
   }
 })
 
@@ -117,13 +130,15 @@ definePageMeta({
         <n-step :title="$t('petition_create.image_title')">
           <div ref="image" class="n-step-description">
             <p>{{ $t('petition_create.image_description') }}</p>
-            <ImageUpload />
+            <ImageUpload @change="(fileList) => petition.image = fileList" />
           </div>
         </n-step>
         <n-step :title="$t('petition_create.email_title')">
           <div ref="email" class="n-step-description">
             <n-p>{{ $t("petition_create.email_description") }}</n-p>
-            <n-input ref="emailInput" v-model:value="petition.userEmail" type="text" />
+            <n-form-item path="email">
+              <n-input ref="emailInput" v-model:value="petition.email" type="text" />
+            </n-form-item>
           </div>
         </n-step>
       </n-steps>

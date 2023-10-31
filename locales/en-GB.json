@@ -21,6 +21,8 @@
     "image_upload_text": "Click or drag a file to this area to upload",
     "email_title": "Your Email Address",
     "email_description": "Please enter your email so you can launch and manage your petition",
+    "email_validator": "Looks like that isn't an email address",
+    "email_required": "You need to enter your email address",
     "nav_next": "Next",
     "nav_previous": "Previous"
   },
@@ -30,5 +32,8 @@
     "big_heading": "Big heading",
     "small_heading": "Small heading",
     "list": "List"
+  },
+  "image_upload": {
+    "too_large_warning": "File is too large! Needs to be less than 10MB"
   }
 }
