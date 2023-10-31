@@ -64,7 +64,6 @@ const formRules = ref<FormRules>({
     required: true,
     trigger: ['blur'],
     validator (rule: FormItemRule, value: string) {
-      console.log(value)
       if (!value) {
         return new Error($i18n.t('petition_create.email_required'))
       } else if (!/^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i.test(value)) {
@@ -104,7 +103,7 @@ definePageMeta({
       <n-steps v-model:current="currentRef" :vertical="true" :status="currentStatus">
         <n-step :title="$t('petition_create.title')">
           <span ref="title" />
-          <n-space class="n-step-description" justify="center" vertical>
+          <n-space class="n-step-description full" justify="center" vertical>
             <p>{{ $t('petition_create.title_description') }}</p>
             <n-form-item path="title">
               <n-input
@@ -120,25 +119,26 @@ definePageMeta({
         </n-step>
         <n-step :title="$t('petition_create.petition_title')">
           <span ref="description" />
-          <n-space class="n-step-description" vertical justify="center" height="100%">
+          <n-space class="n-step-description full" vertical justify="center" height="100%">
             <p>{{ $t('petition_create.petition_description') }}</p>
             <client-only @keyup.ctrl.enter="nextStep()">
               <TiptapEditor v-model="petition.description" />
             </client-only>
           </n-space>
         </n-step>
-        <n-step :title="$t('petition_create.image_title')">
-          <div ref="image" class="n-step-description">
+        <n-step :title="`${$t('petition_create.image_title')}  (${$t('petition_create.optional')})`">
+          <div ref="image" class="n-step-description full">
             <p>{{ $t('petition_create.image_description') }}</p>
             <ImageUpload @change="(fileList) => petition.image = fileList" />
           </div>
         </n-step>
         <n-step :title="$t('petition_create.email_title')">
-          <div ref="email" class="n-step-description">
+          <div ref="email" class="n-step-description full">
             <n-p>{{ $t("petition_create.email_description") }}</n-p>
             <n-form-item path="email">
               <n-input ref="emailInput" v-model:value="petition.email" type="text" />
             </n-form-item>
+            <n-button>{{ $t('petition_create.create_button') }}</n-button>
           </div>
         </n-step>
       </n-steps>
@@ -163,7 +163,7 @@ definePageMeta({
 .main-content {
     padding: 10px;
 }
-.n-step-description {
+.n-step-description.full {
     min-height: 90vh;
 }
 

@@ -24,7 +24,9 @@
     "email_validator": "Looks like that isn't an email address",
     "email_required": "You need to enter your email address",
     "nav_next": "Next",
-    "nav_previous": "Previous"
+    "nav_previous": "Previous",
+    "create_button": "Create your petition",
+    "optional": "optional"
   },
   "tiptap": {
     "bold": "Bold",
