@@ -62,6 +62,7 @@ jspm_packages/
 .output
 .env
 dist
+public/uploads
 
 # vuepress build output
 .vuepress/dist

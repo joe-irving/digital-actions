@@ -12,6 +12,7 @@
   "petition_create": {
     "title": "Title",
     "title_description": "Enter the title of your petition, keep it short and clear",
+    "title_validator": "You need to enter a title.",
     "title_placeholder": "Demand All Saints Church stops banking on climate chaos",
     "petition_title": "Petition",
     "petition_description": "Write your petition here, keep it defined and targeted.",
@@ -22,5 +23,12 @@
     "email_description": "Please enter your email so you can launch and manage your petition",
     "nav_next": "Next",
     "nav_previous": "Previous"
+  },
+  "tiptap": {
+    "bold": "Bold",
+    "italic": "Italic",
+    "big_heading": "Big heading",
+    "small_heading": "Small heading",
+    "list": "List"
   }
 }
