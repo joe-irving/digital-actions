@@ -130,6 +130,8 @@ const handleCreatePetition = () => {
 }
 
 const createPetition = async () => {
+  // If not logged in, create a verification code that is attached to the petition and passed to the redirect page.
+  // neeed to do sign in on server side to send code. Then it would be redirect to /petition/[id]?verification=fkdsjafldjsf-dfanwklfnes-feasjklfehjaithdsifi54tw
   console.log(petitionCampaign.value)
   try {
     const petitionCreated = await $client.petition.create.mutate({
