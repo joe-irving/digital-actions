@@ -77,7 +77,6 @@ export const petition = router({
     // If not logged in fetch token and perform sendgrid auth request
     const token = await $fetch.raw('/api/auth/csrf')
     const cookies = token.headers.getSetCookie()
-    console.log(cookies)
     const redirectUrl = `/petition/${petition.id}/manage?verify=${petition.verificationToken}`
     const loginBody = {
       ...token._data,
@@ -86,9 +85,7 @@ export const petition = router({
       json: true,
       redirect: false
     }
-    console.log((new URLSearchParams(loginBody)).toString())
-    console.log(cookies.join('; '))
-    const authRequest = await $fetch.raw('/api/auth/signin/sendgrid', {
+    $fetch.raw('/api/auth/signin/sendgrid', {
       method: 'POST',
       body: (new URLSearchParams(loginBody)).toString(),
       headers: {
@@ -97,7 +94,6 @@ export const petition = router({
         Cookie: cookies.join('; ')
       }
     })
-    console.log(authRequest.headers)
     return petitionWithImage
     // Create and link sharing information
   })

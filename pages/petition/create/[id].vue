@@ -2,7 +2,7 @@
 import { StepsProps, InputInst, FormRules, FormItemRule, FormValidationError, FormInst, UploadFileInfo } from 'naive-ui'
 import { TRPCClientError } from '@trpc/client'
 const { $client } = useNuxtApp()
-const { signIn } = useAuth()
+// const { signIn } = useAuth()
 const route = useRoute()
 const { $i18n } = useNuxtApp()
 
@@ -145,6 +145,11 @@ const createPetition = async () => {
           }
         : undefined
     })
+    if (user.value.user) {
+      navigateTo(`/petition/${petitionCreated.id}/manage`)
+    } else {
+      navigateTo('/verify')
+    }
   } catch (err) {
     if (err instanceof TRPCClientError) {
       formWarningMessages.value = [[{
@@ -153,13 +158,6 @@ const createPetition = async () => {
     }
     throw err
   }
-  // console.log(petitionCreated)
-  const res = await signIn('sendgrid', {
-    email: petition.value.email,
-    callbackUrl: '/petition/1',
-    redirect: false
-  })
-  // await signIn('google')
   // Create petition in back end, with either user email attached or linked to logged in userEmail
   // if not logged in -> take them to login page -> redirect to manage page
   // if logged in -> redirect to manage page once created
