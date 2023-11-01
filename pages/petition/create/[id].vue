@@ -154,11 +154,11 @@ const createPetition = async () => {
     throw err
   }
   // console.log(petitionCreated)
-  // const res = await signIn('sendgrid', {
-  //   email: petition.value.email,
-  //   callbackUrl: '/petition/1',
-  //   redirect: false
-  // })
+  const res = await signIn('sendgrid', {
+    email: petition.value.email,
+    callbackUrl: '/petition/1',
+    redirect: false
+  })
   // await signIn('google')
   // Create petition in back end, with either user email attached or linked to logged in userEmail
   // if not logged in -> take them to login page -> redirect to manage page

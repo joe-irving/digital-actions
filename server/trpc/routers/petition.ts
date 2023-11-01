@@ -67,12 +67,38 @@ export const petition = router({
       select: {
         id: true,
         title: true,
-        content: true
+        content: true,
+        slug: true
       }
     })
+    if (ctx.user) {
+      return petitionWithImage
+    }
+    // If not logged in fetch token and perform sendgrid auth request
+    const token = await $fetch.raw('/api/auth/csrf')
+    const cookies = token.headers.getSetCookie()
+    console.log(cookies)
+    const redirectUrl = `/petition/${petition.id}/manage?verify=${petition.verificationToken}`
+    const loginBody = {
+      ...token._data,
+      email: creatorEmail,
+      callbackUrl: redirectUrl,
+      json: true,
+      redirect: false
+    }
+    console.log((new URLSearchParams(loginBody)).toString())
+    console.log(cookies.join('; '))
+    const authRequest = await $fetch.raw('/api/auth/signin/sendgrid', {
+      method: 'POST',
+      body: (new URLSearchParams(loginBody)).toString(),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Accept: '*/*',
+        Cookie: cookies.join('; ')
+      }
+    })
+    console.log(authRequest.headers)
     return petitionWithImage
-    // Create petition
-    // Create image
     // Create and link sharing information
   })
 })

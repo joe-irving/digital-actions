@@ -162,8 +162,9 @@ model Petition {
   id                   Int                       @id @default(autoincrement())
   locationTag          String?
   title                String
+  slug                 String       @unique @default(cuid())
   content              String
-  sharingInformation   SharingInformation        @relation(fields: [sharingInformationId], references: [id])
+  sharingInformation   SharingInformation        @relation(fields: [sharingInformationId], references: [id], onDelete: Cascade)
   sharingInformationId Int                       @unique
   permissions          UserPetitionPermissions[]
   petitionCampaign     PetitionCampaign?         @relation(fields: [petitionCampaignId], references: [id])
@@ -172,6 +173,7 @@ model Petition {
   image                File?                     @relation(fields: [imageId], references: [id])
   imageId              Int?
   creatorEmail         String?
+  verificationToken    String?   @default(uuid())
 }
 
 model UserPetitionPermissions {
