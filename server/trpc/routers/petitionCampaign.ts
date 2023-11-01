@@ -31,8 +31,8 @@ export const petitionCampaign = router({
     })
     return petitionCampaign
   }),
-  getPublic: publicProcedure.input(z.number().int()).query(({ ctx, input }) => {
-    return ctx.prisma.petitionCampaign.findFirst({
+  getPublic: publicProcedure.input(z.number().int()).query(async ({ ctx, input }) => {
+    const petitionCampaign = await ctx.prisma.petitionCampaign.findFirst({
       where: {
         id: input,
         status: 'public'
@@ -44,11 +44,11 @@ export const petitionCampaign = router({
           select: {
             id: true,
             title: true,
-            description: true,
             icon: true
           }
         }
       }
     })
+    return petitionCampaign
   })
 })

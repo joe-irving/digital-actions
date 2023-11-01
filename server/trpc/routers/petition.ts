@@ -6,13 +6,15 @@ export const petition = router({
   create: publicProcedure.input(z.object({
     title: z.string().max(200),
     content: z.string().max(1000),
+    petitionCampaign: z.number().int(),
     image: z.optional(z.object({
       url: z.string().max(1000),
       name: z.string().max(100)
     })),
     creatorEmail: z.optional(z.string().regex(/^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i, {
       message: 'That is not an email in the creatorEmail field.'
-    }).or(z.string().min(0).max(0)).or(z.null()))
+    }).or(z.string().min(0).max(0)).or(z.null())),
+    themes: z.array(z.number())
   })).mutation(async ({ input, ctx }) => {
     const creatorEmail = !input.creatorEmail || input.creatorEmail === '' ? ctx.user?.email : input.creatorEmail
     if (!creatorEmail) {
@@ -21,6 +23,31 @@ export const petition = router({
         message: 'There is neither a creator email submitted or an email attached to the logged in user'
       })
     }
+    // Check that petition campaign is public to this user
+    const petitionCampaign = await ctx.prisma.petitionCampaign.findFirst({
+      where: {
+        status: 'public',
+        id: input.petitionCampaign
+      },
+      select: {
+        id: true,
+        themes: {
+          select: {
+            id: true
+          }
+        }
+      }
+    })
+    if (!petitionCampaign) {
+      throw new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'The given ID did not match up to a petition campaign that was public'
+      })
+    }
+    // Filter themes to ones available in petition campaign
+    const allowedThemes = petitionCampaign.themes.filter((theme) => {
+      return input.themes.includes(theme.id)
+    })
     // if image, create it
     const image = input.image
       ? await ctx.prisma.file.create({
@@ -53,7 +80,22 @@ export const petition = router({
               }
             }
           : undefined,
-        creatorEmail
+        creatorEmail,
+        petitionThemes: {
+          connect: allowedThemes
+        },
+        petitionCampaign: {
+          connect: {
+            id: petitionCampaign.id
+          }
+        },
+        image: imageId
+          ? {
+              connect: {
+                id: imageId
+              }
+            }
+          : undefined
       }
     })
     // Idk why this is needed, but the only way that adding an image was working
@@ -62,7 +104,6 @@ export const petition = router({
         id: petition.id
       },
       data: {
-        imageId
       },
       select: {
         id: true,
