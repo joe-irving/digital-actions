@@ -30,7 +30,8 @@ export const petition = router({
         }
       })
       : undefined
-    // TODO add image to petition
+    const imageId = image?.id
+    // TODO add image to petition, include slug.
     const petition = await ctx.prisma.petition.create({
       data: {
         title: input.title,
@@ -40,7 +41,8 @@ export const petition = router({
             whatsappShareText: '',
             shareTitle: input.title,
             tweet: '',
-            description: ''
+            description: '',
+            shareImageId: imageId
           }
         },
         permissions: ctx.user
@@ -54,7 +56,21 @@ export const petition = router({
         creatorEmail
       }
     })
-    return petition
+    // Idk why this is needed, but the only way that adding an image was working
+    const petitionWithImage = await ctx.prisma.petition.update({
+      where: {
+        id: petition.id
+      },
+      data: {
+        imageId
+      },
+      select: {
+        id: true,
+        title: true,
+        content: true
+      }
+    })
+    return petitionWithImage
     // Create petition
     // Create image
     // Create and link sharing information
