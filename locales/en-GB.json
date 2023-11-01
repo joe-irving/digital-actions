@@ -21,7 +21,7 @@
     "image_upload_text": "Click or drag a file to this area to upload",
     "email_title": "Your Email Address",
     "email_description": "Please enter your email so you can launch and manage your petition",
-    "email_validator": "Looks like that isn't an email address",
+    "email_validator": "Please enter a valid email address like jane.doe@proton.me.",
     "email_required": "You need to enter your email address",
     "nav_next": "Next",
     "nav_previous": "Previous",

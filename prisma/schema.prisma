@@ -166,6 +166,8 @@ model Petition {
   petitionCampaign     PetitionCampaign?         @relation(fields: [petitionCampaignId], references: [id])
   petitionCampaignId   Int?
   petitionThemes       Theme[]                   @relation("PetitionThemes")
+  image File @relation(fields: [imageId], references: [id])
+  imageId Int
 }
 
 model UserPetitionPermissions {
@@ -206,4 +208,12 @@ model PetitionCampaignPermission {
   campaign   PetitionCampaign @relation(fields: [campaignId], references: [id])
   campaignId Int
   type       String
+}
+
+model File {
+  id  Int @id @default(autoincrement())
+  name String?
+  url String
+  thumbnailUrl  String?
+  petitions Petition[]
 }
