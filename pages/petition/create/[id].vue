@@ -1,13 +1,16 @@
 <script setup lang="ts">
-import { StepsProps, InputInst, FormRules, FormItemRule, FormValidationError } from 'naive-ui'
+import { StepsProps, InputInst, FormRules, FormItemRule, FormValidationError, FormInst, UploadFileInfo } from 'naive-ui'
+import { TRPCClientError } from '@trpc/client'
 const { $client } = useNuxtApp()
 const { signIn } = useAuth()
 const route = useRoute()
+const { $i18n } = useNuxtApp()
 
 const { data: user } = $client.user.me.useQuery()
 
-const { $i18n } = useNuxtApp()
 // Get id prop, if it is an int then get the campaign, if not create without link to campaign?
+const petitionCampaignId = parseInt(route.params.id instanceof Array ? route.params.id[0] : route.params.id)
+const { data: petitionCampaign } = $client.petitionCampaign.getPublic.useQuery(petitionCampaignId)
 // Set layout to be plain
 const currentRef = ref<number>(1)
 const currentStatus = ref<StepsProps['status']>('process')
@@ -24,9 +27,14 @@ const email = ref<HTMLElement | null>(null)
 const emailInput = ref<InputInst | null>(null)
 const formRef = ref<FormInst | null>(null)
 
-const petition = ref({
+const petition = ref<{
+  title: string,
+  content: string,
+  image: UploadFileInfo[],
+  email: string
+}>({
   title: route.query.title?.toString() || '',
-  description: route.query.content?.toString() || '',
+  content: route.query.content?.toString() || '',
   image: [],
   email: route.query.email?.toString() || ''
 })
@@ -63,8 +71,15 @@ const steps = [
 const formRules = ref<FormRules>({
   title: {
     required: true,
-    message: $i18n.t('petition_create.title_validator'),
-    trigger: ['input', 'blur']
+    trigger: ['input', 'blur'],
+    validator (rule: FormItemRule, value: string) {
+      if (!value) {
+        return new Error($i18n.t('petition_create.title_validator'))
+      } else if (value.length > 200) {
+        return new Error($i18n.t('petition_create.title_validator_too_big'))
+      }
+      return true
+    }
   },
   email: {
     required: true,
@@ -79,6 +94,8 @@ const formRules = ref<FormRules>({
     }
   }
 })
+
+// TODO validate input from TipTap.
 
 const formWarningMessages = ref<FormValidationError[]>([])
 
@@ -104,7 +121,6 @@ const handleCreatePetition = () => {
   formWarningMessages.value = []
   formRef.value?.validate((errors: Array<FormValidationError> | undefined) => {
     if (errors) {
-      console.log(errors)
       formWarningMessages.value = errors
     } else {
       console.log('creating petition')
@@ -114,13 +130,33 @@ const handleCreatePetition = () => {
 }
 
 const createPetition = async () => {
-  // const petitionCreated = $client
-
-  const res = await signIn('sendgrid', {
-    email: petition.value.email,
-    callbackUrl: '/petition/1',
-    redirect: false
-  })
+  console.log(petitionCampaign.value)
+  try {
+    const petitionCreated = await $client.petition.create.mutate({
+      title: petition.value.title,
+      content: petition.value.content,
+      creatorEmail: petition.value.email,
+      image: (petition.value.image.length && petition.value.image[0].url)
+        ? {
+            url: petition.value.image[0].url,
+            name: petition.value.image[0].name
+          }
+        : undefined
+    })
+  } catch (err) {
+    if (err instanceof TRPCClientError) {
+      formWarningMessages.value = [[{
+        message: $i18n.t('petition_create.server_error')
+      }]]
+    }
+    throw err
+  }
+  // console.log(petitionCreated)
+  // const res = await signIn('sendgrid', {
+  //   email: petition.value.email,
+  //   callbackUrl: '/petition/1',
+  //   redirect: false
+  // })
   // await signIn('google')
   // Create petition in back end, with either user email attached or linked to logged in userEmail
   // if not logged in -> take them to login page -> redirect to manage page
@@ -158,7 +194,7 @@ definePageMeta({
           <n-space class="n-step-description full" vertical justify="center" height="100%">
             <p>{{ $t('petition_create.petition_description') }}</p>
             <client-only @keyup.ctrl.enter="nextStep()">
-              <TiptapEditor v-model="petition.description" />
+              <TiptapEditor v-model="petition.content" />
             </client-only>
           </n-space>
         </n-step>

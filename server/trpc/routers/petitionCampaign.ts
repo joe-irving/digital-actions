@@ -30,5 +30,25 @@ export const petitionCampaign = router({
       }
     })
     return petitionCampaign
+  }),
+  getPublic: publicProcedure.input(z.number().int()).query(({ ctx, input }) => {
+    return ctx.prisma.petitionCampaign.findFirst({
+      where: {
+        id: input,
+        status: 'public'
+      },
+      select: {
+        id: true,
+        title: true,
+        themes: {
+          select: {
+            id: true,
+            title: true,
+            description: true,
+            icon: true
+          }
+        }
+      }
+    })
   })
 })

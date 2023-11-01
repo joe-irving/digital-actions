@@ -13,6 +13,7 @@
     "title": "Title",
     "title_description": "Enter the title of your petition, keep it short and clear",
     "title_validator": "You need to enter a title.",
+    "title_validator_too_big": "The title should be less than 200 characters.",
     "title_placeholder": "Demand All Saints Church stops banking on climate chaos",
     "petition_title": "Petition",
     "petition_description": "Write your petition here, keep it defined and targeted.",
@@ -26,7 +27,8 @@
     "nav_next": "Next",
     "nav_previous": "Previous",
     "create_button": "Create your petition",
-    "optional": "optional"
+    "optional": "optional",
+    "server_error": "There was a error in creating your petition."
   },
   "tiptap": {
     "bold": "Bold",

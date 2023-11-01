@@ -151,13 +151,16 @@ model PetitionCampaign {
   petitions                 Petition[]
   sharingInformation        SharingInformation?          @relation(fields: [sharingInformationId], references: [id])
   sharingInformationId      Int?                         @unique
-  themes                    Theme[]
+  themes                    Theme[]                      @relation("PetitionCampaignThemes")
   permissions               PetitionCampaignPermission[]
+  status                    String                       @default("draft")
+  defaultPetitionImage      File?                        @relation(fields: [defaultPetitionImageId], references: [id])
+  defaultPetitionImageId    Int?
 }
 
 model Petition {
   id                   Int                       @id @default(autoincrement())
-  locationTag          String
+  locationTag          String?
   title                String
   content              String
   sharingInformation   SharingInformation        @relation(fields: [sharingInformationId], references: [id])
@@ -166,8 +169,9 @@ model Petition {
   petitionCampaign     PetitionCampaign?         @relation(fields: [petitionCampaignId], references: [id])
   petitionCampaignId   Int?
   petitionThemes       Theme[]                   @relation("PetitionThemes")
-  image File @relation(fields: [imageId], references: [id])
-  imageId Int
+  image                File?                     @relation(fields: [imageId], references: [id])
+  imageId              Int?
+  creatorEmail         String?
 }
 
 model UserPetitionPermissions {
@@ -186,19 +190,20 @@ model SharingInformation {
   petitionCampaign   PetitionCampaign?
   petitionCampaignId Int?
   whatsappShareText  String
-  shareImage         String
+  shareImage         File?             @relation(fields: [shareImageId], references: [id])
+  shareImageId       Int?
   shareTitle         String
   tweet              String
   description        String
 }
 
 model Theme {
-  id          Int              @id @default(autoincrement())
+  id          Int                @id @default(autoincrement())
   title       String
-  description String
-  petitions   Petition[]       @relation("PetitionThemes")
-  campaign    PetitionCampaign @relation(fields: [campaignId], references: [id])
-  campaignId  Int
+  description String?
+  icon        String
+  petitions   Petition[]         @relation("PetitionThemes")
+  campaign    PetitionCampaign[] @relation("PetitionCampaignThemes")
 }
 
 model PetitionCampaignPermission {
@@ -211,9 +216,11 @@ model PetitionCampaignPermission {
 }
 
 model File {
-  id  Int @id @default(autoincrement())
-  name String?
-  url String
-  thumbnailUrl  String?
-  petitions Petition[]
+  id                 Int                  @id @default(autoincrement())
+  name               String?
+  url                String
+  thumbnailUrl       String?
+  petitions          Petition[]
+  petitionCampaign   PetitionCampaign[]
+  sharingInformation SharingInformation[]
 }
