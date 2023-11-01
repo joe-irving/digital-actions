@@ -1,7 +1,7 @@
 import { inferAsyncReturnType } from '@trpc/server'
 import type { H3Event } from 'h3'
 import { PrismaClient } from '@prisma/client'
-import { getServerSession, Session } from '#auth'
+import { getServerSession } from '#auth'
 
 let prisma: PrismaClient
 
