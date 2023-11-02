@@ -2,6 +2,7 @@
 import { StepsProps, InputInst, FormRules, FormItemRule, FormValidationError, FormInst, UploadFileInfo, SelectInst } from 'naive-ui'
 import { LocationQueryValue } from 'vue-router'
 import { TRPCClientError } from '@trpc/client'
+import { NominatimLocationInfo } from '~/types'
 const { $client } = useNuxtApp()
 // const { signIn } = useAuth()
 const route = useRoute()
@@ -24,6 +25,8 @@ const totalSteps = ref(4)
 // Element references
 const title = ref<HTMLElement | null>(null)
 const titleInput = ref<InputInst | null>(null)
+const targetRef = ref<HTMLElement | null>(null)
+const targetInput = ref<InputInst | null>(null)
 const description = ref<HTMLElement | null>(null)
 // const descriptionInput = ref<InputInst | null>(null)
 const themes = ref<HTMLElement | null>(null)
@@ -52,13 +55,17 @@ const petition = ref<{
   content: string,
   image: UploadFileInfo[],
   email: string,
-  themes: number[]
+  themes: number[],
+  location: NominatimLocationInfo | null,
+  target: string
 }>({
   title: route.query.title?.toString() || '',
   content: route.query.content?.toString() || '',
   image: [],
   email: route.query.email?.toString() || '',
-  themes: parseTheme(route.query.theme)
+  themes: parseTheme(route.query.theme),
+  location: null,
+  target: route.query.target?.toString() || ''
 })
 
 const formRules = ref<FormRules>({
@@ -108,6 +115,11 @@ const steps = [
     name: 'location',
     jump: location,
     inputFocus: null
+  },
+  {
+    name: 'target',
+    jump: targetRef,
+    inputFocus: targetInput
   },
   {
     name: 'description',
@@ -170,7 +182,9 @@ const createPetition = async () => {
           }
         : undefined,
       petitionCampaign: petitionCampaignId,
-      themes: petition.value.themes
+      themes: petition.value.themes,
+      location: petition.value.location || undefined,
+      target: petition.value.target
     })
     if (user.value?.user) {
       navigateTo(`/petition/${petitionCreated.id}/manage`)
@@ -229,7 +243,23 @@ definePageMeta({
           <span ref="location" />
           <n-space class="n-step-description full" vertical justify="center" height="100%">
             <p>{{ $t('petition_create.location_description') }}</p>
-            <LocationLookup />
+            <LocationLookup v-model="petition.location" />
+          </n-space>
+        </n-step>
+        <n-step :title="$t('petition_create.target_title')">
+          <span ref="targetRef" />
+          <n-space class="n-step-description full" justify="center" vertical>
+            <p>{{ $t('petition_create.target_description') }}</p>
+            <n-form-item path="target">
+              <n-input
+                ref="targetInput"
+                v-model:value="petition.target"
+                type="text"
+                :placeholder="$t('petition_create.target_placeholder')"
+                size="large"
+                @keyup.enter="nextStep()"
+              />
+            </n-form-item>
           </n-space>
         </n-step>
         <n-step :title="$t('petition_create.petition_title')">
@@ -279,13 +309,14 @@ definePageMeta({
         </n-button>
       </div>
     </n-space>
-    {{ petition }}
   </div>
 </template>
 
 <style scoped>
 .main-content {
     padding: 10px;
+    max-width: 600px;
+    margin: 0 auto;
 }
 .n-step-description.full {
     min-height: 90vh;
