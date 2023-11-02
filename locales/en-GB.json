@@ -1,6 +1,51 @@
 {
   "menu": {
     "home": "Home",
-    "tweet_campaign": "Tweet Campaign"
+    "tweet_campaign": "Tweet Campaign",
+    "petition_campaign": "Petition Campaign",
+    "create_petition_campaign": "Create Petition Campaign",
+    "new": "New"
+  },
+  "petition_campaign": {
+    "create_new": "Create new petition campaign"
+  },
+  "petition_create": {
+    "title": "Title",
+    "title_description": "Enter the title of your petition, keep it short and clear",
+    "theme_title": "What theme(s) does your petition fall under?",
+    "theme_description": "Pick one or more theme that your petition fits into.",
+    "title_validator": "You need to enter a title.",
+    "title_validator_too_big": "The title should be less than 200 characters.",
+    "title_placeholder": "Demand All Saints Church stops banking on climate chaos",
+    "location_title": "Location of your target",
+    "location_description": "Pick a location for who you are targeting, or leave blank",
+    "petition_title": "Petition",
+    "petition_description": "Write your petition here, keep it defined and targeted.",
+    "image_title": "Upload an image",
+    "image_description": "Ideally include a landscape image that includes people's faces or something relatable",
+    "image_upload_text": "Click or drag a file to this area to upload",
+    "email_title": "Your Email Address",
+    "email_description": "Please enter your email so you can launch and manage your petition",
+    "email_validator": "Please enter a valid email address like jane.doe@proton.me.",
+    "email_required": "You need to enter your email address",
+    "nav_next": "Next",
+    "nav_previous": "Previous",
+    "create_button": "Create your petition",
+    "optional": "optional",
+    "server_error": "There was a error in creating your petition.",
+    "close": "Close",
+    "target_title": "The target of your petition",
+    "target_description": "Who are you petitioning to change? The more specific the better.",
+    "target_placeholder": "e.g. The parish council of Slough"
+  },
+  "tiptap": {
+    "bold": "Bold",
+    "italic": "Italic",
+    "big_heading": "Big heading",
+    "small_heading": "Small heading",
+    "list": "List"
+  },
+  "image_upload": {
+    "too_large_warning": "File is too large! Needs to be less than 10MB"
   }
 }

@@ -8,7 +8,7 @@ const { signIn, signOut, status } = useAuth()
     <button v-if="status === 'authenticated'" @click="signOut()">
       Log out
     </button>
-    <button v-else @click="() => signIn()">
+    <button v-else @click="() => signIn(undefined)">
       Log in!
     </button>
   </div>

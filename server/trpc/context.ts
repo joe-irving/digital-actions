@@ -13,13 +13,15 @@ export const createContext = async (event: H3Event) => {
   // const prisma = new PrismaClient(event)
   const session = await getServerSession(event)
   const authenticated = !!session?.user
-  const user = await prisma.user.findFirst({
-    where: {
-      email: {
-        equals: session?.user?.email
+  const user = session?.user?.email
+    ? await prisma.user.findFirst({
+      where: {
+        email: {
+          equals: session?.user?.email
+        }
       }
-    }
-  })
+    })
+    : undefined
   return { prisma, session, authenticated, user }
 }
 

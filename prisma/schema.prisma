@@ -36,17 +36,19 @@ model Session {
 }
 
 model User {
-  id                       String                    @id @default(cuid())
-  created                  DateTime                  @default(now())
-  updated                  DateTime                  @default(now()) @updatedAt
-  name                     String?
-  email                    String?                   @unique
-  emailVerified            DateTime?
-  image                    String?
-  account                  Account[]
-  sessions                 Session[]
-  tweetCampaignPermissions TweetCampaignPermission[]
-  targetListPermissions    TargetListPermission[]
+  id                         String                       @id @default(cuid())
+  created                    DateTime                     @default(now())
+  updated                    DateTime                     @default(now()) @updatedAt
+  name                       String?
+  email                      String?                      @unique
+  emailVerified              DateTime?
+  image                      String?
+  account                    Account[]
+  sessions                   Session[]
+  tweetCampaignPermissions   TweetCampaignPermission[]
+  targetListPermissions      TargetListPermission[]
+  userPetitionPermissions    UserPetitionPermissions[]
+  PetitionCampaignPermission PetitionCampaignPermission[]
 }
 
 model VerificationToken {
@@ -127,4 +129,128 @@ model Target {
   twitterHandle String
   targetList    TargetList @relation(fields: [targetListId], references: [id])
   targetListId  Int
+}
+
+model ActionNetworkCredential {
+  id                 Int                @id @default(autoincrement())
+  name               String
+  apiKey             String
+  petitionCampaign   PetitionCampaign[]
+  petitionCampaignId Int
+}
+
+model PetitionCampaign {
+  id                        Int                          @id @default(autoincrement())
+  title                     String
+  description               String?
+  actionNetworkCredential   ActionNetworkCredential?     @relation(fields: [actionNetworkCredentialId], references: [id])
+  actionNetworkCredentialId Int?
+  petitionEndpointURL       String?
+  tagPrefix                 String
+  actionNetworkTagId        String?
+  petitions                 Petition[]
+  sharingInformation        SharingInformation?          @relation(fields: [sharingInformationId], references: [id])
+  sharingInformationId      Int?                         @unique
+  themes                    Theme[]                      @relation("PetitionCampaignThemes")
+  permissions               PetitionCampaignPermission[]
+  status                    String                       @default("draft")
+  defaultPetitionImage      File?                        @relation(fields: [defaultPetitionImageId], references: [id])
+  defaultPetitionImageId    Int?
+}
+
+model Petition {
+  id                   Int                       @id @default(autoincrement())
+  locationTag          String?
+  title                String
+  slug                 String       @unique @default(cuid())
+  content              String
+  sharingInformation   SharingInformation        @relation(fields: [sharingInformationId], references: [id], onDelete: Cascade)
+  sharingInformationId Int                       @unique
+  permissions          UserPetitionPermissions[]
+  petitionCampaign     PetitionCampaign?         @relation(fields: [petitionCampaignId], references: [id])
+  petitionCampaignId   Int?
+  petitionThemes       Theme[]                   @relation("PetitionThemes")
+  image                File?                     @relation(fields: [imageId], references: [id])
+  imageId              Int?
+  creatorEmail         String?
+  verificationToken    String?   @default(uuid())
+  location             Location? @relation(fields: [locationId], references: [id])
+  locationId           Int?
+  targetName           String?
+}
+
+model UserPetitionPermissions {
+  id         Int      @id @default(autoincrement())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
+  type       String
+  petition   Petition @relation(fields: [petitionId], references: [id])
+  petitionId Int
+}
+
+model SharingInformation {
+  id                 Int               @id @default(autoincrement())
+  petition           Petition?
+  petitionId         Int?
+  petitionCampaign   PetitionCampaign?
+  petitionCampaignId Int?
+  whatsappShareText  String
+  shareImage         File?             @relation(fields: [shareImageId], references: [id])
+  shareImageId       Int?
+  shareTitle         String
+  tweet              String
+  description        String
+}
+
+model Theme {
+  id          Int                @id @default(autoincrement())
+  title       String
+  description String?
+  icon        String
+  petitions   Petition[]         @relation("PetitionThemes")
+  campaign    PetitionCampaign[] @relation("PetitionCampaignThemes")
+}
+
+model PetitionCampaignPermission {
+  id         Int              @id @default(autoincrement())
+  user       User             @relation(fields: [userId], references: [id])
+  userId     String
+  campaign   PetitionCampaign @relation(fields: [campaignId], references: [id])
+  campaignId Int
+  type       String
+}
+
+model File {
+  id                 Int                  @id @default(autoincrement())
+  name               String?
+  url                String
+  thumbnailUrl       String?
+  petitions          Petition[]
+  petitionCampaign   PetitionCampaign[]
+  sharingInformation SharingInformation[]
+}
+
+model Location {
+  id           Int      @id @default(autoincrement())
+  place_id     Int      @unique
+  licence      String?
+  osm_type     String?
+  osm_id       Int?
+  lat          String
+  lon          String
+  category     String?
+  type         String?
+  place_rank   Int?
+  importance   Float?
+  addresstype  String?
+  name         String
+  display_name String
+  boundingbox  String?
+  county         String?
+  ISO3166_2_lvl6 String?
+  state          String?
+  ISO3166_2_lvl4 String?
+  country        String?
+  country_code   String?
+  petitions      Petition[]
 }

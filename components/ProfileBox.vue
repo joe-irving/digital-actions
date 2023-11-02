@@ -21,7 +21,7 @@ const { data: user } = $client.user.me.useQuery()
       </n-button>
     </div>
     <div v-else class="sign-in-wrapper">
-      <n-button @click="() => signIn()">
+      <n-button @click="() => signIn(undefined)">
         Log In
       </n-button>
     </div>
