@@ -35,7 +35,22 @@ export const petitionCampaign = router({
     const petitionCampaign = await ctx.prisma.petitionCampaign.findFirst({
       where: {
         id: input,
-        status: 'public'
+        OR: [
+          {
+            status: 'public'
+          },
+          {
+            permissions: {
+              some: {
+                userId: ctx.user?.id || '0',
+                type: {
+                  in: ['owner', 'read', 'write']
+                }
+              }
+            }
+          }
+        ]
+
       },
       select: {
         id: true,
