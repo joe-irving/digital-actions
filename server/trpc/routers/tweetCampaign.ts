@@ -30,7 +30,7 @@ export const tweetCampaign = router({
               in: [PermissionLevel.OWNER, PermissionLevel.READ, PermissionLevel.WRITE]
             },
             user: {
-              id: ctx.user?.id
+              id: ctx.user?.id || '0'
             }
           }
         }

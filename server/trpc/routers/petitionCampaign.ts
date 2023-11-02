@@ -31,11 +31,29 @@ export const petitionCampaign = router({
     })
     return petitionCampaign
   }),
-  getPublic: publicProcedure.input(z.number().int()).query(async ({ ctx, input }) => {
+  getPublic: publicProcedure.input(z.object({
+    id: z.number().int(),
+    includeStyle: z.boolean().default(false)
+  })).query(async ({ ctx, input }) => {
     const petitionCampaign = await ctx.prisma.petitionCampaign.findFirst({
       where: {
-        id: input,
-        status: 'public'
+        id: input.id,
+        OR: [
+          {
+            status: 'public'
+          },
+          {
+            permissions: {
+              some: {
+                userId: ctx.user?.id || '0',
+                type: {
+                  in: ['owner', 'read', 'write']
+                }
+              }
+            }
+          }
+        ]
+
       },
       select: {
         id: true,
@@ -46,9 +64,93 @@ export const petitionCampaign = router({
             title: true,
             icon: true
           }
-        }
+        },
+        defaultPetitionImage: {
+          select: {
+            id: true,
+            url: true
+          }
+        },
+        styleTheme: input.includeStyle
+          ? {
+              select: {
+                name: true,
+                backgroundColor: true,
+                backgroundTextColor: true,
+                backgroundHeaderColor: true,
+                accentColor: true,
+                accentTextColor: true,
+                accentHeaderColor: true,
+                headerFont: true,
+                font: true,
+                logo: {
+                  select: {
+                    id: true,
+                    url: true
+                  }
+                },
+                logoSquare: {
+                  select: {
+                    id: true,
+                    url: true
+                  }
+                },
+                icon: {
+                  select: {
+                    id: true,
+                    url: true
+                  }
+                }
+              }
+            }
+          : false
       }
     })
     return petitionCampaign
+  }),
+  getPublicList: publicProcedure.input(z.object({
+    id: z.number().int()
+  })).query(async ({ ctx, input }) => {
+    // if petition campaign pubic & petition public & petition approved & has owner (i.e. has been user verified)
+    return await ctx.prisma.petition.findMany({
+      where: {
+        petitionCampaign: {
+          id: input.id,
+          status: {
+            equals: 'public'
+          }
+        },
+        status: 'public',
+        approved: true,
+        permissions: {
+          some: {
+            type: 'owner'
+          }
+        }
+      },
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        image: {
+          select: {
+            id: true,
+            url: true
+          }
+        },
+        sharingInformation: {
+          select: {
+            description: true
+          }
+        },
+        petitionThemes: {
+          select: {
+            id: true,
+            title: true,
+            icon: true
+          }
+        }
+      }
+    })
   })
 })

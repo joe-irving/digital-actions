@@ -156,13 +156,15 @@ model PetitionCampaign {
   status                    String                       @default("draft")
   defaultPetitionImage      File?                        @relation(fields: [defaultPetitionImageId], references: [id])
   defaultPetitionImageId    Int?
+  styleTheme                StyleTheme?                  @relation(fields: [styleThemeId], references: [id])
+  styleThemeId              Int?
 }
 
 model Petition {
   id                   Int                       @id @default(autoincrement())
   locationTag          String?
   title                String
-  slug                 String       @unique @default(cuid())
+  slug                 String                    @unique @default(cuid())
   content              String
   sharingInformation   SharingInformation        @relation(fields: [sharingInformationId], references: [id], onDelete: Cascade)
   sharingInformationId Int                       @unique
@@ -173,10 +175,12 @@ model Petition {
   image                File?                     @relation(fields: [imageId], references: [id])
   imageId              Int?
   creatorEmail         String?
-  verificationToken    String?   @default(uuid())
-  location             Location? @relation(fields: [locationId], references: [id])
+  verificationToken    String?                   @default(uuid())
+  location             Location?                 @relation(fields: [locationId], references: [id])
   locationId           Int?
   targetName           String?
+  approved             Boolean @default(false)
+  status               String @default("draft")
 }
 
 model UserPetitionPermissions {
@@ -221,31 +225,34 @@ model PetitionCampaignPermission {
 }
 
 model File {
-  id                 Int                  @id @default(autoincrement())
-  name               String?
-  url                String
-  thumbnailUrl       String?
-  petitions          Petition[]
-  petitionCampaign   PetitionCampaign[]
-  sharingInformation SharingInformation[]
+  id                   Int                  @id @default(autoincrement())
+  name                 String?
+  url                  String
+  thumbnailUrl         String?
+  petitions            Petition[]
+  petitionCampaign     PetitionCampaign[]
+  sharingInformation   SharingInformation[]
+  styleThemeLogo       StyleTheme?          @relation("StyleThemeLogo")
+  styleThemeLogoSquare StyleTheme?          @relation("StyleThemeLogoSquare")
+  styleThemeIcon       StyleTheme?          @relation("StyleThemeIcon")
 }
 
 model Location {
-  id           Int      @id @default(autoincrement())
-  place_id     Int      @unique
-  licence      String?
-  osm_type     String?
-  osm_id       Int?
-  lat          String
-  lon          String
-  category     String?
-  type         String?
-  place_rank   Int?
-  importance   Float?
-  addresstype  String?
-  name         String
-  display_name String
-  boundingbox  String?
+  id             Int        @id @default(autoincrement())
+  place_id       BigInt     @unique
+  licence        String?
+  osm_type       String?
+  osm_id         BigInt?
+  lat            String
+  lon            String
+  category       String?
+  type           String?
+  place_rank     Int?
+  importance     Float?
+  addresstype    String?
+  name           String
+  display_name   String
+  boundingbox    String?
   county         String?
   ISO3166_2_lvl6 String?
   state          String?
@@ -253,4 +260,24 @@ model Location {
   country        String?
   country_code   String?
   petitions      Petition[]
+}
+
+model StyleTheme {
+  id                    Int                @id @default(autoincrement())
+  name                  String
+  backgroundColor       String?
+  backgroundTextColor   String?
+  backgroundHeaderColor String?
+  accentColor           String?
+  accentTextColor       String?
+  accentHeaderColor     String?
+  headerFont            String?
+  font                  String?
+  logo                  File?              @relation("StyleThemeLogo", fields: [logoId], references: [id])
+  logoId                Int?               @unique
+  logoSquare            File?              @relation("StyleThemeLogoSquare", fields: [logoSquareId], references: [id])
+  logoSquareId          Int?               @unique
+  icon                  File?              @relation("StyleThemeIcon", fields: [iconId], references: [id])
+  iconId                Int?               @unique
+  petitionCampaign      PetitionCampaign[]
 }
