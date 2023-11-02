@@ -1,8 +1,7 @@
 <script setup lang="ts">
-// import { darkTheme, LayoutContentInst } from 'naive-ui'
 import { CustomStyleTheme } from '~/types'
 
-defineProps({
+const props = defineProps({
   theme: {
     type: Object as PropType<CustomStyleTheme>,
     default: () => {
@@ -12,6 +11,10 @@ defineProps({
     }
   }
 })
+
+// TODO turn theme into Naive Theme
+const overrideTheme = useCreateThemeOverrides(props.theme)
+// console.log(overrideTheme)
 
 const pageContent = ref<HTMLElement | null>(null)
 
@@ -45,7 +48,8 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <n-config-provider>
+  <n-config-provider :theme="undefined" :theme-overrides="overrideTheme">
+    <!-- <n-theme-editor> -->
     <n-space vertical size="large">
       <n-layout @scroll="console.log">
         <n-layout-header>
@@ -77,5 +81,6 @@ onUnmounted(() => {
         </n-layout-content>
       </n-layout>
     </n-space>
+    <!-- </n-theme-editor> -->
   </n-config-provider>
 </template>

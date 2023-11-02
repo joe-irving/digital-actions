@@ -61,3 +61,21 @@ export interface CustomStyleTheme {
   logoSquare: DatabaseFile | null;
   icon: DatabaseFile | null;
 }
+
+interface sharingDescription {
+  description: string
+}
+interface petitionTheme {
+  id: number,
+  title: string,
+  icon: string
+}
+
+export interface PetitionListItem {
+  id: number
+  title: string,
+  sharingInformation: sharingDescription,
+  image: DatabaseFile | null,
+  slug: string,
+  petitionThemes: petitionTheme[]
+}

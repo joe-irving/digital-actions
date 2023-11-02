@@ -116,6 +116,7 @@ export const petition = router({
         title: input.title,
         content: input.content,
         targetName: input.target,
+        status: 'public',
         sharingInformation: {
           create: {
             whatsappShareText: '',

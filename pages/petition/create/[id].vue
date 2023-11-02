@@ -12,7 +12,7 @@ const { data: user } = $client.user.me.useQuery()
 
 // Get id prop, if it is an int then get the campaign, if not create without link to campaign?
 const petitionCampaignId = parseInt(route.params.id instanceof Array ? route.params.id[0] : route.params.id)
-const { data: petitionCampaign } = await $client.petitionCampaign.getPublic.useQuery({ id: petitionCampaignId })
+const { data: petitionCampaign } = await $client.petitionCampaign.getPublic.useQuery({ id: petitionCampaignId, includeStyle: true })
 const themeOptions = ref(petitionCampaign.value?.themes.map((t) => { return { label: t.title, value: t.id } }))
 if (!petitionCampaign.value) {
   navigateTo('/')
@@ -20,7 +20,6 @@ if (!petitionCampaign.value) {
 // Set layout to be plain
 const currentRef = ref<number>(1)
 const currentStatus = ref<StepsProps['status']>('process')
-const totalSteps = ref(4)
 
 // Element references
 const title = ref<HTMLElement | null>(null)
@@ -137,6 +136,7 @@ const steps = [
     inputFocus: emailInput
   }
 ]
+const totalSteps = ref(steps.length)
 
 const goToStep = (stepNumber: number) => {
   currentRef.value = stepNumber
@@ -211,105 +211,107 @@ definePageMeta({
 </script>
 
 <template>
-  <div class="main-content">
-    <n-form ref="formRef" :rules="formRules" :model="petition">
-      <n-steps v-model:current="currentRef" :vertical="true" :status="currentStatus">
-        <n-step :title="$t('petition_create.title')">
-          <span ref="title" />
-          <n-space class="n-step-description full" justify="center" vertical>
-            <p>{{ $t('petition_create.title_description') }}</p>
-            <n-form-item path="title">
-              <n-input
-                ref="titleInput"
-                v-model:value="petition.title"
-                type="text"
-                :placeholder="$t('petition_create.title_placeholder')"
-                size="large"
-                @keyup.enter="nextStep()"
-              />
-            </n-form-item>
-          </n-space>
-        </n-step>
-        <n-step :title="$t('petition_create.theme_title')">
-          <span ref="themes" />
-          <n-space class="n-step-description full" vertical justify="center" height="100%">
-            <p>{{ $t('petition_create.theme_description') }}</p>
-            <n-form-item path="themes">
-              <n-select ref="themesInput" v-model:value="petition.themes" multiple :options="themeOptions" />
-            </n-form-item>
-          </n-space>
-        </n-step>
-        <n-step :title="`${$t('petition_create.location_title')}  (${$t('petition_create.optional')})`">
-          <span ref="location" />
-          <n-space class="n-step-description full" vertical justify="center" height="100%">
-            <p>{{ $t('petition_create.location_description') }}</p>
-            <LocationLookup v-model="petition.location" />
-          </n-space>
-        </n-step>
-        <n-step :title="$t('petition_create.target_title')">
-          <span ref="targetRef" />
-          <n-space class="n-step-description full" justify="center" vertical>
-            <p>{{ $t('petition_create.target_description') }}</p>
-            <n-form-item path="target">
-              <n-input
-                ref="targetInput"
-                v-model:value="petition.target"
-                type="text"
-                :placeholder="$t('petition_create.target_placeholder')"
-                size="large"
-                @keyup.enter="nextStep()"
-              />
-            </n-form-item>
-          </n-space>
-        </n-step>
-        <n-step :title="$t('petition_create.petition_title')">
-          <span ref="description" />
-          <n-space class="n-step-description full" vertical justify="center" height="100%">
-            <p>{{ $t('petition_create.petition_description') }}</p>
-            <client-only @keyup.ctrl.enter="nextStep()">
-              <TiptapEditor v-model="petition.content" />
-            </client-only>
-          </n-space>
-        </n-step>
-        <n-step :title="`${$t('petition_create.image_title')}  (${$t('petition_create.optional')})`">
-          <div ref="image" class="n-step-description full">
-            <p>{{ $t('petition_create.image_description') }}</p>
-            <ImageUpload @change="(fileList) => petition.image = fileList" />
-          </div>
-        </n-step>
-        <n-step :title="user?.authenticated ? $t('petition_create.create_button') : $t('petition_create.email_title')">
-          <!-- Only if not signed in, otherwise just show button -->
-          <div ref="email" class="n-step-description full">
-            <div v-if="!user?.authenticated">
-              <n-p>{{ $t("petition_create.email_description") }}</n-p>
-              <n-form-item path="email">
-                <n-input ref="emailInput" v-model:value="petition.email" type="text" />
+  <CustomThemeWrapper :theme="petitionCampaign?.styleTheme">
+    <div class="main-content">
+      <n-form ref="formRef" :rules="formRules" :model="petition">
+        <n-steps v-model:current="currentRef" :vertical="true" :status="currentStatus">
+          <n-step :title="$t('petition_create.title')">
+            <span ref="title" />
+            <n-space class="n-step-description full" justify="center" vertical>
+              <p>{{ $t('petition_create.title_description') }}</p>
+              <n-form-item path="title">
+                <n-input
+                  ref="titleInput"
+                  v-model:value="petition.title"
+                  type="text"
+                  :placeholder="$t('petition_create.title_placeholder')"
+                  size="large"
+                  @keyup.enter="nextStep()"
+                />
               </n-form-item>
+            </n-space>
+          </n-step>
+          <n-step :title="$t('petition_create.theme_title')">
+            <span ref="themes" />
+            <n-space class="n-step-description full" vertical justify="center" height="100%">
+              <p>{{ $t('petition_create.theme_description') }}</p>
+              <n-form-item path="themes">
+                <n-select ref="themesInput" v-model:value="petition.themes" multiple :options="themeOptions" />
+              </n-form-item>
+            </n-space>
+          </n-step>
+          <n-step :title="`${$t('petition_create.location_title')}  (${$t('petition_create.optional')})`">
+            <span ref="location" />
+            <n-space class="n-step-description full" vertical justify="center" height="100%">
+              <p>{{ $t('petition_create.location_description') }}</p>
+              <LocationLookup v-model="petition.location" />
+            </n-space>
+          </n-step>
+          <n-step :title="$t('petition_create.target_title')">
+            <span ref="targetRef" />
+            <n-space class="n-step-description full" justify="center" vertical>
+              <p>{{ $t('petition_create.target_description') }}</p>
+              <n-form-item path="target">
+                <n-input
+                  ref="targetInput"
+                  v-model:value="petition.target"
+                  type="text"
+                  :placeholder="$t('petition_create.target_placeholder')"
+                  size="large"
+                  @keyup.enter="nextStep()"
+                />
+              </n-form-item>
+            </n-space>
+          </n-step>
+          <n-step :title="$t('petition_create.petition_title')">
+            <span ref="description" />
+            <n-space class="n-step-description full" vertical justify="center" height="100%">
+              <p>{{ $t('petition_create.petition_description') }}</p>
+              <client-only @keyup.ctrl.enter="nextStep()">
+                <TiptapEditor v-model="petition.content" />
+              </client-only>
+            </n-space>
+          </n-step>
+          <n-step :title="`${$t('petition_create.image_title')}  (${$t('petition_create.optional')})`">
+            <div ref="image" class="n-step-description full">
+              <p>{{ $t('petition_create.image_description') }}</p>
+              <ImageUpload @change="(fileList) => petition.image = fileList" />
             </div>
-            <!-- , { username: petition.email, callbackUrl: '/peition' }) -->
-            <n-button @click="handleCreatePetition()">
-              {{ $t('petition_create.create_button') }}
-            </n-button>
-            <div v-if="formWarningMessages.length > 0">
-              <FormErrorList :errors="formWarningMessages" />
+          </n-step>
+          <n-step :title="user?.authenticated ? $t('petition_create.create_button') : $t('petition_create.email_title')">
+            <!-- Only if not signed in, otherwise just show button -->
+            <div ref="email" class="n-step-description full">
+              <div v-if="!user?.authenticated">
+                <n-p>{{ $t("petition_create.email_description") }}</n-p>
+                <n-form-item path="email">
+                  <n-input ref="emailInput" v-model:value="petition.email" type="text" />
+                </n-form-item>
+              </div>
+              <!-- , { username: petition.email, callbackUrl: '/peition' }) -->
+              <n-button @click="handleCreatePetition()">
+                {{ $t('petition_create.create_button') }}
+              </n-button>
+              <div v-if="formWarningMessages.length > 0">
+                <FormErrorList :errors="formWarningMessages" />
+              </div>
             </div>
-          </div>
-        </n-step>
-      </n-steps>
-    </n-form>
-    <n-space class="navigation-buttons" justify="space-between">
-      <div class="left">
-        <n-button v-if="currentRef > 1" @click="prevStep()">
-          {{ $t("petition_create.nav_previous") }}
-        </n-button>
-      </div>
-      <div class="right">
-        <n-button v-if="currentRef < totalSteps" @click.prevent="nextStep()">
-          {{ $t("petition_create.nav_next") }}
-        </n-button>
-      </div>
-    </n-space>
-  </div>
+          </n-step>
+        </n-steps>
+      </n-form>
+      <n-space class="navigation-buttons" justify="space-between">
+        <div class="left">
+          <n-button v-if="currentRef > 1" @click="prevStep()">
+            {{ $t("petition_create.nav_previous") }}
+          </n-button>
+        </div>
+        <div class="right">
+          <n-button v-if="currentRef < totalSteps" @click.prevent="nextStep()">
+            {{ $t("petition_create.nav_next") }}
+          </n-button>
+        </div>
+      </n-space>
+    </div>
+  </CustomThemeWrapper>
 </template>
 
 <style scoped>

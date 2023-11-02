@@ -180,6 +180,7 @@ model Petition {
   locationId           Int?
   targetName           String?
   approved             Boolean @default(false)
+  status               String @default("draft")
 }
 
 model UserPetitionPermissions {

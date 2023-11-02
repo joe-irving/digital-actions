@@ -65,6 +65,12 @@ export const petitionCampaign = router({
             icon: true
           }
         },
+        defaultPetitionImage: {
+          select: {
+            id: true,
+            url: true
+          }
+        },
         styleTheme: input.includeStyle
           ? {
               select: {
@@ -101,5 +107,50 @@ export const petitionCampaign = router({
       }
     })
     return petitionCampaign
+  }),
+  getPublicList: publicProcedure.input(z.object({
+    id: z.number().int()
+  })).query(async ({ ctx, input }) => {
+    // if petition campaign pubic & petition public & petition approved & has owner (i.e. has been user verified)
+    return await ctx.prisma.petition.findMany({
+      where: {
+        petitionCampaign: {
+          id: input.id,
+          status: {
+            equals: 'public'
+          }
+        },
+        status: 'public',
+        approved: true,
+        permissions: {
+          some: {
+            type: 'owner'
+          }
+        }
+      },
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        image: {
+          select: {
+            id: true,
+            url: true
+          }
+        },
+        sharingInformation: {
+          select: {
+            description: true
+          }
+        },
+        petitionThemes: {
+          select: {
+            id: true,
+            title: true,
+            icon: true
+          }
+        }
+      }
+    })
   })
 })
