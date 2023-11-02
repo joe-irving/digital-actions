@@ -47,5 +47,10 @@
   },
   "image_upload": {
     "too_large_warning": "File is too large! Needs to be less than 10MB"
+  },
+  "verification": {
+    "check_email": "Please check your email and click the link",
+    "email_address_reminder": "You have registered on the email {email}",
+    "close_tab": "You can now close this tab."
   }
 }

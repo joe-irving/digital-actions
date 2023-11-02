@@ -189,7 +189,7 @@ const createPetition = async () => {
     if (user.value?.user) {
       navigateTo(`/petition/${petitionCreated.id}/manage`)
     } else {
-      navigateTo('/verify')
+      navigateTo('/verify?email=' + encodeURIComponent(petition.value.email))
     }
   } catch (err) {
     if (err instanceof TRPCClientError) {
