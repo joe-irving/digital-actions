@@ -6,6 +6,10 @@
     "create_petition_campaign": "Create Petition Campaign",
     "new": "New"
   },
+  "profile": {
+    "sign_out": "Sign Out",
+    "log_in": "Log in"
+  },
   "petition_campaign": {
     "create_new": "Create new petition campaign"
   },

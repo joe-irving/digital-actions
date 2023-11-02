@@ -1,28 +1,40 @@
 <script setup lang="ts">
-const { $client } = useNuxtApp()
+const { $client, $i18n } = useNuxtApp()
 const { signIn, signOut } = useAuth()
 
 const { data: user } = $client.user.me.useQuery()
+
+const handleProfileOptions = async (option: string) => {
+  if (option === 'signOut') {
+    await signOut()
+  }
+}
 </script>
 
 <template>
   <div>
     <div v-if="user?.authenticated" class="user-box">
-      <div class="user">
-        <n-avatar
-          round
-          size="small"
-          :src="user?.user?.image || undefined"
-        />
-      </div>
-
-      <n-button @click="() => signOut()">
-        Log Out
-      </n-button>
+      <n-dropdown trigger="click" :options="[{key: 'signOut', label: $i18n.t('profile.sign_out')}]" @select="handleProfileOptions">
+        <n-space justify="center">
+          <n-space vertical>
+            <n-p class="font-bold text-right">
+              {{ user?.user?.name }}
+            </n-p>
+            <n-p class="text-xs text-right">
+              {{ user?.user?.email }}
+            </n-p>
+          </n-space>
+          <n-avatar
+            round
+            size="small"
+            :src="user?.user?.image || undefined"
+          />
+        </n-space>
+      </n-dropdown>
     </div>
     <div v-else class="sign-in-wrapper">
       <n-button @click="() => signIn(undefined)">
-        Log In
+        {{ $t('profile.log_in') }}
       </n-button>
     </div>
   </div>

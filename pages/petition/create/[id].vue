@@ -12,7 +12,7 @@ const { data: user } = $client.user.me.useQuery()
 
 // Get id prop, if it is an int then get the campaign, if not create without link to campaign?
 const petitionCampaignId = parseInt(route.params.id instanceof Array ? route.params.id[0] : route.params.id)
-const { data: petitionCampaign } = await $client.petitionCampaign.getPublic.useQuery(petitionCampaignId)
+const { data: petitionCampaign } = await $client.petitionCampaign.getPublic.useQuery({ id: petitionCampaignId })
 const themeOptions = ref(petitionCampaign.value?.themes.map((t) => { return { label: t.title, value: t.id } }))
 if (!petitionCampaign.value) {
   navigateTo('/')

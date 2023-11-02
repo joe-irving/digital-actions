@@ -41,3 +41,23 @@ export interface NominatimLocationInfo {
   };
   boundingbox: [string, string, string, string];
 }
+
+export interface DatabaseFile {
+  id: number;
+  url: string;
+}
+
+export interface CustomStyleTheme {
+  name: string;
+  backgroundColor: string | null;
+  backgroundTextColor: string | null;
+  backgroundHeaderColor: string | null;
+  accentColor: string | null;
+  accentTextColor: string | null;
+  accentHeaderColor: string | null;
+  headerFont: string | null;
+  font: string | null;
+  logo: DatabaseFile | null;
+  logoSquare: DatabaseFile | null;
+  icon: DatabaseFile | null;
+}

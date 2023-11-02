@@ -179,6 +179,7 @@ model Petition {
   location             Location?                 @relation(fields: [locationId], references: [id])
   locationId           Int?
   targetName           String?
+  approved             Boolean @default(false)
 }
 
 model UserPetitionPermissions {
