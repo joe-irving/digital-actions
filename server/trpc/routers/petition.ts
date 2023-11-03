@@ -179,7 +179,7 @@ export const petition = router({
     // If not logged in fetch token and perform sendgrid auth request
     const token = await $fetch.raw('/api/auth/csrf')
     const cookies = token.headers.getSetCookie()
-    const redirectUrl = `/petition/${petition.id}/manage?verify=${petition.verificationToken}`
+    const redirectUrl = `/petition/${petition.id}/manage?token=${petition.verificationToken}`
     const loginBody = {
       ...token._data,
       email: creatorEmail,
@@ -198,5 +198,90 @@ export const petition = router({
     })
     return petitionWithImage
     // Create and link sharing information
+  }),
+  getManage: publicProcedure.input(z.object({
+    id: z.number().int(),
+    token: z.optional(z.string())
+  })).query(async ({ ctx, input }) => {
+    // if not logged in return
+    if (!ctx.user?.id) {
+      throw new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'You have to be logged in to get a petition on the manage page'
+      })
+    }
+    const selectFields = {
+      id: true,
+      title: true,
+      slug: true,
+      content: true,
+      targetName: true,
+      sharingInformation: {
+        select: {
+          whatsappShareText: true,
+          shareImage: {
+            select: {
+              id: true,
+              url: true
+            }
+          }
+        }
+      },
+      image: {
+        select: {
+          id: true,
+          url: true
+        }
+      },
+      approved: true,
+      status: true
+    }
+    const petition = await ctx.prisma.petition.findFirst({
+      where: {
+        id: input.id,
+        permissions: {
+          some: {
+            userId: ctx.user.id,
+            type: {
+              in: ['read', 'write', 'owner']
+            }
+          }
+        }
+      },
+      select: selectFields
+    })
+    if (!petition && !input.token) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: `Could not find a petition with ID ${input.id} for user with email ${ctx.user.email}`
+      })
+    }
+    if (petition) {
+      return petition
+    }
+    // Otherwise attempt to verify & update permissions
+    const verifiedPetition = await ctx.prisma.petition.findFirst({
+      where: {
+        id: input.id,
+        verificationToken: input.token,
+        creatorEmail: ctx.user.email
+      },
+      select: selectFields
+    })
+    if (!verifiedPetition) {
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: 'In order to verify the petition you need the id and verification token to match, and the creator to be the logged in user.'
+      })
+    }
+    // Add owner permissions
+    ctx.prisma.userPetitionPermissions.create({
+      data: {
+        type: 'owner',
+        petitionId: verifiedPetition.id,
+        userId: ctx.user.id
+      }
+    })
+    return verifiedPetition
   })
 })

@@ -14,7 +14,7 @@ defineProps({
 </script>
 
 <template>
-  <NuxtLink class="max-w-[250px]" :to="`/petition/${petition?.slug}`">
+  <NuxtLink class="max-w-[250px]" :to="`/p/${petition?.slug}`">
     <n-card :title="petition?.title" hoverable class="landscape">
       <template #cover>
         <div
