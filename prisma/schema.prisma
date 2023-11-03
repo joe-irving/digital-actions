@@ -64,14 +64,15 @@ model TweetCampaign {
   id                       Int                       @id @default(autoincrement())
   created                  DateTime                  @default(now())
   updated                  DateTime                  @default(now()) @updatedAt
-  title                    String
-  slug                     String                    @unique @default(uuid())
+  title   String
   description              String
   targetList               TargetList                @relation(fields: [targetListId], references: [id])
   targetListId             Int
   published                Boolean                   @default(true)
   tweets                   Tweet[]
   tweetCampaignPermissions TweetCampaignPermission[]
+  slugRelation    Slug @relation(fields: [slug], references: [slug])
+  slug String @unique
 }
 
 model TweetCampaignPermission {
@@ -163,6 +164,8 @@ model PetitionCampaign {
   styleTheme                StyleTheme?                  @relation(fields: [styleThemeId], references: [id])
   styleThemeId              Int?
   limitLocationCountry      String?
+  slugRelation    Slug @relation(fields: [slug], references: [slug])
+  slug String @unique
 }
 
 model Petition {
@@ -171,7 +174,6 @@ model Petition {
   updated              DateTime                  @default(now()) @updatedAt
   locationTag          String?
   title                String
-  slug                 String                    @unique @default(cuid())
   content              String
   sharingInformation   SharingInformation        @relation(fields: [sharingInformationId], references: [id], onDelete: Cascade)
   sharingInformationId Int                       @unique
@@ -188,6 +190,8 @@ model Petition {
   targetName           String?
   approved             Boolean                   @default(false)
   status               String                    @default("draft")
+  slugRelation    Slug @relation(fields: [slug], references: [slug])
+  slug String @unique
 }
 
 model UserPetitionPermissions {
@@ -301,4 +305,14 @@ model StyleTheme {
   icon                  File?              @relation("StyleThemeIcon", fields: [iconId], references: [id])
   iconId                Int?               @unique
   petitionCampaign      PetitionCampaign[]
+}
+
+model Slug {
+  slug          String  @id @default(cuid())
+  created               DateTime           @default(now())
+  updated               DateTime           @default(now()) @updatedAt
+  petition  Petition?
+  petitionCampaign PetitionCampaign?
+  tweetCampaign TweetCampaign?
+  active Boolean @default(true) // For when slug is updated, keep a record but mark as available for use.
 }

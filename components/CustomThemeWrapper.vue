@@ -3,17 +3,13 @@ import { CustomStyleTheme } from '~/types'
 
 const props = defineProps({
   theme: {
-    type: Object as PropType<CustomStyleTheme>,
-    default: () => {
-      return {
-        name: ''
-      }
-    }
+    type: Object as PropType<CustomStyleTheme | null>,
+    default: () => null
   }
 })
 
 // TODO turn theme into Naive Theme
-const overrideTheme = useCreateThemeOverrides(props.theme)
+const overrideTheme = props.theme ? useCreateThemeOverrides(props.theme) : undefined
 // console.log(overrideTheme)
 
 const pageContent = ref<HTMLElement | null>(null)
@@ -62,9 +58,9 @@ onUnmounted(() => {
           >
             <n-space>
               <NuxtLink to="/">
-                <n-image v-if="theme.logo" :src="theme.logo?.url" width="64" height="64" />
+                <n-image v-if="theme?.logo" :src="theme?.logo?.url" width="64" height="64" />
                 <n-h1 v-else>
-                  {{ theme.name }}
+                  {{ theme?.name }}
                 </n-h1>
               </NuxtLink>
             </n-space>

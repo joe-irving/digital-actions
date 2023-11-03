@@ -166,6 +166,9 @@ export const petition = router({
             shareImageId: imageId
           }
         },
+        slugRelation: {
+          create: {}
+        },
         permissions: ctx.user
           ? {
               create: {
@@ -377,5 +380,80 @@ export const petition = router({
 
     // placeholder
     return petition
+  }),
+  getPublic: publicProcedure.input(z.object({
+    id: z.number().int()
+  })).query(async ({ ctx, input }) => {
+    const petition = await ctx.prisma.petition.findFirst({
+      where: {
+        id: input.id,
+        OR: [
+          {
+            permissions: {
+              some: {
+                type: {
+                  in: ['read', 'write', 'owner']
+                }
+              }
+            }
+          },
+          {
+            status: 'public',
+            approved: true
+          }
+        ]
+      },
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        sharingInformation: {
+          select: {
+            shareTitle: true,
+            whatsappShareText: true,
+            shareImage: {
+              select: {
+                id: true,
+                url: true
+              }
+            },
+            tweet: true,
+            description: true
+          }
+        },
+        petitionThemes: {
+          select: {
+            id: true,
+            title: true,
+            icon: true
+          }
+        },
+        image: {
+          select: {
+            id: true,
+            url: true
+          }
+        },
+        slug: true,
+        petitionCampaign: {
+          select: {
+            id: true,
+            title: true,
+            description: true,
+            petitionEndpointURL: true,
+            tagPrefix: true,
+            styleTheme: true
+          }
+        }
+      }
+    })
+    if (!petition) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'Cannot find that petition'
+      })
+    }
+    // TODO get signatures from cached action network endpoint
+    return { ...petition, signatures: 12423 }
   })
 })

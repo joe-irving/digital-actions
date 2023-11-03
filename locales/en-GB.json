@@ -82,5 +82,15 @@
     "whatsapp": "WhatsApp",
     "copy": "Copy",
     "copied": "Copied"
+  },
+  "petition_form": {
+    "first_name_label": "First Name",
+    "first_name_required": "A first name is required",
+    "last_name_label": "Last Name",
+    "email_label": "Email address",
+    "email_invalid": "That doesn't look like a valid email address",
+    "phone_label": "Phone number",
+    "phone_invalid": "That doesn't like a valid postcode"
+
   }
 }

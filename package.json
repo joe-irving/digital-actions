@@ -27,6 +27,7 @@
     "@nuxtseo/module": "^2.0.0-beta.40",
     "@sidebase/nuxt-auth": "^0.6.0-beta.6",
     "@testing-library/vue": "^6.6.1",
+    "@types/vue-tel-input": "^2.1.5",
     "@vitejs/plugin-vue": "^3.2.0",
     "@vitest/coverage-c8": "^0.26.0",
     "@vitest/ui": "^0.26.1",
@@ -59,6 +60,7 @@
     "h3-formidable": "^1.0.0",
     "next-auth": "4.21.1",
     "trpc-nuxt": "^0.10.12",
+    "vue-tel-input": "^8.1.4",
     "yarn": "^1.22.19",
     "zod": "^3.22.4"
   }
