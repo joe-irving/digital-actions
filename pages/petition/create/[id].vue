@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { StepsProps, InputInst, FormRules, FormItemRule, FormValidationError, FormInst, UploadFileInfo, SelectInst } from 'naive-ui'
+import { StepsProps, SelectOption, InputInst, FormRules, FormItemRule, FormValidationError, FormInst, UploadFileInfo, SelectInst } from 'naive-ui'
 import { LocationQueryValue } from 'vue-router'
 import { TRPCClientError } from '@trpc/client'
 import { NominatimLocationInfo } from '~/types'
@@ -13,7 +13,7 @@ const { data: user } = $client.user.me.useQuery()
 // Get id prop, if it is an int then get the campaign, if not create without link to campaign?
 const petitionCampaignId = parseInt(route.params.id instanceof Array ? route.params.id[0] : route.params.id)
 const { data: petitionCampaign } = await $client.petitionCampaign.getPublic.useQuery({ id: petitionCampaignId, includeStyle: true })
-const themeOptions = ref(petitionCampaign.value?.themes.map((t) => { return { label: t.title, value: t.id } }))
+const themeOptions = ref(petitionCampaign.value?.themes.map((t): SelectOption => { return { label: t.title, value: t.id } }))
 if (!petitionCampaign.value) {
   navigateTo('/')
 }
@@ -37,17 +37,6 @@ const email = ref<HTMLElement | null>(null)
 const emailInput = ref<InputInst | null>(null)
 const formRef = ref<FormInst | null>(null)
 
-const parseTheme = (theme: LocationQueryValue | LocationQueryValue[]): number[] => {
-  let filteredThemes: number[] = []
-  filteredThemes = (theme instanceof Array ? theme : [theme]).map((t) => {
-    return parseInt(t || '0')
-  })
-  return filteredThemes.filter((t) => {
-    const isAllowed = themeOptions.value?.filter(o => o.value === t)
-    return t !== 0 && isAllowed && isAllowed.length > 0
-  })
-}
-
 // Define other template data
 const petition = ref<{
   title: string,
@@ -62,7 +51,7 @@ const petition = ref<{
   content: route.query.content?.toString() || '',
   image: [],
   email: route.query.email?.toString() || '',
-  themes: parseTheme(route.query.theme),
+  themes: useParseTheme(route.query.theme, themeOptions.value),
   location: null,
   target: route.query.target?.toString() || ''
 })
@@ -89,7 +78,7 @@ const formRules = ref<FormRules>({
       } else if (!/^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i.test(value)) {
         return new Error($i18n.t('petition_create.email_validator'))
       }
-      return true //  i couldn't work out to remove the rule param from the function
+      return true
     }
   }
 })
@@ -244,7 +233,7 @@ definePageMeta({
             <span ref="location" />
             <n-space class="n-step-description full" vertical justify="center" height="100%">
               <p>{{ $t('petition_create.location_description') }}</p>
-              <LocationLookup v-model="petition.location" />
+              <LocationLookup v-model="petition.location" :limit-country="petitionCampaign?.limitLocationCountry" />
             </n-space>
           </n-step>
           <n-step :title="$t('petition_create.target_title')">

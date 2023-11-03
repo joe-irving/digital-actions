@@ -3,10 +3,50 @@ import { TRPCError } from '@trpc/server'
 import { publicProcedure, router } from '../trpc'
 import { LocationSchema } from './location'
 
+const selectFieldAuthorised = {
+  id: true,
+  created: true,
+  updated: true,
+  title: true,
+  slug: true,
+  content: true,
+  targetName: true,
+  petitionCampaignId: true,
+  sharingInformation: {
+    select: {
+      whatsappShareText: true,
+      shareTitle: true,
+      description: true,
+      tweet: true,
+      shareImage: {
+        select: {
+          id: true,
+          url: true
+        }
+      }
+    }
+  },
+  image: {
+    select: {
+      id: true,
+      url: true
+    }
+  },
+  approved: true,
+  status: true,
+  petitionThemes: {
+    select: {
+      id: true,
+      title: true,
+      icon: true
+    }
+  }
+}
+
 export const petition = router({
   create: publicProcedure.input(z.object({
     title: z.string().max(200),
-    content: z.string().max(1000),
+    content: z.string().max(10000),
     petitionCampaign: z.number().int(),
     image: z.optional(z.object({
       url: z.string().max(1000),
@@ -15,9 +55,9 @@ export const petition = router({
     creatorEmail: z.optional(z.string().regex(/^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i, {
       message: 'That is not an email in the creatorEmail field.'
     }).or(z.string().min(0).max(0)).or(z.null())),
-    themes: z.array(z.number()),
+    themes: z.array(z.number().int()),
     location: z.optional(LocationSchema),
-    target: z.string()
+    target: z.string().max(100)
   })).mutation(async ({ input, ctx }) => {
     const creatorEmail = !input.creatorEmail || input.creatorEmail === '' ? ctx.user?.email : input.creatorEmail
     if (!creatorEmail) {
@@ -211,31 +251,14 @@ export const petition = router({
       })
     }
     const selectFields = {
-      id: true,
-      title: true,
-      slug: true,
-      content: true,
-      targetName: true,
-      sharingInformation: {
-        select: {
-          whatsappShareText: true,
-          shareImage: {
-            select: {
-              id: true,
-              url: true
-            }
-          }
+      ...selectFieldAuthorised,
+      permissions: {
+        where: {
+          userId: ctx.user.id
         }
-      },
-      image: {
-        select: {
-          id: true,
-          url: true
-        }
-      },
-      approved: true,
-      status: true
+      }
     }
+
     const petition = await ctx.prisma.petition.findFirst({
       where: {
         id: input.id,
@@ -257,7 +280,8 @@ export const petition = router({
       })
     }
     if (petition) {
-      return petition
+      // TODO replace with real data
+      return { ...petition, signatures: 11323 }
     }
     // Otherwise attempt to verify & update permissions
     const verifiedPetition = await ctx.prisma.petition.findFirst({
@@ -282,6 +306,76 @@ export const petition = router({
         userId: ctx.user.id
       }
     })
-    return verifiedPetition
+    return { ...verifiedPetition, signatures: 0 }
+  }),
+  update: publicProcedure.input(z.object({
+    id: z.number().int(),
+    title: z.optional(z.string().max(200)),
+    content: z.optional(z.string().max(10000)),
+    target: z.optional(z.string().max(200)),
+    themes: z.optional(z.array(z.number().int()))
+  })).mutation(async ({ ctx, input }) => {
+    if (!ctx.user?.id) {
+      throw new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'You need to be signed in to modify petitions'
+      })
+    }
+
+    // Get userPetitionPermissions
+    const petitionAllowed = await ctx.prisma.petition.findFirst({
+      where: {
+        id: input.id,
+        permissions: {
+          some: {
+            userId: ctx.user.id,
+            type: {
+              in: ['write', 'owner']
+            }
+          }
+        }
+      },
+      select: {
+        id: true,
+        petitionCampaign: {
+          select: {
+            themes: {
+              select: {
+                id: true
+              }
+            }
+          }
+        }
+      }
+    })
+    if (!petitionAllowed) {
+      throw new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'You do not have permission to edit this petition.'
+      })
+    }
+    const allowedThemesLimit = petitionAllowed.petitionCampaign?.themes || []
+    const allowedThemes = allowedThemesLimit.filter((theme) => {
+      return input.themes?.includes(theme.id)
+    })
+
+    // Authorized and has appropriate permissions
+    const petition = await ctx.prisma.petition.update({
+      where: {
+        id: input.id
+      },
+      data: {
+        title: input.title,
+        content: input.content,
+        targetName: input.target,
+        petitionThemes: {
+          connect: allowedThemes
+        }
+      },
+      select: selectFieldAuthorised
+    })
+
+    // placeholder
+    return petition
   })
 })

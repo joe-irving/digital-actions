@@ -5,10 +5,15 @@ import { NominatimLocationInfo } from '~/types'
 
 // set model prop for location selected
 
-defineProps({
+const props = defineProps({
   modelValue: {
     type: Object as PropType<NominatimLocationInfo | null>,
     default: () => null
+  },
+  limitCountry: {
+    type: String,
+    required: false,
+    default: undefined
   }
 })
 
@@ -36,7 +41,14 @@ const isClear = computed(() => {
 const emit = defineEmits(['update:modelValue'])
 // define lookup function to nomiatim
 const lookupNominatim = async () => {
-  const { data: lookup } = await useFetch<NominatimLocationInfo[]>(`https://nominatim.openstreetmap.org/search.php?q=${encodeURIComponent(locationSearchQuery.value)}&format=jsonv2&addressdetails=1`)
+  const { data: lookup } = await useFetch<NominatimLocationInfo[]>('https://nominatim.openstreetmap.org/search.php', {
+    query: {
+      q: encodeURIComponent(locationSearchQuery.value),
+      format: 'jsonv2',
+      addressdetails: 1,
+      countrycodes: props.limitCountry || undefined
+    }
+  })
   locationSearch.value = lookup.value || []
   if (!locationSearchQuery.value || locationSearchQuery.value === '') {
     emit('update:modelValue', null)

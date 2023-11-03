@@ -13,7 +13,7 @@ const createLabel = (label: string, path: string) => {
   return () => h(NuxtLink, { to: path }, { default: () => label })
 }
 
-const collapsed = ref(false)
+const collapsed = ref(true)
 const menuOptions = ref<MenuOption[]>([
   {
     key: 'home',
@@ -26,8 +26,8 @@ const menuOptions = ref<MenuOption[]>([
     icon: createIcon('cib:twitter')
   },
   {
-    key: 'petition-campaigns',
-    label: createLabel($i18n.t('menu.petition_campaign'), '/petition-campaign'),
+    key: 'petitions',
+    label: createLabel($i18n.t('menu.petitions'), '/petition'),
     icon: createIcon('mdi:clipboard-edit-outline')
   }
 ])
@@ -39,6 +39,7 @@ const menuOptions = ref<MenuOption[]>([
       <n-layout-sider
         bordered
         collapse-mode="width"
+        class="h-screen"
         :collapsed-width="64"
         :width="240"
         :collapsed="collapsed"
@@ -53,13 +54,11 @@ const menuOptions = ref<MenuOption[]>([
             :collapsed-icon-size="22"
             :options="menuOptions"
           />
-          <div style="padding: 10px;">
-            <ProfileBox />
-          </div>
+          <ProfileBox />
         </n-space>
       </n-layout-sider>
-      <n-layout class="main-wrapper">
-        <slot />
+      <n-layout class="h-screen" :native-scrollbar="false">
+        <n-dialog-provider><slot /></n-dialog-provider>
       </n-layout>
     </n-layout>
   </n-space>

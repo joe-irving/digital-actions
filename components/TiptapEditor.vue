@@ -21,7 +21,7 @@ const editor = useEditor({
 </script>
 
 <template>
-  <div>
+  <div class="w-full">
     <BubbleMenu
       v-if="editor"
       :editor="editor"

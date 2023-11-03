@@ -58,6 +58,7 @@ export const petitionCampaign = router({
       select: {
         id: true,
         title: true,
+        limitLocationCountry: true,
         themes: {
           select: {
             id: true,

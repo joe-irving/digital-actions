@@ -79,3 +79,11 @@ export interface PetitionListItem {
   slug: string,
   petitionThemes: petitionTheme[]
 }
+
+export interface ShareInformation {
+  whatsappShareText: string;
+  tweet: string;
+  shareTitle: string;
+  description: string;
+  shareImage: DatabaseFile | null;
+}

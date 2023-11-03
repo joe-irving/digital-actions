@@ -24,6 +24,7 @@
     "@nuxtjs/eslint-config-typescript": "^12.0.0",
     "@nuxtjs/i18n": "^8.0.0-rc.5",
     "@nuxtjs/tailwindcss": "^6.2.0",
+    "@nuxtseo/module": "^2.0.0-beta.40",
     "@sidebase/nuxt-auth": "^0.6.0-beta.6",
     "@testing-library/vue": "^6.6.1",
     "@vitejs/plugin-vue": "^3.2.0",

@@ -26,7 +26,8 @@ export default defineNuxtConfig({
     '@bg-dev/nuxt-naiveui',
     '@sidebase/nuxt-auth',
     '@nuxtjs/i18n',
-    'nuxt3-leaflet'
+    'nuxt3-leaflet',
+    '@nuxtseo/module'
   ],
   extends: ['@sidebase/core'],
   typescript: {
@@ -35,5 +36,8 @@ export default defineNuxtConfig({
   i18n: {
     locales: ['en'],
     defaultLocale: 'en'
+  },
+  site: {
+    url: 'https://act.defundclimatechaos.uk'
   }
 })

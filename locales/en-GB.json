@@ -3,6 +3,8 @@
     "home": "Home",
     "tweet_campaign": "Tweet Campaign",
     "petition_campaign": "Petition Campaign",
+    "petitions": "Petitions",
+    "petition": "Petition",
     "create_petition_campaign": "Create Petition Campaign",
     "new": "New"
   },
@@ -41,7 +43,9 @@
     "close": "Close",
     "target_title": "The target of your petition",
     "target_description": "Who are you petitioning to change? The more specific the better.",
-    "target_placeholder": "e.g. The parish council of Slough"
+    "target_placeholder": "e.g. The parish council of Slough",
+    "content_required_validator": "Petition content is required",
+    "content_too_big": "Petition content needs to be under 10,000 characters"
   },
   "tiptap": {
     "bold": "Bold",
@@ -57,5 +61,26 @@
     "check_email": "Please check your email and click the link",
     "email_address_reminder": "You have registered on the email {email}",
     "close_tab": "You can now close this tab."
+  },
+  "petition": {
+    "share": "Share",
+    "overview": "Overview",
+    "emails": "Emails",
+    "comments": "Comments",
+    "edit": "Edit",
+    "signatures": "Signatures",
+    "share_petition": "Share your petition",
+    "approved": "Approved",
+    "awaiting_approval": "Awaiting approval",
+    "content_of_petition": "Content of your petition",
+    "save_edits": "Save edits",
+    "petition_saved": "Petition saved"
+  },
+  "share": {
+    "twitter": "Twitter",
+    "facebook": "Facebook",
+    "whatsapp": "WhatsApp",
+    "copy": "Copy",
+    "copied": "Copied"
   }
 }
