@@ -95,7 +95,7 @@ const createShareDialog = () => {
             </NuxtLink>
           </n-breadcrumb-item>
           <n-breadcrumb-item>
-            <NuxtLink :to="localePath('/petition/' + petition?.id + '/manage')">
+            <NuxtLink :to="localePath('/petition/' + petition?.id)">
               {{ petition?.title }}
             </NuxtLink>
           </n-breadcrumb-item>

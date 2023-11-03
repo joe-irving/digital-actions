@@ -219,7 +219,7 @@ export const petition = router({
     // If not logged in fetch token and perform sendgrid auth request
     const token = await $fetch.raw('/api/auth/csrf')
     const cookies = token.headers.getSetCookie()
-    const redirectUrl = `/petition/${petition.id}/manage?token=${petition.verificationToken}`
+    const redirectUrl = `/petition/${petition.id}?token=${petition.verificationToken}`
     const loginBody = {
       ...token._data,
       email: creatorEmail,

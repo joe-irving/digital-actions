@@ -176,7 +176,7 @@ const createPetition = async () => {
       target: petition.value.target
     })
     if (user.value?.user) {
-      navigateTo(`/petition/${petitionCreated.id}/manage`)
+      navigateTo(`/petition/${petitionCreated.id}`)
     } else {
       navigateTo('/verify?email=' + encodeURIComponent(petition.value.email))
     }

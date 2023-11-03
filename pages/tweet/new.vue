@@ -20,7 +20,7 @@ const createCampaign = async () => {
       slug: formValue.value.slug,
       description: formValue.value.description
     })
-    router.push(`/tweet/${c.id}/manage`)
+    router.push(`/tweet/${c.id}`)
   } catch (err) {
     if (err instanceof TRPCClientError) {
       errorMessage.value = err.message
