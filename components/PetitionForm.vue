@@ -74,9 +74,7 @@ const formRules = ref<FormRules>({
 const formRef = ref<FormInst | null>(null)
 
 const countryChanged = (country: {iso2: string, name: string, dialCode: string}) => {
-  if (submission.value.country === '' || !submission.value.country) {
-    submission.value.country = country.iso2
-  }
+  submission.value.country = country.iso2
 }
 
 const handleSignPetition = () => {

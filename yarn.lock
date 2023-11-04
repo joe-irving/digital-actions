@@ -2462,6 +2462,13 @@
   resolved "https://registry.npmjs.org/@types/resolve/-/resolve-1.20.2.tgz"
   integrity sha512-60BCwRFOZCQhDncwQdxxeOEEkbc5dIMccYLwbxsS4TUNeVECQ/pBJ0j09mrHOl/JJvpRPGwO9SvE4nR2Nb/a4Q==
 
+"@types/sanitize-html@^2.9.3":
+  version "2.9.3"
+  resolved "https://registry.yarnpkg.com/@types/sanitize-html/-/sanitize-html-2.9.3.tgz#eb31abeb496838719014b094b9e647dd7937ce7d"
+  integrity sha512-1rsSdEJLV7utAG+Fms2uP+nSmmYmOhUUSSZvUz4wF2wlA0M5/A/gVgnpWZ7EKaPWsrrxWiSuNJqSBW8dh2isBA==
+  dependencies:
+    htmlparser2 "^8.0.0"
+
 "@types/semver@^7.5.0":
   version "7.5.3"
   resolved "https://registry.npmjs.org/@types/semver/-/semver-7.5.3.tgz"

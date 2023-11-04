@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
+import sanitizeHtml from 'sanitize-html'
 import { publicProcedure, router } from '../trpc'
 import { LocationSchema } from './location'
 
@@ -154,7 +155,7 @@ export const petition = router({
     const petition = await ctx.prisma.petition.create({
       data: {
         title: input.title,
-        content: input.content,
+        content: sanitizeHtml(input.content),
         targetName: input.target,
         status: 'public',
         sharingInformation: {
@@ -369,7 +370,7 @@ export const petition = router({
       },
       data: {
         title: input.title,
-        content: input.content,
+        content: sanitizeHtml(input.content),
         targetName: input.target,
         petitionThemes: {
           connect: allowedThemes
