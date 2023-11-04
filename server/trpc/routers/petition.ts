@@ -392,6 +392,7 @@ export const petition = router({
           {
             permissions: {
               some: {
+                userId: ctx.user.id,
                 type: {
                   in: ['read', 'write', 'owner']
                 }
