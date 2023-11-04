@@ -44,7 +44,7 @@ definePageMeta({
     </n-space>
 
     <n-space justify="center" class="mb-8 mt-8">
-      <NuxtLink :to="`/petition/create/${petitionCampaign?.id}?source=bottom_petition_list`">
+      <NuxtLink :to="`/petition/${petitionCampaign?.id}/start?source=bottom_petition_list`">
         <n-button size="large">
           {{ $t("petition_campaign.create_your_own") }}
         </n-button>
