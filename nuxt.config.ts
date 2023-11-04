@@ -18,7 +18,9 @@ export default defineNuxtConfig({
     githubClientSecret: '',
     googleClientSecret: '',
     sendgridApiKey: '',
-    authSecret: ''
+    authSecret: '',
+    apiKeySecret: '',
+    apiKeyInitVector: ''
   },
   modules: [
     '@nuxtjs/tailwindcss',

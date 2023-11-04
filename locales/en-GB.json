@@ -6,7 +6,8 @@
     "petitions": "Petitions",
     "petition": "Petition",
     "create_petition_campaign": "Create Petition Campaign",
-    "new": "New"
+    "new": "New",
+    "creds": "Credentials"
   },
   "profile": {
     "sign_out": "Sign Out",
@@ -99,5 +100,10 @@
     "error": "There was an error in adding your name to this petition",
     "country_label": "Country",
     "share": "Now, can you share this petition to 3 other people?"
+  },
+  "creds": {
+    "register": "Register",
+    "name": "Name",
+    "key": "Key"
   }
 }

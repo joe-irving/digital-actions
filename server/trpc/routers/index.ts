@@ -6,6 +6,7 @@ import { tweetRouter } from './tweets'
 import { petitionCampaign } from './petitionCampaign'
 import { petition } from './petition'
 import { slugRouter } from './slug'
+import { actionNetwork } from './actionNetwork'
 
 export const appRouter = router({
   user,
@@ -14,7 +15,8 @@ export const appRouter = router({
   tweetRouter,
   petitionCampaign,
   petition,
-  slug: slugRouter
+  slug: slugRouter,
+  actionNetwork
 })
 
 // export type definition of API

@@ -49,6 +49,7 @@ model User {
   targetListPermissions      TargetListPermission[]
   userPetitionPermissions    UserPetitionPermissions[]
   PetitionCampaignPermission PetitionCampaignPermission[]
+  actionNetworkCredentials   ActionNetworkCredential[]
 }
 
 model VerificationToken {
@@ -140,6 +141,8 @@ model ActionNetworkCredential {
   apiKey             String
   petitionCampaign   PetitionCampaign[]
   petitionCampaignId Int
+  owner              User               @relation(fields: [ownerId], references: [id])
+  ownerId            String
 }
 
 model PetitionCampaign {
