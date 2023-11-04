@@ -2,6 +2,13 @@
 const { $client, $i18n } = useNuxtApp()
 const { signIn, signOut } = useAuth()
 
+defineProps({
+  collapsed: {
+    type: Boolean,
+    default: false
+  }
+})
+
 const { data: user } = $client.user.me.useQuery()
 
 const handleProfileOptions = async (option: string) => {
@@ -13,10 +20,10 @@ const handleProfileOptions = async (option: string) => {
 
 <template>
   <div>
-    <div v-if="user?.authenticated" class="user-box">
+    <div v-if="user?.authenticated">
       <n-dropdown trigger="click" :options="[{key: 'signOut', label: $i18n.t('profile.sign_out')}]" @select="handleProfileOptions">
         <n-space justify="center">
-          <n-space vertical>
+          <n-space v-if="!collapsed" vertical>
             <n-p class="font-bold text-right">
               {{ user?.user?.name }}
             </n-p>
@@ -26,7 +33,6 @@ const handleProfileOptions = async (option: string) => {
           </n-space>
           <n-avatar
             round
-            size="small"
             :src="user?.user?.image || undefined"
           />
         </n-space>
@@ -41,14 +47,14 @@ const handleProfileOptions = async (option: string) => {
 </template>
 
 <style scoped>
-.user-box {
+/* .user-box {
     width: 100%;
     display: flex;
     justify-content: flex-start;
     align-items: center;
     gap: 10px;
 
-}
+} */
 .user {
     padding: 10px;
     display: flex;

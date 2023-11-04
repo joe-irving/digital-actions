@@ -54,7 +54,7 @@ const menuOptions = ref<MenuOption[]>([
             :collapsed-icon-size="22"
             :options="menuOptions"
           />
-          <ProfileBox />
+          <ProfileBox :collapsed="collapsed" class="pb-2" />
         </n-space>
       </n-layout-sider>
       <n-layout class="h-screen" :native-scrollbar="false">
