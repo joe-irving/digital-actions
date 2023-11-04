@@ -6,12 +6,12 @@ const breadcrumbItems = ref([
     icon: 'dashicons:admin-home'
   },
   {
-    link: '/petition-campaign',
+    link: '/petition/campaign',
     title: 'menu.petition_campaign',
     icon: null
   },
   {
-    link: '/petition-campaign/new',
+    link: '/petition/campaign/new',
     title: 'menu.new',
     icon: null
   }

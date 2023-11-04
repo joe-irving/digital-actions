@@ -19,7 +19,7 @@ const testCreate = () => {
         </NuxtLink>
       </n-breadcrumb-item>
       <n-breadcrumb-item>
-        <NuxtLink to="/petition-campaign">
+        <NuxtLink to="/petition/campaign">
           {{ $t('menu.petition_campaign') }}
         </NuxtLink>
       </n-breadcrumb-item>
