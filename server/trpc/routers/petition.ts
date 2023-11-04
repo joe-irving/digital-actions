@@ -442,7 +442,8 @@ export const petition = router({
             description: true,
             petitionEndpointURL: true,
             tagPrefix: true,
-            styleTheme: true
+            styleTheme: true,
+            groupName: true
           }
         }
       }

@@ -64,15 +64,15 @@ model TweetCampaign {
   id                       Int                       @id @default(autoincrement())
   created                  DateTime                  @default(now())
   updated                  DateTime                  @default(now()) @updatedAt
-  title   String
+  title                    String
   description              String
   targetList               TargetList                @relation(fields: [targetListId], references: [id])
   targetListId             Int
   published                Boolean                   @default(true)
   tweets                   Tweet[]
   tweetCampaignPermissions TweetCampaignPermission[]
-  slugRelation    Slug @relation(fields: [slug], references: [slug])
-  slug String @unique
+  slugRelation             Slug                      @relation(fields: [slug], references: [slug])
+  slug                     String                    @unique
 }
 
 model TweetCampaignPermission {
@@ -164,8 +164,9 @@ model PetitionCampaign {
   styleTheme                StyleTheme?                  @relation(fields: [styleThemeId], references: [id])
   styleThemeId              Int?
   limitLocationCountry      String?
-  slugRelation    Slug @relation(fields: [slug], references: [slug])
-  slug String @unique
+  slugRelation              Slug                         @relation(fields: [slug], references: [slug])
+  slug                      String                       @unique
+  groupName                 String?
 }
 
 model Petition {
@@ -190,8 +191,8 @@ model Petition {
   targetName           String?
   approved             Boolean                   @default(false)
   status               String                    @default("draft")
-  slugRelation    Slug @relation(fields: [slug], references: [slug])
-  slug String @unique
+  slugRelation         Slug                      @relation(fields: [slug], references: [slug])
+  slug                 String                    @unique
 }
 
 model UserPetitionPermissions {
@@ -308,11 +309,11 @@ model StyleTheme {
 }
 
 model Slug {
-  slug          String  @id @default(cuid())
-  created               DateTime           @default(now())
-  updated               DateTime           @default(now()) @updatedAt
-  petition  Petition?
+  slug             String            @id @default(cuid())
+  created          DateTime          @default(now())
+  updated          DateTime          @default(now()) @updatedAt
+  petition         Petition?
   petitionCampaign PetitionCampaign?
-  tweetCampaign TweetCampaign?
-  active Boolean @default(true) // For when slug is updated, keep a record but mark as available for use.
+  tweetCampaign    TweetCampaign?
+  active           Boolean           @default(true) // For when slug is updated, keep a record but mark as available for use.
 }

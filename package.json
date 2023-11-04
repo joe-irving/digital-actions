@@ -59,6 +59,7 @@
     "@trpc/server": "^10.40.0",
     "h3-formidable": "^1.0.0",
     "next-auth": "4.21.1",
+    "sanitize-html": "^2.11.0",
     "trpc-nuxt": "^0.10.12",
     "vue-tel-input": "^8.1.4",
     "yarn": "^1.22.19",

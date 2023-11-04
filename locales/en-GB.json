@@ -86,11 +86,18 @@
   "petition_form": {
     "first_name_label": "First Name",
     "first_name_required": "A first name is required",
+    "last_name_required": "A last name is required",
     "last_name_label": "Last Name",
     "email_label": "Email address",
     "email_invalid": "That doesn't look like a valid email address",
     "phone_label": "Phone number",
-    "phone_invalid": "That doesn't like a valid postcode"
-
+    "phone_invalid": "That doesn't like a valid postcode",
+    "comment_label": "Any comments to add?",
+    "opt_in_text": "You don't have to leave your email address or phone number, but if you do, we ({group}) will use these to keep you updated on how you can get involved through petitions, campaigning, volunteering and donating. You can opt out at any time. We take the security of your data seriously. Your information is safe and secure with us – read our privacy policy",
+    "postal_code": "Post code",
+    "add_my_name": "Add my name",
+    "error": "There was an error in adding your name to this petition",
+    "country_label": "Country",
+    "share": "Now, can you share this petition to 3 other people?"
   }
 }

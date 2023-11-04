@@ -11,25 +11,55 @@ const props = defineProps({
 const { data: petition } = await $client.petition.getPublic.useQuery({
   id: props.id
 })
+const shareUrl = ref(useShareUrl(petition.value?.slug || ''))
+
+const success = ref(false)
 </script>
 
 <template>
   <CustomThemeWrapper :theme="petition?.petitionCampaign?.styleTheme">
     <n-space justify="center" class="mt-10 mb-10">
-      <n-space>
-        <n-space class="max-w-lg flex-wrap">
+      <div v-if="!success" class="flex justify-center gap-10 items-start">
+        <n-space class="max-w-lg border-0 sm:border shadow-none sm:shadow-md rounded p-4">
           <n-space>
-            <n-image :src="petition?.image?.url" />
+            <n-image :src="petition?.image?.url" class="hidden sm:block" />
             <n-h1>{{ petition?.title }}</n-h1>
+            <PetitionForm
+              class="block sm:hidden mb-8"
+              :endpoint="petition?.petitionCampaign?.petitionEndpointURL"
+              :tag-name="`[${petition?.petitionCampaign?.tagPrefix}]: ${petition?.id}`"
+              :tag-prefix="petition?.petitionCampaign?.tagPrefix"
+              :group-name="petition?.petitionCampaign?.groupName"
+              @success="() => success = true"
+            />
+            <!-- When time, use the JSON output from tiptap, then store and parse taht -->
             <div v-html="petition?.content" />
           </n-space>
         </n-space>
-        <n-space>
-          <n-space><PetitionForm /></n-space>
-        </n-space>
-      </n-space>
+        <div class="hidden sm:flex">
+          <n-space class="max-w-xs border-0 sm:border shadow-none sm:shadow-md rounded p-4">
+            <PetitionForm
+              :endpoint="petition?.petitionCampaign?.petitionEndpointURL"
+              :tag-name="`[${petition?.petitionCampaign?.tagPrefix}]: ${petition?.id}`"
+              :tag-prefix="petition?.petitionCampaign?.tagPrefix"
+              :group-name="petition?.petitionCampaign?.groupName"
+              @success="() => success = true"
+            />
+          </n-space>
+        </div>
+      </div>
+      <div v-else class="rounded shadow-md p-4 ">
+        <n-h2>
+          {{ $t('petition_form.share') }}
+        </n-h2>
+        <ShareTile
+          :title="petition?.sharingInformation?.shareTitle"
+          :tweet="petition?.sharingInformation?.tweet"
+          :whatsapp="petition?.sharingInformation?.whatsappShareText"
+          :description="petition?.sharingInformation?.description"
+          :url="shareUrl"
+        />
+      </div>
     </n-space>
-
-    <div>{{ petition }}</div>
   </CustomThemeWrapper>
 </template>
