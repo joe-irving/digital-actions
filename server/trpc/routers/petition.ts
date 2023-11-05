@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
 import sanitizeHtml from 'sanitize-html'
 import { publicProcedure, router } from '../trpc'
+import { createActionNetworkTags } from '../utils/actionNetwork'
 import { LocationSchema } from './location'
 
 const selectFieldAuthorised = {
@@ -75,9 +76,15 @@ export const petition = router({
       },
       select: {
         id: true,
+        tagPrefix: true,
         themes: {
           select: {
             id: true
+          }
+        },
+        actionNetworkCredential: {
+          select: {
+            apiKey: true
           }
         }
       }
@@ -88,6 +95,7 @@ export const petition = router({
         message: 'The given ID did not match up to a petition campaign that was public'
       })
     }
+
     // Filter themes to ones available in petition campaign
     const allowedThemes = petitionCampaign.themes.filter((theme) => {
       return input.themes.includes(theme.id)
@@ -203,6 +211,13 @@ export const petition = router({
           : undefined
       }
     })
+    // Create tag
+    if (petitionCampaign && petitionCampaign?.actionNetworkCredential) {
+      createActionNetworkTags(
+        petitionCampaign.actionNetworkCredential?.apiKey,
+      `[${petitionCampaign.tagPrefix}]: ${petition.id}`
+      )
+    }
     // Idk why this is needed, but the only way that adding an image was working
     const petitionWithImage = await ctx.prisma.petition.update({
       where: {
@@ -370,7 +385,7 @@ export const petition = router({
       },
       data: {
         title: input.title,
-        content: sanitizeHtml(input.content),
+        content: input.content ? sanitizeHtml(input.content) : undefined,
         targetName: input.target,
         petitionThemes: {
           connect: allowedThemes
@@ -392,7 +407,7 @@ export const petition = router({
           {
             permissions: {
               some: {
-                userId: ctx.user.id,
+                userId: ctx.user?.id || 'NEVER',
                 type: {
                   in: ['read', 'write', 'owner']
                 }

@@ -140,7 +140,6 @@ model ActionNetworkCredential {
   name               String
   apiKey             String
   petitionCampaign   PetitionCampaign[]
-  petitionCampaignId Int
   owner              User               @relation(fields: [ownerId], references: [id])
   ownerId            String
 }

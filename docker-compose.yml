@@ -1,0 +1,17 @@
+version: "3"
+
+services:
+  web:
+    build: "."
+    command: node .output/server/index.mjs
+    environment:
+      - DATABASE_URL
+      - NUXT_PUBLIC_GITHUB_CLIENT_ID
+      - NUXT_GITHUB_CLIENT_SECRET
+      - NUXT_PUBLIC_GOOGLE_CLIENT_ID
+      - NUXT_GOOGLE_CLIENT_SECRET
+      - NUXT_SENDGRID_API_KEY
+      - NUXT_AUTH_SECRET
+      - AUTH_ORIGIN
+    ports:
+      - 1004:3000

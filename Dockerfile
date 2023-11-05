@@ -9,15 +9,16 @@ WORKDIR /app
 
 # copy the app, note .dockerignore
 COPY package.json .
-COPY package-lock.json .
-RUN npm ci
+COPY yarn.lock .
+# RUN yarn ci
+RUN yarn install
 
 FROM dependency-base AS production-base
 
 # build will also take care of building
 # if necessary
 COPY . .
-RUN npm run build
+RUN yarn run build
 
 FROM $NODE_VERSION AS production
 
@@ -36,4 +37,4 @@ ENV DATABASE_URL=file:./db.sqlite
 ENV NODE_ENV=production
 
 # start the app
-CMD [ "node", "/app/.output/server/index.mjs" ]
+# CMD [ "node", "/app/.output/server/index.mjs" ]

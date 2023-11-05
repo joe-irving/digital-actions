@@ -20,8 +20,7 @@ const newCreds = ref({
 })
 
 const createCreds = async () => {
-  const { data: created } = await $client.actionNetwork.registerKey.mutate(newCreds.value)
-  console.log(created)
+  const created = await $client.actionNetwork.registerKey.mutate(newCreds.value)
 }
 </script>
 
