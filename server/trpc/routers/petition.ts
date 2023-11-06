@@ -454,7 +454,9 @@ export const petition = router({
             petitionEndpointURL: true,
             tagPrefix: true,
             styleTheme: true,
-            groupName: true
+            groupName: true,
+            actionNetworkAllTag: true,
+            actionNetworkResponseTag: true
           }
         }
       }

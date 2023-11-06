@@ -134,14 +134,14 @@ model Target {
 }
 
 model ActionNetworkCredential {
-  id                 Int                @id @default(autoincrement())
-  created            DateTime           @default(now())
-  updated            DateTime           @default(now()) @updatedAt
-  name               String
-  apiKey             String
-  petitionCampaign   PetitionCampaign[]
-  owner              User               @relation(fields: [ownerId], references: [id])
-  ownerId            String
+  id               Int                @id @default(autoincrement())
+  created          DateTime           @default(now())
+  updated          DateTime           @default(now()) @updatedAt
+  name             String
+  apiKey           String
+  petitionCampaign PetitionCampaign[]
+  owner            User               @relation(fields: [ownerId], references: [id])
+  ownerId          String
 }
 
 model PetitionCampaign {
@@ -169,34 +169,36 @@ model PetitionCampaign {
   slugRelation              Slug                         @relation(fields: [slug], references: [slug])
   slug                      String                       @unique
   groupName                 String?
+  actionNetworkAllTag       String
+  actionNetworkResponseTag  String
 }
 
 model Petition {
-  id                   Int                       @id @default(autoincrement())
-  created              DateTime                  @default(now())
-  updated              DateTime                  @default(now()) @updatedAt
-  locationTag          String?
-  title                String
-  content              String
-  sharingInformation   SharingInformation        @relation(fields: [sharingInformationId], references: [id], onDelete: Cascade)
-  sharingInformationId Int                       @unique
-  permissions          UserPetitionPermissions[]
-  petitionCampaign     PetitionCampaign?         @relation(fields: [petitionCampaignId], references: [id])
-  petitionCampaignId   Int?
-  petitionThemes       Theme[]                   @relation("PetitionThemes")
-  image                File?                     @relation(fields: [imageId], references: [id])
-  imageId              Int?
-  creatorEmail         String?
-  verificationToken    String?                   @default(uuid())
-  location             Location?                 @relation(fields: [locationId], references: [id])
-  locationId           Int?
-  targetName           String?
-  approved             Boolean                   @default(false)
-  status               String                    @default("draft")
-  slugRelation         Slug                      @relation(fields: [slug], references: [slug])
-  slug                 String                    @unique
-  actionNetworkQueryId String?
-  tagName   String?
+  id                      Int                       @id @default(autoincrement())
+  created                 DateTime                  @default(now())
+  updated                 DateTime                  @default(now()) @updatedAt
+  locationTag             String?
+  title                   String
+  content                 String
+  sharingInformation      SharingInformation        @relation(fields: [sharingInformationId], references: [id], onDelete: Cascade)
+  sharingInformationId    Int                       @unique
+  permissions             UserPetitionPermissions[]
+  petitionCampaign        PetitionCampaign?         @relation(fields: [petitionCampaignId], references: [id])
+  petitionCampaignId      Int?
+  petitionThemes          Theme[]                   @relation("PetitionThemes")
+  image                   File?                     @relation(fields: [imageId], references: [id])
+  imageId                 Int?
+  creatorEmail            String?
+  verificationToken       String?                   @default(uuid())
+  location                Location?                 @relation(fields: [locationId], references: [id])
+  locationId              Int?
+  targetName              String?
+  approved                Boolean                   @default(false)
+  status                  String                    @default("draft")
+  slugRelation            Slug                      @relation(fields: [slug], references: [slug])
+  slug                    String                    @unique
+  actionNetworkQueryId    String?
+  tagName                 String?
   actionNetworkPetitionId String?
 }
 

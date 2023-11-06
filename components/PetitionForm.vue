@@ -24,6 +24,10 @@ const props = defineProps({
   groupName: {
     type: String,
     default: ''
+  },
+  tagList: {
+    type: Array as PropType<string[]>,
+    default: () => []
   }
 })
 
@@ -104,7 +108,7 @@ const signPetiton = async () => {
     },
     add_tags: [
       props.tagName,
-      props.tagPrefix
+      ...props.tagList
     ]
   }
   const { error } = await useFetch(props.endpoint, {

@@ -32,6 +32,7 @@ const success = ref(false)
               :endpoint="(petition?.actionNetworkPetitionId || '') + '/signatures'"
               :tag-name="`[${petition?.petitionCampaign?.tagPrefix}]: ${petition?.id}`"
               :tag-prefix="petition?.petitionCampaign?.tagPrefix"
+              :tag-list="[petition?.petitionCampaign?.actionNetworkAllTag, petition?.petitionCampaign?.actionNetworkResponseTag]"
               :group-name="petition?.petitionCampaign?.groupName"
               @success="() => success = true"
             />
@@ -42,9 +43,10 @@ const success = ref(false)
         <div class="hidden sm:flex">
           <n-space class="max-w-xs border-0 sm:border shadow-none sm:shadow-md rounded p-4">
             <PetitionForm
-              :endpoint="(petition.actionNetworkPetitionId || '') + '/signatures'"
+              :endpoint="(petition?.actionNetworkPetitionId || '') + '/signatures'"
               :tag-name="`[${petition?.petitionCampaign?.tagPrefix}]: ${petition?.id}`"
               :tag-prefix="petition?.petitionCampaign?.tagPrefix"
+              :tag-list="[petition?.petitionCampaign?.actionNetworkAllTag, petition?.petitionCampaign?.actionNetworkResponseTag]"
               :group-name="petition?.petitionCampaign?.groupName"
               @success="() => success = true"
             />

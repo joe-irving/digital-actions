@@ -1,24 +1,52 @@
 import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
 import { publicProcedure, router } from '../trpc'
+import { createActionNetworkTags } from '../utils/actionNetwork'
 import { PermissionLevel } from '~/types'
 
 export const petitionCampaign = router({
   create: publicProcedure.input(z.object({
     title: z.string(),
-    tagPrefix: z.string()
+    tagPrefix: z.string(),
+    actionNetworkCredentialId: z.number().int()
   })).mutation(async ({ ctx, input }) => {
-    if (!ctx.authenticated || !ctx.user) {
+    if (!ctx.authenticated || !ctx.user?.id) {
       throw new TRPCError({
         code: 'UNAUTHORIZED',
         message: 'You need to be logged in to make a petition campaign'
       })
     }
-    // Create the petition campaign
+    // Get action network creds
+    const anKeys = await ctx.prisma.actionNetworkCredential.findFirst({
+      where: {
+        id: input.actionNetworkCredentialId,
+        ownerId: ctx.user.id
+      }
+    })
+    if (!anKeys) {
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: 'Could not find that action network credential linked to your account'
+      })
+    }
+    const tags = {
+      all: `[${input.tagPrefix}] All signatures`,
+      response: `[${input.tagPrefix}] Auto Response`
+    }
     const petitionCampaign = await ctx.prisma.petitionCampaign.create({
       data: {
         title: input.title,
-        tagPrefix: input.tagPrefix
+        tagPrefix: input.tagPrefix,
+        slugRelation: {
+          create: {}
+        },
+        actionNetworkCredential: {
+          connect: {
+            id: anKeys.id
+          }
+        },
+        actionNetworkAllTag: tags.all,
+        actionNetworkResponseTag: tags.response
       }
     })
     // Create the owner permissions
@@ -29,7 +57,9 @@ export const petitionCampaign = router({
         campaignId: petitionCampaign.id
       }
     })
-    // TODO Create tags for campaign & auto response
+
+    createActionNetworkTags(anKeys.apiKey, tags.all)
+    createActionNetworkTags(anKeys.apiKey, tags.response)
     return petitionCampaign
   }),
   getPublic: publicProcedure.input(z.object({
