@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
 import sanitizeHtml from 'sanitize-html'
 import { publicProcedure, router } from '../trpc'
-import { createActionNetworkTags } from '../utils/actionNetwork'
+import { createActionNetworkTags, createActionNetworkPetition, ActionNetworkTag, ActionNetworkPetition, getSignatureCount } from '../utils/actionNetwork'
 import { LocationSchema } from './location'
 
 const selectFieldAuthorised = {
@@ -211,13 +211,6 @@ export const petition = router({
           : undefined
       }
     })
-    // Create tag
-    if (petitionCampaign && petitionCampaign?.actionNetworkCredential) {
-      createActionNetworkTags(
-        petitionCampaign.actionNetworkCredential?.apiKey,
-      `[${petitionCampaign.tagPrefix}]: ${petition.id}`
-      )
-    }
     // Idk why this is needed, but the only way that adding an image was working
     const petitionWithImage = await ctx.prisma.petition.update({
       where: {
@@ -424,6 +417,7 @@ export const petition = router({
         id: true,
         title: true,
         content: true,
+        actionNetworkPetitionId: true,
         sharingInformation: {
           select: {
             shareTitle: true,
@@ -471,7 +465,164 @@ export const petition = router({
         message: 'Cannot find that petition'
       })
     }
-    // TODO get signatures from cached action network endpoint
-    return { ...petition, signatures: 12423 }
+    return petition
+  }),
+  signatureCount: publicProcedure.input(z.object({
+    id: z.number().int()
+  })).query(async ({ ctx, input }) => {
+    // get petition and related api key through campaign
+    const petition = await ctx.prisma.petition.findFirst({
+      where: {
+        id: input.id,
+        OR: [
+          {
+            permissions: {
+              some: {
+                userId: ctx.user?.id || 'NEVER',
+                type: {
+                  in: ['read', 'write', 'owner']
+                }
+              }
+            }
+          },
+          {
+            status: 'public',
+            approved: true
+          }
+        ]
+      },
+      select: {
+        actionNetworkPetitionId: true,
+        petitionCampaign: {
+          select: {
+            actionNetworkCredential: {
+              select: {
+                apiKey: true
+              }
+            }
+          }
+        }
+      }
+    })
+    if (!petition) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'Could not find a public or associated with your account petition with that id'
+      })
+    }
+    if (!petition.actionNetworkPetitionId) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'There is no action network petition linked to this petition'
+      })
+    }
+    if (!petition.petitionCampaign?.actionNetworkCredential?.apiKey) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'There is no action network id linked to this petition campaign'
+      })
+    }
+    // TODO: get signature count for API created petition
+    const signatures = await getSignatureCount(petition.petitionCampaign.actionNetworkCredential.apiKey, petition.actionNetworkPetitionId)
+
+    // return
+    return {
+      count: signatures.total_signatures,
+      comments: signatures._embedded['osdi:signatures'].map((sig) => {
+        return {
+          created: sig.created_date,
+          comments: sig.comments
+        }
+      })
+    }
+  }),
+  approval: publicProcedure.input(z.object({
+    petitionCampaignId: z.number().int(),
+    petitionId: z.number().int(),
+    approved: z.boolean()
+  })).mutation(async ({ ctx, input }) => {
+    if (!ctx.user) {
+      throw new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'You need to be logged in to approve petitions'
+      })
+    }
+    // check if permissions exist
+    const petitionCampaign = await ctx.prisma.petitionCampaign.findFirst({
+      where: {
+        permissions: {
+          some: {
+            userId: ctx.user.id,
+            type: {
+              in: ['approval', 'owner']
+            }
+          }
+        },
+        petitions: {
+          some: {
+            id: input.petitionId
+          }
+        }
+      },
+      select: {
+        tagPrefix: true,
+        actionNetworkCredential: {
+          select: {
+            apiKey: true
+          }
+        },
+        petitions: {
+          where: {
+            id: input.petitionId
+          },
+          select: {
+            id: true,
+            title: true,
+            content: true,
+            creatorEmail: true,
+            targetName: true,
+            approved: true,
+            tagName: true,
+            actionNetworkPetitionId: true
+          }
+        }
+      }
+    })
+    if (!petitionCampaign) {
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: 'Could not find a petition campaign that matches that id and the logged in user has permissions to approve petitions'
+      })
+    }
+    // Create tag, create petition endpoint
+    let anPetition: ActionNetworkPetition | null = null
+    let anTag: ActionNetworkTag | null = null
+    if (petitionCampaign?.actionNetworkCredential && input.approved && !petitionCampaign.petitions[0].tagName) {
+      anTag = await createActionNetworkTags(
+        petitionCampaign.actionNetworkCredential?.apiKey,
+      `[${petitionCampaign.tagPrefix}]: ${petitionCampaign.petitions[0].id}`
+      )
+    }
+    if (petitionCampaign?.actionNetworkCredential && input.approved && !petitionCampaign.petitions[0].actionNetworkPetitionId) {
+      anPetition = await createActionNetworkPetition({
+        key: petitionCampaign.actionNetworkCredential?.apiKey,
+        title: petitionCampaign.petitions[0].title,
+        target: petitionCampaign.petitions[0].targetName || '',
+        description: petitionCampaign.petitions[0].content,
+        creatorEmail: petitionCampaign.petitions[0].creatorEmail || undefined
+      })
+    }
+    // write in approved and link in tag and petition
+    const petition = await ctx.prisma.petition.update({
+      where: {
+        id: input.petitionId
+      },
+      data: {
+        approved: input.approved,
+        actionNetworkPetitionId: anPetition?._links.self.href,
+        tagName: anTag?.name
+      }
+    })
+    return petition
   })
 })

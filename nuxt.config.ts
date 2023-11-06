@@ -20,7 +20,8 @@ export default defineNuxtConfig({
     sendgridApiKey: '',
     authSecret: '',
     apiKeySecret: '',
-    apiKeyInitVector: ''
+    apiKeyInitVector: '',
+    siteName: ''
   },
   modules: [
     '@nuxtjs/tailwindcss',

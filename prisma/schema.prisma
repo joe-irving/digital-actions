@@ -195,6 +195,9 @@ model Petition {
   status               String                    @default("draft")
   slugRelation         Slug                      @relation(fields: [slug], references: [slug])
   slug                 String                    @unique
+  actionNetworkQueryId String?
+  tagName   String?
+  actionNetworkPetitionId String?
 }
 
 model UserPetitionPermissions {

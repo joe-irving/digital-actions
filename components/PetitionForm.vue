@@ -105,12 +105,7 @@ const signPetiton = async () => {
     add_tags: [
       props.tagName,
       props.tagPrefix
-    ],
-    triggers: {
-      autoresponse: {
-        enabled: true
-      }
-    }
+    ]
   }
   const { error } = await useFetch(props.endpoint, {
     method: 'POST',

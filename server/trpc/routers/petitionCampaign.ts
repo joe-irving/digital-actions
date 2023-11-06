@@ -29,6 +29,7 @@ export const petitionCampaign = router({
         campaignId: petitionCampaign.id
       }
     })
+    // TODO Create tags for campaign & auto response
     return petitionCampaign
   }),
   getPublic: publicProcedure.input(z.object({
@@ -142,6 +143,51 @@ export const petitionCampaign = router({
         sharingInformation: {
           select: {
             description: true
+          }
+        },
+        petitionThemes: {
+          select: {
+            id: true,
+            title: true,
+            icon: true
+          }
+        }
+      }
+    })
+  }),
+  getManageList: publicProcedure.input(z.object({
+    id: z.number().int()
+  })).query(async ({ ctx, input }) => {
+    if (!ctx.user) {
+      throw new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'You need to be logged in to list petitions on this page'
+      })
+    }
+    return await ctx.prisma.petition.findMany({
+      where: {
+        petitionCampaign: {
+          id: input.id,
+          permissions: {
+            some: {
+              userId: ctx.user.id,
+              type: {
+                in: ['read', 'write', 'owner', 'approval']
+              }
+            }
+          }
+        }
+      },
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        slug: true,
+        approved: true,
+        image: {
+          select: {
+            id: true,
+            url: true
           }
         },
         petitionThemes: {

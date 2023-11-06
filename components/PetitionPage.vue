@@ -11,6 +11,9 @@ const props = defineProps({
 const { data: petition } = await $client.petition.getPublic.useQuery({
   id: props.id
 })
+const { data: signatures } = $client.petition.signatureCount.useQuery({
+  id: props.id
+})
 const shareUrl = ref(useShareUrl(petition.value?.slug || ''))
 
 const success = ref(false)
@@ -24,22 +27,23 @@ const success = ref(false)
           <n-space>
             <n-image :src="petition?.image?.url" class="hidden sm:block" />
             <n-h1>{{ petition?.title }}</n-h1>
+            Sigs: {{ signatures }}
             <PetitionForm
               class="block sm:hidden mb-8"
-              :endpoint="petition?.petitionCampaign?.petitionEndpointURL"
+              :endpoint="(petition?.actionNetworkPetitionId || '') + '/signatures'"
               :tag-name="`[${petition?.petitionCampaign?.tagPrefix}]: ${petition?.id}`"
               :tag-prefix="petition?.petitionCampaign?.tagPrefix"
               :group-name="petition?.petitionCampaign?.groupName"
               @success="() => success = true"
             />
-            <!-- When time, use the JSON output from tiptap, then store and parse taht -->
+            <!-- TODO: When time, use the JSON output from tiptap, then store and parse taht -->
             <div v-html="petition?.content" />
           </n-space>
         </n-space>
         <div class="hidden sm:flex">
           <n-space class="max-w-xs border-0 sm:border shadow-none sm:shadow-md rounded p-4">
             <PetitionForm
-              :endpoint="petition?.petitionCampaign?.petitionEndpointURL"
+              :endpoint="(petition.actionNetworkPetitionId || '') + '/signatures'"
               :tag-name="`[${petition?.petitionCampaign?.tagPrefix}]: ${petition?.id}`"
               :tag-prefix="petition?.petitionCampaign?.tagPrefix"
               :group-name="petition?.petitionCampaign?.groupName"
