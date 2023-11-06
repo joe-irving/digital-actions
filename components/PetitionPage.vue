@@ -27,7 +27,6 @@ const success = ref(false)
           <n-space>
             <n-image :src="petition?.image?.url" class="hidden sm:block" />
             <n-h1>{{ petition?.title }}</n-h1>
-            Sigs: {{ signatures }}
             <PetitionForm
               class="block sm:hidden mb-8"
               :endpoint="(petition?.actionNetworkPetitionId || '') + '/signatures'"
