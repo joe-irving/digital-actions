@@ -224,7 +224,7 @@ export const getSignatureCount = cachedFunction(async (key: string, actionNetwor
   // return
   return signatures
 }, {
-  maxAge: 10, // TODO !!
+  maxAge: 60 * 60 * 10, // TODO !!
   name: 'getActionNetworkSignatureCount',
   getKey: (actionNetworkId: string) => {
     return actionNetworkId

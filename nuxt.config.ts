@@ -41,6 +41,6 @@ export default defineNuxtConfig({
     defaultLocale: 'en'
   },
   site: {
-    url: 'https://act.defundclimatechaos.uk'
+    url: process.env.NUXT_SITE_URL
   }
 })

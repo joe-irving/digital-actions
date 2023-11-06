@@ -12,8 +12,9 @@ const dialog = useDialog()
 const { t } = useI18n()
 
 const verificationToken = route.query.token?.toString() || undefined
+const petitionId = parseInt(route.params.id.toString())
 const { data: petition } = await $client.petition.getManage.useQuery({
-  id: parseInt(route.params.id.toString()),
+  id: petitionId,
   token: verificationToken
 })
 if (petition.value && verificationToken) {
@@ -26,11 +27,17 @@ if (petition.value && verificationToken) {
 if (!petition.value) {
   await navigateTo('/petition')
 }
-const { data: petitionCampaign } = await $client.petitionCampaign.getPublic.useQuery({
-  id: petition.value?.petitionCampaignId || undefined
+const { data: signatures } = $client.petition.signatureCount.useQuery({
+  id: petitionId
 })
 
-const shareUrl = ref(siteUrl + localePath(`/p/${petition.value?.slug}`))
+const { data: petitionCampaign } = petition.value?.petitionCampaignId
+  ? await $client.petitionCampaign.getPublic.useQuery({
+    id: petition.value?.petitionCampaignId
+  })
+  : { data: undefined }
+
+const shareUrl = ref(siteUrl + localePath(`/${petition.value?.slug}`))
 
 const createShareDialog = () => {
   dialog.create({
@@ -53,7 +60,7 @@ const createShareDialog = () => {
       <n-tabs>
         <n-tab-pane name="overview" :tab="$t('petition.overview')">
           <n-grid cols="1 sm:1 md:2" :x-gap="10" :y-gap="10" responsive="screen">
-            <n-gi><SignatureCount :count="petition?.signatures" /></n-gi>
+            <n-gi><SignatureCount :count="signatures?.count" /></n-gi>
             <n-gi>
               <n-card :title="$t('petition.share_petition')">
                 <ShareTile
@@ -77,8 +84,8 @@ const createShareDialog = () => {
             :themes="petition?.petitionThemes"
             :image="petition?.image || undefined"
             :available-themes="petitionCampaign?.themes"
-            :limit-countries="petitionCampaign?.limitLocationCountry"
-            @update="(update) => petition = {...update, signatures: petition.signatures}"
+            :limit-countries="petitionCampaign?.limitLocationCountry || undefined"
+            @update="(update) => petition = update"
           />
         </n-tab-pane>
       </n-tabs>

@@ -527,7 +527,7 @@ export const petition = router({
 
     // return
     return {
-      count: signatures.total_signatures,
+      count: signatures.total_records,
       comments: signatures._embedded['osdi:signatures'].map((sig) => {
         return {
           created: sig.created_date,
