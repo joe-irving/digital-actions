@@ -134,6 +134,48 @@ export interface ActionNetworkSignaturesApiResponse {
   _embedded: EmbeddedSignatures;
 }
 
+interface Link {
+  href: string;
+}
+
+interface Curie {
+  name: string;
+  href: string;
+  templated: boolean;
+}
+
+interface TaggingLink {
+  href: string;
+}
+
+interface Tagging {
+  _links: {
+    self: Link;
+    'osdi:tag': Link;
+    'osdi:person': Link;
+  };
+  identifiers: string[];
+  created_date: string; // You may want to use a Date type if you parse the timestamp
+  modified_date: string; // You may want to use a Date type if you parse the timestamp
+  item_type: string;
+}
+
+export interface ActionNetworkTaggingsApiResponse {
+  _links: {
+    next: Link;
+    self: Link;
+    'osdi:taggings': TaggingLink[];
+    curies: Curie[];
+  };
+  _embedded: {
+    'osdi:taggings': Tagging[];
+  };
+  total_pages: number;
+  per_page: number;
+  page: number;
+  total_records: number;
+}
+
 export const createActionNetworkTags = async (key: string, tag: string) => {
   const apiKey = decryptData(key)
   const newTag = await $fetch<ActionNetworkTag>('https://actionnetwork.org/api/v2/tags', {
@@ -224,7 +266,27 @@ export const getSignatureCount = cachedFunction(async (key: string, actionNetwor
   // return
   return signatures
 }, {
-  maxAge: 60 * 60 * 10, // TODO !!
+  maxAge: 60 * 60 * 10,
+  name: 'getActionNetworkSignatureCount',
+  getKey: (actionNetworkId: string) => {
+    return actionNetworkId
+  }
+})
+
+export const getTaggingCount = cachedFunction(async (key: string, id: string) => {
+  const apiKey = decryptData(key)
+  const ids = id.match(/[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}/)
+  if (!ids?.length) {
+    return null
+  }
+  const tag = await $fetch<ActionNetworkTaggingsApiResponse>(`https://actionnetwork.org/api/v2/tags/${ids[0]}/taggings`, {
+    headers: {
+      'OSDI-API-Token': apiKey
+    }
+  })
+  return tag
+}, {
+  maxAge: 10,
   name: 'getActionNetworkSignatureCount',
   getKey: (actionNetworkId: string) => {
     return actionNetworkId

@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
 import { publicProcedure, router } from '../trpc'
-import { createActionNetworkTags } from '../utils/actionNetwork'
+import { createActionNetworkTags, getTaggingCount } from '~/server/trpc/utils/actionNetwork'
 import { PermissionLevel } from '~/types'
 
 export const petitionCampaign = router({
@@ -33,6 +33,8 @@ export const petitionCampaign = router({
       all: `[${input.tagPrefix}] All signatures`,
       response: `[${input.tagPrefix}] Auto Response`
     }
+    const anTag = await createActionNetworkTags(anKeys.apiKey, tags.all)
+    createActionNetworkTags(anKeys.apiKey, tags.response)
     const petitionCampaign = await ctx.prisma.petitionCampaign.create({
       data: {
         title: input.title,
@@ -46,7 +48,8 @@ export const petitionCampaign = router({
           }
         },
         actionNetworkAllTag: tags.all,
-        actionNetworkResponseTag: tags.response
+        actionNetworkResponseTag: tags.response,
+        actionNetworkTagId: anTag._links.self.href
       }
     })
     // Create the owner permissions
@@ -58,8 +61,6 @@ export const petitionCampaign = router({
       }
     })
 
-    createActionNetworkTags(anKeys.apiKey, tags.all)
-    createActionNetworkTags(anKeys.apiKey, tags.response)
     return petitionCampaign
   }),
   getPublic: publicProcedure.input(z.object({
@@ -153,7 +154,6 @@ export const petitionCampaign = router({
           }
         },
         status: 'public',
-        approved: true,
         permissions: {
           some: {
             type: 'owner'
@@ -210,10 +210,14 @@ export const petitionCampaign = router({
       },
       select: {
         id: true,
+        created: true,
+        updated: true,
         title: true,
         content: true,
         slug: true,
         approved: true,
+        status: true,
+        targetName: true,
         image: {
           select: {
             id: true,
@@ -226,7 +230,156 @@ export const petitionCampaign = router({
             title: true,
             icon: true
           }
+        },
+        location: {
+          select: {
+            id: true,
+            country: true,
+            name: true,
+            display_name: true
+          }
         }
+      }
+    })
+  }),
+  getManage: publicProcedure.input(z.object({
+    id: z.number().int()
+  })).query(async ({ ctx, input }) => {
+    if (!ctx.user?.id) {
+      throw new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'You have to be logged in to manage petition campaigns'
+      })
+    }
+    const campaign = await ctx.prisma.petitionCampaign.findFirst({
+      where: {
+        id: input.id,
+        permissions: {
+          some: {
+            userId: ctx.user.id,
+            type: {
+              in: ['read', 'write', 'owner', 'approval']
+            }
+          }
+        }
+      },
+      select: {
+        id: true,
+        created: true,
+        updated: true,
+        title: true,
+        description: true,
+        actionNetworkCredential: {
+          select: {
+            name: true
+          }
+        },
+        tagPrefix: true,
+        _count: {
+          select: {
+            petitions: true
+          }
+        },
+        themes: {
+          select: {
+            id: true,
+            title: true,
+            icon: true
+          }
+        },
+        status: true,
+        defaultPetitionImage: {
+          select: {
+            id: true,
+            url: true
+          }
+        },
+        limitLocationCountry: true,
+        slug: true,
+        groupName: true,
+        actionNetworkAllTag: true,
+        actionNetworkResponseTag: true,
+        sharingInformation: {
+          select: {
+            tweet: true,
+            whatsappShareText: true,
+            shareTitle: true,
+            description: true
+          }
+        }
+      }
+    })
+    return campaign
+  }),
+  getSignatureStats: publicProcedure.input(z.object({
+    id: z.number().int()
+  })).query(async ({ ctx, input }) => {
+    // get petition campaign
+    const campaign = await ctx.prisma.petitionCampaign.findFirst({
+      where: {
+        id: input.id,
+        OR: [
+          {
+            status: 'public'
+          },
+          {
+            permissions: {
+              some: {
+                userId: ctx.user?.id || 'NEVER',
+                type: {
+                  in: ['read', 'write', 'owner', 'approval']
+                }
+              }
+            }
+          }
+        ]
+      },
+      select: {
+        actionNetworkTagId: true,
+        actionNetworkCredential: {
+          select: {
+            apiKey: true
+          }
+        }
+      }
+    })
+    if (!campaign) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'Could not find a petition campaign that you have access to with that id'
+      })
+    }
+    if (!campaign.actionNetworkCredential) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'No api key attached to this petition campaign'
+      })
+    }
+    if (!campaign.actionNetworkTagId) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'No action network tag attached to petition campaign'
+      })
+    }
+    const tag = await getTaggingCount(campaign.actionNetworkCredential.apiKey, campaign.actionNetworkTagId)
+    // return {
+    //   count: tag?.total_records
+    // }
+    return tag
+  }),
+  getUserPermissions: publicProcedure.input(z.object({
+    id: z.number().int()
+  })).query(async ({ ctx, input }) => {
+    if (!ctx.user) {
+      throw new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'You need to be logged in to get user permissions'
+      })
+    }
+    return await ctx.prisma.petitionCampaignPermission.findMany({
+      where: {
+        userId: ctx.user.id,
+        campaignId: input.id
       }
     })
   })

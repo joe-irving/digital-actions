@@ -1,8 +1,8 @@
 <template>
-  <n-page-header>
+  <n-page-header class="p-4">
     <slot />
     <template #title>
-      {{ $t(title) }}
+      <n-h1>{{ $t(title) }}</n-h1>
     </template>
     <template #header>
       <n-breadcrumb>
@@ -26,7 +26,7 @@ const localePath = useLocalePath()
 interface BreadcrumbItem {
     link: string;
     title: string | null;
-    icon: string | null
+    icon: string | null | undefined;
 }
 
 defineProps({

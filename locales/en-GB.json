@@ -7,7 +7,8 @@
     "petition": "Petition",
     "create_petition_campaign": "Create Petition Campaign",
     "new": "New",
-    "creds": "Credentials"
+    "creds": "Credentials",
+    "campaign": "Campaign"
   },
   "profile": {
     "sign_out": "Sign Out",
@@ -75,7 +76,12 @@
     "awaiting_approval": "Awaiting approval",
     "content_of_petition": "Content of your petition",
     "save_edits": "Save edits",
-    "petition_saved": "Petition saved"
+    "petition_saved": "Petition saved",
+    "rejected": "Rejected",
+    "draft": "Draft",
+    "approval_question": "Is this petition ready to be made public?",
+    "reject": "Reject",
+    "approve": "Approve"
   },
   "share": {
     "twitter": "Twitter",
@@ -105,5 +111,14 @@
     "register": "Register",
     "name": "Name",
     "key": "Key"
+  },
+  "pc_manage": {
+    "petitions": "Petitions",
+    "signatures": "Signatures",
+    "approved": "Approved",
+    "to_approve": "To Approve",
+    "rejected": "Rejected",
+    "share_campaign": "Share this petition campaign",
+    "share": "Share"
   }
 }

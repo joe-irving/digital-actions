@@ -32,6 +32,12 @@ export interface NominatimLocationInfo {
   name: string;
   display_name: string;
   address: {
+    road: string | undefined;
+    neighbourhood: string | undefined;
+    suburb: string | undefined;
+    village: string | undefined;
+    town: string | undefined;
+    municipality: string | undefined;
     county: string;
     'ISO3166-2-lvl6': string;
     state: string;
