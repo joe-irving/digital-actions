@@ -1,5 +1,6 @@
 import { router } from '../trpc'
 import { user } from './userRouter'
+import { themesRouter } from './themesRouter'
 import { targetList } from './targetList'
 import { tweetCampaign } from './tweetCampaign'
 import { tweetRouter } from './tweets'
@@ -16,7 +17,8 @@ export const appRouter = router({
   petitionCampaign,
   petition,
   slug: slugRouter,
-  actionNetwork
+  actionNetwork,
+  theme: themesRouter
 })
 
 // export type definition of API

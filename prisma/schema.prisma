@@ -235,9 +235,10 @@ model Theme {
   updated     DateTime           @default(now()) @updatedAt
   title       String
   description String?
-  icon        String
+  icon        String?
   petitions   Petition[]         @relation("PetitionThemes")
   campaign    PetitionCampaign[] @relation("PetitionCampaignThemes")
+  status      String @default("public")
 }
 
 model PetitionCampaignPermission {

@@ -304,7 +304,13 @@ export const petitionCampaign = router({
             tweet: true,
             whatsappShareText: true,
             shareTitle: true,
-            description: true
+            description: true,
+            shareImage: {
+              select: {
+                id: true,
+                url: true
+              }
+            }
           }
         }
       }
@@ -382,5 +388,73 @@ export const petitionCampaign = router({
         campaignId: input.id
       }
     })
+  }),
+  update: publicProcedure.input(z.object({
+    id: z.number().int(),
+    title: z.string().max(200).optional(),
+    description: z.string().max(1000).optional(),
+    themes: z.array(z.string()).optional(),
+    groupName: z.string().max(200).optional(),
+    image: z.object({
+      url: z.string(),
+      name: z.string()
+    }).optional(),
+    limitLocationCountry: z.string()
+  })).query(async ({ ctx, input }) => {
+    if (!ctx.user) {
+      throw new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'You need to be logged in to modify petition campaigns'
+      })
+    }
+    // allowed?
+    const permissions = await ctx.prisma.petitionCampaignPermission.findFirst({
+      where: {
+        userId: ctx.user.id,
+        campaignId: input.id,
+        type: {
+          in: ['write', 'owner']
+        }
+      }
+    })
+    if (!permissions) {
+      throw new TRPCError({
+        code: 'FORBIDDEN',
+        message: 'You do not have permission to update this petition campaign'
+      })
+    }
+    const existingThemes = input.themes
+      ? await ctx.prisma.theme.findMany({
+        where: {
+          title: {
+            in: input.themes
+          }
+        }
+      })
+      : []
+    const existingThemeNames = existingThemes.map(t => t.title)
+    const newThemeNames = (input.themes || []).filter(t => !existingThemeNames.includes(t))
+    const newThemes = await newThemeNames.map(async (name) => {
+      const newTheme = await ctx.prisma.theme.create({
+        data: {
+          title: name
+        }
+      })
+      return newTheme
+    })
+    const themeConnect = [...newThemes, ...existingThemes]
+    const campaign = await ctx.prisma.petitionCampaign.update({
+      where: {
+        id: input.id
+      },
+      data: {
+        title: input.title,
+        description: input.description,
+        themes: {
+          connect: []
+        }
+      }
+    })
+    return campaign
   })
 })

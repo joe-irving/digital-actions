@@ -119,6 +119,21 @@
     "to_approve": "To Approve",
     "rejected": "Rejected",
     "share_campaign": "Share this petition campaign",
-    "share": "Share"
+    "share": "Share",
+    "overview": "Overview",
+    "theme": "Theme",
+    "edit": "Edit",
+    "admins": "Admins",
+    "title": "Title",
+    "description": "Description of petition campaign",
+    "group_name": "What is the name of the group people are subscribing to?",
+    "default_image": "The default image added to petitions",
+    "themes_available": "The themes available for people to choose",
+    "limit_country": "Which countries should the location search be limited to?",
+    "new_theme": "New theme",
+    "update_pc": "Update petition campaign",
+    "group_name_too_big": "Name needs to be less than 200 characters",
+    "group_name_required": "Group name is required",
+    "campaign_saved": "Campaign saved"
   }
 }

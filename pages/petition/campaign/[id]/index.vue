@@ -13,6 +13,10 @@ const { data: campaign } = await $client.petitionCampaign.getManage.useQuery({
   id: petitionCampaignId
 })
 
+if (!campaign) {
+  navigateTo('/petition/campaign')
+}
+
 const breadcrumbs = ref([
   {
     title: 'menu.home',
@@ -36,6 +40,16 @@ const breadcrumbs = ref([
   }
 ])
 const shareUrl = ref(siteUrl + localePath(`/${campaign.value?.slug}`))
+const campaignEdit = campaign.value
+  ? {
+      title: campaign.value.title,
+      description: campaign.value.description,
+      themes: campaign.value.themes.map(t => t.title),
+      groupName: campaign.value.groupName,
+      defaultImage: campaign.value.defaultPetitionImage,
+      limitLocationCountry: campaign.value.limitLocationCountry
+    }
+  : undefined
 
 const createShareDialog = () => {
   dialog.create({
@@ -71,8 +85,20 @@ const createShareDialog = () => {
       </TitleBar>
       <div class="p-4">
         <n-tabs>
+          <n-tab-pane name="overview" :tab="$t('pc_manage.overview')">
+            Key stats, action network connection info (tag names etc)
+          </n-tab-pane>
           <n-tab-pane name="petitions" :tab="$t('pc_manage.petitions')">
             <PetitionApprovalList :campaign-id="campaign.id" />
+          </n-tab-pane>
+          <n-tab-pane name="theme" :tab="$t('pc_manage.theme')">
+            Theme editor here
+          </n-tab-pane>
+          <n-tab-pane name="edit" :tab="$t('pc_manage.edit')">
+            <EditPetitionCampaignForm v-if="campaignEdit" :campaign="campaignEdit" />
+          </n-tab-pane>
+          <n-tab-pane name="admins" :tab="$t('pc_manage.admins')">
+            Admins and permission setting
           </n-tab-pane>
         </n-tabs>
       </div>

@@ -233,7 +233,7 @@ definePageMeta({
             <span ref="location" />
             <n-space class="n-step-description full" vertical justify="center" height="100%">
               <p>{{ $t('petition_create.location_description') }}</p>
-              <LocationLookup v-model="petition.location" :limit-country="petitionCampaign?.limitLocationCountry" />
+              <LocationLookup v-model="petition.location" :limit-country="petitionCampaign?.limitLocationCountry || undefined" />
             </n-space>
           </n-step>
           <n-step :title="$t('petition_create.target_title')">
