@@ -1,5 +1,5 @@
 # see https://docs.docker.com/engine/reference/builder/#understand-how-arg-and-from-interact
-ARG NODE_VERSION=node:16.14.2
+ARG NODE_VERSION=node:20.0.0
 
 FROM $NODE_VERSION AS dependency-base
 
@@ -10,8 +10,8 @@ WORKDIR /app
 # copy the app, note .dockerignore
 COPY package.json .
 COPY yarn.lock .
-# RUN yarn ci
-RUN yarn install
+RUN yarn install --frozen-lockfile
+# RUN yarn install
 
 FROM dependency-base AS production-base
 
@@ -23,6 +23,9 @@ RUN yarn run build
 FROM $NODE_VERSION AS production
 
 COPY --from=production-base /app/.output /app/.output
+COPY --from=production-base /app/package.json /app/package.json
+COPY --from=production-base /app/prisma /app/prisma
+COPY --from=production-base /app/node_modules /app/node_modules
 
 # Service hostname
 ENV NUXT_HOST=0.0.0.0
@@ -31,10 +34,7 @@ ENV NUXT_HOST=0.0.0.0
 ARG NUXT_APP_VERSION
 ENV NUXT_APP_VERSION=${NUXT_APP_VERSION}
 
-ENV DATABASE_URL=file:./db.sqlite
-
 # Run in production mode
 ENV NODE_ENV=production
-
 # start the app
-# CMD [ "node", "/app/.output/server/index.mjs" ]
+CMD [ "node", "/app/.output/server/index.mjs" ]

@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { PropType } from 'nuxt/dist/app/compat/capi'
-import { TweetCampaignSummary } from '~/types'
+import type { TweetCampaignSummary } from '~/types'
 
 defineProps({
   campaigns: {
