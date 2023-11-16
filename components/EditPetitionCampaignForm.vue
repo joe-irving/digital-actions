@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FormRules, FormValidationError, FormInst } from 'naive-ui'
+import type { FormRules, FormValidationError, FormInst } from 'naive-ui'
 
 interface CampaignEdit {
     id: number;
