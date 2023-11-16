@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { NumberAnimationInst } from 'naive-ui'
+import type { NumberAnimationInst } from 'naive-ui'
 const { locale } = useI18n()
 
 const props = defineProps({

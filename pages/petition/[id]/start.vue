@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { StepsProps, SelectOption, InputInst, FormRules, FormItemRule, FormValidationError, FormInst, UploadFileInfo, SelectInst } from 'naive-ui'
-import { LocationQueryValue } from 'vue-router'
+import type { StepsProps, SelectOption, InputInst, FormRules, FormItemRule, FormValidationError, FormInst, UploadFileInfo, SelectInst } from 'naive-ui'
+// import { LocationQueryValue } from 'vue-router'
 import { TRPCClientError } from '@trpc/client'
-import { NominatimLocationInfo } from '~/types'
+import type { NominatimLocationInfo } from '~/types'
 const { $client } = useNuxtApp()
 // const { signIn } = useAuth()
 const route = useRoute()
@@ -51,7 +51,7 @@ const petition = ref<{
   content: route.query.content?.toString() || '',
   image: [],
   email: route.query.email?.toString() || '',
-  themes: useParseTheme(route.query.theme, themeOptions.value),
+  themes: useParseTheme(route.query.theme, themeOptions.value || []),
   location: null,
   target: route.query.target?.toString() || ''
 })
@@ -233,7 +233,7 @@ definePageMeta({
             <span ref="location" />
             <n-space class="n-step-description full" vertical justify="center" height="100%">
               <p>{{ $t('petition_create.location_description') }}</p>
-              <LocationLookup v-model="petition.location" :limit-country="petitionCampaign?.limitLocationCountry" />
+              <LocationLookup v-model="petition.location" :limit-country="petitionCampaign?.limitLocationCountry || undefined" />
             </n-space>
           </n-step>
           <n-step :title="$t('petition_create.target_title')">

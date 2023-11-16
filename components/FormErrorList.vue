@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { FormValidationError } from 'naive-ui'
-import { PropType } from 'nuxt/dist/app/compat/capi'
+import type { FormValidationError } from 'naive-ui'
+// import { PropType } from 'nuxt/dist/app/compat/capi'
 
 defineProps({
   errors: {

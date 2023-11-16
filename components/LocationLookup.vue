@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { PropType } from 'nuxt/dist/app/compat/capi'
-import { AutoCompleteOption } from 'naive-ui'
-import { NominatimLocationInfo } from '~/types'
+// import { PropType } from 'nuxt/dist/app/compat/capi'
+import type { AutoCompleteOption } from 'naive-ui'
+import type { NominatimLocationInfo } from '~/types'
 
 // set model prop for location selected
 

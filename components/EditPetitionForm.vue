@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { SelectOption, FormRules, FormItemRule, FormValidationError, FormInst, UploadFileInfo } from 'naive-ui'
+import type { SelectOption, FormRules, FormItemRule, FormValidationError, FormInst, UploadFileInfo } from 'naive-ui'
 import { TRPCClientError } from '@trpc/client'
-import { NominatimLocationInfo } from '~/types'
+import type { NominatimLocationInfo } from '~/types'
 
 const i18n = useI18n()
 const { $client } = useNuxtApp()

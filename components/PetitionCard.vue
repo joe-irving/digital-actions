@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PetitionListItem } from '~/types'
+import type { PetitionListItem } from '~/types'
 
 defineProps({
   petition: {
