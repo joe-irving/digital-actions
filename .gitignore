@@ -1,7 +1,7 @@
 # Logs and databases #
 ######################
 *.log
-*.sql
+#*.sql # Including so migrations are tracked
 *.sqlite
 *.db
 *.sqlite-journal
