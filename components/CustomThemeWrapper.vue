@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CustomStyleTheme } from '~/types'
+import type { CustomStyleTheme } from '~/types'
 
 const props = defineProps({
   theme: {

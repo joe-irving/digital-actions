@@ -1,7 +1,7 @@
 # Logs and databases #
 ######################
 *.log
-*.sql
+#*.sql # Including so migrations are tracked
 *.sqlite
 *.db
 *.sqlite-journal
@@ -82,3 +82,6 @@ sw.*
 # Auto generate on postinstall step
 auto-imports.d.ts
 components.d.ts
+
+
+google-key.json

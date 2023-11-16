@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FormValidationError, FormRules, FormItemRule, FormInst } from 'naive-ui'
+import type { FormValidationError, FormRules, FormItemRule, FormInst } from 'naive-ui'
 
 const i18n = useI18n()
 const countries = useGetCountryList()

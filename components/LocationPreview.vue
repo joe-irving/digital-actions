@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { PropType } from 'nuxt/dist/app/compat/capi'
-import { NominatimLocationInfo } from '~/types'
+// import { PropType } from 'nuxt/dist/app/compat/capi'
+import type { NominatimLocationInfo } from '~/types'
 
 const emit = defineEmits(['close'])
 

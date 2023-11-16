@@ -1,8 +1,10 @@
 {
   "private": true,
+  "license": "MIT",
   "scripts": {
     "dev": "prisma generate && nuxt dev",
     "build": "prisma generate && nuxt build",
+    "prestart": "sh bin/migrate.sh",
     "start": "NODE_ENV=production node .output/server/index.mjs",
     "lint": "eslint .",
     "test": "TZ=UTC vitest --run",
@@ -15,11 +17,13 @@
     "typecheck": "nuxt typecheck",
     "prisma:studio": "prisma studio",
     "prisma:format": "prisma format",
-    "prisma:migrate": "prisma migrate dev"
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:deploy": "prisma migrate deploy"
   },
   "devDependencies": {
     "@bg-dev/nuxt-naiveui": "^1.5.1",
     "@faker-js/faker": "^7.6.0",
+    "@nuxt/devtools": "1.0.2",
     "@nuxt/test-utils": "^3.0.0",
     "@nuxtjs/eslint-config-typescript": "^12.0.0",
     "@nuxtjs/i18n": "^8.0.0-rc.5",
@@ -36,7 +40,7 @@
     "eslint": "^8.31.0",
     "h3": "^1.0.2",
     "jsdom": "^21.0.0",
-    "nuxt": "3.7.4",
+    "nuxt": "3.8.1",
     "nuxt-svgo": "^1.1.0",
     "nuxt3-leaflet": "^1.0.12",
     "playwright": "^1.29.2",
@@ -50,19 +54,32 @@
     "vue-tsc": "^1.0.16"
   },
   "dependencies": {
+    "@google-cloud/storage": "^7.6.0",
     "@next-auth/prisma-adapter": "^1.0.7",
     "@prisma/client": "^4.8.1",
     "@sidebase/core": "^0.1.4",
+    "@tiptap/core": "^2.0.0",
     "@tiptap/pm": "^2.1.12",
     "@tiptap/starter-kit": "^2.1.12",
     "@tiptap/vue-3": "^2.1.12",
     "@trpc/client": "^10.40.0",
     "@trpc/server": "^10.40.0",
+    "@unhead/shared": "1.8.3",
+    "@vue/compiler-core": "^3.3",
+    "@vue/compiler-sfc": ">= 3",
     "h3-formidable": "^1.0.0",
     "next-auth": "4.21.1",
+    "postcss": "^8.4.21",
     "sanitize-html": "^2.11.0",
+    "svgo-loader": "^4.0.0",
     "trpc-nuxt": "^0.10.12",
+    "unhead": ">=1.7.4",
+    "vite": "^3.0.0",
+    "vue": "^3.0.0",
+    "vue-loader": "^17.0.0",
+    "vue-svg-loader": "0.17.0-beta.2",
     "vue-tel-input": "^8.1.4",
+    "webpack": "^5.0.0",
     "yarn": "^1.22.19",
     "zod": "^3.22.4"
   }
