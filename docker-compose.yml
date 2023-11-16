@@ -3,6 +3,7 @@ version: "3"
 services:
   web:
     build: "."
+    command: yarn --cwd /app run start
     environment:
       - DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db/${POSTGRES_USER}
       - NUXT_PUBLIC_GITHUB_CLIENT_ID

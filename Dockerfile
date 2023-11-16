@@ -26,6 +26,7 @@ COPY --from=production-base /app/.output /app/.output
 COPY --from=production-base /app/package.json /app/package.json
 COPY --from=production-base /app/prisma /app/prisma
 COPY --from=production-base /app/node_modules /app/node_modules
+COPY --from=production-base /app/bin /app/bin
 
 # Service hostname
 ENV NUXT_HOST=0.0.0.0
@@ -37,4 +38,4 @@ ENV NUXT_APP_VERSION=${NUXT_APP_VERSION}
 # Run in production mode
 ENV NODE_ENV=production
 # start the app
-CMD [ "node", "/app/.output/server/index.mjs" ]
+# CMD [ "yarn", "run", "start" ]
