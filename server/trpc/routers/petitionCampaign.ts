@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
 import { publicProcedure, router } from '../trpc'
-import { createActionNetworkTags, getTaggingCount } from '~/server/trpc/utils/actionNetwork'
+import { createActionNetworkPetition, createActionNetworkTags, getTaggingCount } from '~/server/trpc/utils/actionNetwork'
 import { PermissionLevel } from '~/types'
 
 export const petitionCampaign = router({
@@ -34,6 +34,13 @@ export const petitionCampaign = router({
       response: `[${input.tagPrefix}] Auto Response`
     }
     const anTag = await createActionNetworkTags(anKeys.apiKey, tags.all)
+    const anPetition = await createActionNetworkPetition({
+      key: anKeys.apiKey,
+      title: input.title,
+      creatorEmail: ctx.user.email || undefined,
+      target: input.title,
+      description: input.title
+    })
     createActionNetworkTags(anKeys.apiKey, tags.response)
     const petitionCampaign = await ctx.prisma.petitionCampaign.create({
       data: {
@@ -49,7 +56,8 @@ export const petitionCampaign = router({
         },
         actionNetworkAllTag: tags.all,
         actionNetworkResponseTag: tags.response,
-        actionNetworkTagId: anTag._links.self.href
+        actionNetworkTagId: anTag._links.self.href,
+        petitionEndpointURL: anPetition._links.self.href
       }
     })
     // Create the owner permissions
@@ -399,8 +407,9 @@ export const petitionCampaign = router({
       url: z.string(),
       name: z.string()
     }).optional(),
-    limitLocationCountry: z.string()
-  })).query(async ({ ctx, input }) => {
+    limitLocationCountry: z.array(z.string().min(2).max(2)).optional(),
+    status: z.enum(['public', 'draft']).optional()
+  })).mutation(async ({ ctx, input }) => {
     if (!ctx.user) {
       throw new TRPCError({
         code: 'UNAUTHORIZED',
@@ -408,16 +417,32 @@ export const petitionCampaign = router({
       })
     }
     // allowed?
-    const permissions = await ctx.prisma.petitionCampaignPermission.findFirst({
+    // const permissions = await ctx.prisma.petitionCampaignPermission.findFirst({
+    //   where: {
+    //     userId: ctx.user.id,
+    //     campaignId: input.id,
+    //     type: {
+    //       in: ['write', 'owner']
+    //     }
+    //   }
+    // })
+    const oldCampaign = await ctx.prisma.petitionCampaign.findFirst({
       where: {
-        userId: ctx.user.id,
-        campaignId: input.id,
-        type: {
-          in: ['write', 'owner']
+        permissions: {
+          some: {
+            userId: ctx.user.id,
+            campaignId: input.id,
+            type: {
+              in: ['write', 'owner']
+            }
+          }
         }
+      },
+      include: {
+        themes: true
       }
     })
-    if (!permissions) {
+    if (!oldCampaign) {
       throw new TRPCError({
         code: 'FORBIDDEN',
         message: 'You do not have permission to update this petition campaign'
@@ -434,15 +459,25 @@ export const petitionCampaign = router({
       : []
     const existingThemeNames = existingThemes.map(t => t.title)
     const newThemeNames = (input.themes || []).filter(t => !existingThemeNames.includes(t))
-    const newThemes = await newThemeNames.map(async (name) => {
-      const newTheme = await ctx.prisma.theme.create({
+    const newThemes = []
+    for (const newTheme of newThemeNames) {
+      newThemes.push(await ctx.prisma.theme.create({
         data: {
-          title: name
+          title: newTheme,
+          status: 'suggested'
+        }
+      }))
+    }
+    const themeConnect = [...newThemes, ...existingThemes]
+    // Sort out image
+    const image = input.image
+      ? await ctx.prisma.file.create({
+        data: {
+          url: input.image.url,
+          name: input.image.name
         }
       })
-      return newTheme
-    })
-    const themeConnect = [...newThemes, ...existingThemes]
+      : undefined
     const campaign = await ctx.prisma.petitionCampaign.update({
       where: {
         id: input.id
@@ -450,8 +485,29 @@ export const petitionCampaign = router({
       data: {
         title: input.title,
         description: input.description,
-        themes: {
-          connect: []
+        groupName: input.groupName,
+        themes: input.themes
+          ? {
+              disconnect: oldCampaign.themes.map(({ id }) => { return { id } }),
+              connect: themeConnect.map(({ id }) => { return { id } })
+            }
+          : undefined,
+        limitLocationCountry: input.limitLocationCountry ? input.limitLocationCountry.join(',') : undefined,
+        defaultPetitionImageId: image ? image.id : undefined,
+        status: input.status
+      },
+      select: {
+        title: true,
+        description: true,
+        groupName: true,
+        themes: true,
+        limitLocationCountry: true,
+        status: true,
+        defaultPetitionImage: {
+          select: {
+            url: true,
+            id: true
+          }
         }
       }
     })

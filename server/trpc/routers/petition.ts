@@ -2,7 +2,8 @@ import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
 import sanitizeHtml from 'sanitize-html'
 import { publicProcedure, router } from '../trpc'
-import { createActionNetworkTags, createActionNetworkPetition, ActionNetworkTag, ActionNetworkPetition, getSignatureCount } from '../utils/actionNetwork'
+import { createActionNetworkTags, createActionNetworkPetition, getSignatureCount } from '../utils/actionNetwork'
+import type { ActionNetworkTag, ActionNetworkPetition } from '../utils/actionNetwork'
 import { LocationSchema } from './location'
 
 const selectFieldAuthorised = {
@@ -76,8 +77,22 @@ export const petition = router({
     // Check that petition campaign is public to this user
     const petitionCampaign = await ctx.prisma.petitionCampaign.findFirst({
       where: {
-        status: 'public',
-        id: input.petitionCampaign
+        id: input.petitionCampaign,
+        OR: [
+          {
+            status: 'public'
+          },
+          {
+            permissions: {
+              some: {
+                userId: ctx.user?.id || '0',
+                type: {
+                  in: ['owner', 'read', 'write']
+                }
+              }
+            }
+          }
+        ]
       },
       select: {
         id: true,

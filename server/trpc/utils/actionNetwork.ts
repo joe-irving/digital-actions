@@ -216,7 +216,7 @@ export const createActionNetworkPetition = async ({
   key: string,
   title: string,
   target: string,
-  description: string,
+  description: string | undefined,
   creatorEmail: string | undefined
 }) => {
   const apiKey = decryptData(key)

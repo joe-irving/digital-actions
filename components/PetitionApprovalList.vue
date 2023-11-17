@@ -45,10 +45,10 @@ const displayPetitions = groupedPetitions.filter(s => !!s.petitions.length)
         <n-grid cols="1" y-gap="10">
           <n-gi v-for="petition in status.petitions" :key="petition.id">
             <NuxtLink :to="localePath(`/petition/${petition.id}`)">
-              <div class="rounded shadow flex justify-space-between">
+              <div class="rounded shadow hover:shadow-md flex justify-space-between">
                 <div class="p-4 flex-grow">
                   <n-space justify="space-between" :wrap-item="false">
-                    <n-h2>{{ petition.title }}</n-h2>
+                    <Nh2>{{ petition.title }}</Nh2>
                   </n-space>
                   <n-space>
                     <StatusTag :status="petition.status" />
@@ -72,7 +72,7 @@ const displayPetitions = groupedPetitions.filter(s => !!s.petitions.length)
                   :style="{
                     backgroundImage: `url('${petition.image.url}')`
                   }"
-                  class="basis-1/4 bg-cover bg-no-repeat bg-center"
+                  class="basis-1/4 bg-cover bg-no-repeat bg-center rounded-r"
                 />
               </div>
             </NuxtLink>

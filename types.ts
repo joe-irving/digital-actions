@@ -93,3 +93,16 @@ export interface ShareInformation {
   description: string;
   shareImage: DatabaseFile | null;
 }
+
+export interface PetitionCampaignEdit {
+  id: number;
+  title: string;
+  description: string | null;
+  themes: string[];
+  groupName: string | null;
+  defaultImage: {
+      id: number
+      url: string
+  } | null,
+  limitLocationCountry: string | null;
+}

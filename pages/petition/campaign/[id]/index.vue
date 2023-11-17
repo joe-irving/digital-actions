@@ -1,5 +1,10 @@
 <script setup lang="ts">
+import type { inferRouterOutputs } from '@trpc/server'
+import type { AppRouter } from '~/server/trpc/routers'
 import { NaiveIcon, ShareTile } from '#components'
+type RouterOutput = inferRouterOutputs<AppRouter>;
+
+type CampaignUpdateOutput = RouterOutput['petitionCampaign']['update'];
 
 const { $client } = useNuxtApp()
 const route = useRoute()
@@ -40,8 +45,9 @@ const breadcrumbs = ref([
   }
 ])
 const shareUrl = ref(siteUrl + localePath(`/${campaign.value?.slug}`))
-const campaignEdit = campaign.value
+const campaignEdit = ref(campaign.value
   ? {
+      id: campaign.value.id,
       title: campaign.value.title,
       description: campaign.value.description,
       themes: campaign.value.themes.map(t => t.title),
@@ -49,7 +55,7 @@ const campaignEdit = campaign.value
       defaultImage: campaign.value.defaultPetitionImage,
       limitLocationCountry: campaign.value.limitLocationCountry
     }
-  : undefined
+  : undefined)
 
 const createShareDialog = () => {
   dialog.create({
@@ -64,12 +70,30 @@ const createShareDialog = () => {
     })
   })
 }
+
+const updateStatus = async (status: 'public' | 'draft') => {
+  if (!campaign.value) {
+    return
+  }
+  const updatedCampaign = await $client.petitionCampaign.update.mutate({
+    id: campaign.value.id,
+    status
+  })
+  campaign.value.status = updatedCampaign.status
+}
+
+const handleCampaignUpdate = (updatedCampaign: CampaignUpdateOutput) => {
+  if (!campaign.value) {
+    return
+  }
+  campaign.value = { ...campaign.value, ...updatedCampaign }
+}
 </script>
 
 <template>
   <div>
     <div v-if="campaign">
-      <TitleBar :title="campaign?.title" :breadcrumbs="breadcrumbs">
+      <TitleBar :title="campaign?.title" :breadcrumbs="breadcrumbs" class="p-4">
         <n-row>
           <n-col :span="3">
             <n-statistic :label="$t('pc_manage.petitions')">
@@ -78,9 +102,15 @@ const createShareDialog = () => {
           </n-col>
         </n-row>
         <template #extra>
-          <n-button @click="createShareDialog">
-            {{ $t('pc_manage.share') }}
-          </n-button>
+          <n-space>
+            <StatusTag :status="campaign.status" />
+            <n-button @click="createShareDialog">
+              {{ $t('pc_manage.share') }}
+            </n-button>
+            <n-button @click="updateStatus('public')">
+              {{ $t('pc_manage.publish') }}
+            </n-button>
+          </n-space>
         </template>
       </TitleBar>
       <div class="p-4">
@@ -95,7 +125,7 @@ const createShareDialog = () => {
             Theme editor here
           </n-tab-pane>
           <n-tab-pane name="edit" :tab="$t('pc_manage.edit')">
-            <EditPetitionCampaignForm v-if="campaignEdit" :campaign="campaignEdit" />
+            <EditPetitionCampaignForm v-if="campaignEdit" :campaign="campaignEdit" @update="handleCampaignUpdate" />
           </n-tab-pane>
           <n-tab-pane name="admins" :tab="$t('pc_manage.admins')">
             Admins and permission setting

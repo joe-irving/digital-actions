@@ -1,18 +1,7 @@
 <script setup lang="ts">
-import type { FormRules, FormValidationError, FormInst } from 'naive-ui'
+import type { FormRules, FormValidationError, FormInst, UploadFileInfo } from 'naive-ui'
+import type { PetitionCampaignEdit } from '~/types'
 
-interface CampaignEdit {
-    id: number;
-    title: string;
-    description: string | null;
-    themes: string[];
-    groupName: string | null;
-    defaultImage: {
-        id: number
-        url: string
-    } | null,
-    limitLocationCountry: string | null;
-}
 // interface CampaignSharing {
 //     whatsappShareText: string;
 //     tweet: string;
@@ -37,19 +26,28 @@ const countryOptions = countries.map((c) => {
 const props = defineProps({
   campaign: {
     required: true,
-    type: Object as PropType<CampaignEdit>
+    type: Object as PropType<PetitionCampaignEdit>
   }
 })
 
+const emit = defineEmits(['update'])
+
 const { data: themeRes } = await $client.theme.available.useQuery()
 const themes = ref(themeRes.value || [])
-const campaignEdit = ref({
+const campaignEdit = ref<{
+  title: string,
+  description: string,
+  themes: string[],
+  groupName: string,
+  defaultImage: UploadFileInfo[],
+  limitLocationCountry: string[]
+}>({
   title: props.campaign.title,
   description: props.campaign.description || '',
   themes: props.campaign.themes,
   groupName: props.campaign.groupName || '',
   defaultImage: [],
-  limitLocationCountry: (props.campaign.limitLocationCountry || '').split(',')
+  limitLocationCountry: props.campaign.limitLocationCountry ? props.campaign.limitLocationCountry.split(',') : []
 })
 
 const newTheme = ref('')
@@ -105,8 +103,25 @@ const handleUpdate = () => {
   })
 }
 
-const updateCampaign = () => {
-
+const updateCampaign = async () => {
+  const updatedPetition = await $client.petitionCampaign.update.mutate({
+    id: props.campaign.id,
+    title: campaignEdit.value.title,
+    description: campaignEdit.value.description,
+    themes: campaignEdit.value.themes,
+    groupName: campaignEdit.value.groupName,
+    image: campaignEdit.value.defaultImage && campaignEdit.value.defaultImage.length && campaignEdit.value.defaultImage[0].url
+      ? {
+          url: campaignEdit.value.defaultImage[0].url,
+          name: campaignEdit.value.defaultImage[0].name
+        }
+      : undefined,
+    limitLocationCountry: campaignEdit.value.limitLocationCountry
+  })
+  if (updatedPetition) {
+    emit('update', updatedPetition)
+    formSuccess.value = true
+  }
 }
 
 </script>
@@ -169,7 +184,7 @@ const updateCampaign = () => {
       </div>
       <n-space class="p-2">
         <n-tag v-if="formSuccess" round type="success">
-          {{ $t('pc_mange.campaign_saved') }}
+          {{ $t('pc_manage.campaign_saved') }}
           <template #icon>
             <NaiveIcon name="clarity:success-standard-line" />
           </template>
