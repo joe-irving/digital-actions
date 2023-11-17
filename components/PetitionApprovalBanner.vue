@@ -36,7 +36,7 @@ const updateStatus = async (status: 'public' | 'rejected') => {
 <template>
   <div>
     <n-alert v-if="isApprover" type="info">
-      <n-h2>{{ $t('petition.approval_question') }}</n-h2>
+      <Nh2>{{ $t('petition.approval_question') }}</Nh2>
       <n-space>
         <n-button type="error" @click="updateStatus('rejected')">
           {{ $t('petition.reject') }}

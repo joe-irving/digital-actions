@@ -50,10 +50,10 @@ const handleClose = () => {
     </div>
 
     <div class="address-content">
-      <n-h2>
+      <Nh2>
         {{ locationValue?.name }}
-      </n-h2>
-      <n-p>{{ locationValue?.display_name }}</n-p>
+      </Nh2>
+      <Np>{{ locationValue?.display_name }}</Np>
       <n-button @click="handleClose()">
         {{ $t('petition_create.close') }}
       </n-button>

@@ -84,7 +84,7 @@ const createShareDialog = () => {
         </n-breadcrumb>
       </template>
       <template #title>
-        <n-h1>{{ petition?.title }}</n-h1>
+        <Nh1>{{ petition?.title }}</Nh1>
       </template>
       <template #extra>
         <n-space>
@@ -121,7 +121,7 @@ const createShareDialog = () => {
           :target-name="petition?.targetName || undefined"
           :themes="petition?.petitionThemes"
           :image="petition?.image || undefined"
-          :available-themes="petitionCampaign?.themes"
+          :available-themes="petitionCampaign?.themes || []"
           :limit-countries="petitionCampaign?.limitLocationCountry || undefined"
           @update="(update) => petition = update"
         />

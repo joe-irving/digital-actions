@@ -81,7 +81,8 @@
     "draft": "Draft",
     "approval_question": "Is this petition ready to be made public?",
     "reject": "Reject",
-    "approve": "Approve"
+    "approve": "Approve",
+    "public": "Public"
   },
   "share": {
     "twitter": "Twitter",
@@ -134,6 +135,12 @@
     "update_pc": "Update petition campaign",
     "group_name_too_big": "Name needs to be less than 200 characters",
     "group_name_required": "Group name is required",
-    "campaign_saved": "Campaign saved"
+    "campaign_saved": "Campaign saved",
+    "publish": "Publish",
+    "unpublish": "Unpublish",
+    "preview": "Preview",
+    "slug": "Slug",
+    "slug_required": "A slug is required",
+    "slug_unique": "That link is already taken, please try something different"
   }
 }

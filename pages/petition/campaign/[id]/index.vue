@@ -53,7 +53,8 @@ const campaignEdit = ref(campaign.value
       themes: campaign.value.themes.map(t => t.title),
       groupName: campaign.value.groupName,
       defaultImage: campaign.value.defaultPetitionImage,
-      limitLocationCountry: campaign.value.limitLocationCountry
+      limitLocationCountry: campaign.value.limitLocationCountry,
+      slug: campaign.value.slug
     }
   : undefined)
 
@@ -88,6 +89,12 @@ const handleCampaignUpdate = (updatedCampaign: CampaignUpdateOutput) => {
   }
   campaign.value = { ...campaign.value, ...updatedCampaign }
 }
+const handleManageMenu = (option: string) => {
+  if (option === 'unpublish') {
+    updateStatus('draft')
+  }
+}
+
 </script>
 
 <template>
@@ -104,12 +111,20 @@ const handleCampaignUpdate = (updatedCampaign: CampaignUpdateOutput) => {
         <template #extra>
           <n-space>
             <StatusTag :status="campaign.status" />
-            <n-button @click="createShareDialog">
+            <n-button v-if="campaign.status === 'public'" @click="createShareDialog">
               {{ $t('pc_manage.share') }}
             </n-button>
-            <n-button @click="updateStatus('public')">
+            <NuxtLink v-else :to="localePath('/' + campaign.slug)" target="_blank">
+              <n-button>
+                {{ $t('pc_manage.preview') }}
+              </n-button>
+            </NuxtLink>
+            <n-button v-if="campaign.status === 'draft'" type="primary" @click="updateStatus('public')">
               {{ $t('pc_manage.publish') }}
             </n-button>
+            <n-dropdown v-else :options="[{key: 'unpublish', label: $t('pc_manage.unpublish')}]" @select="handleManageMenu">
+              <NaiveIcon name="mdi:dots-vertical" />
+            </n-dropdown>
           </n-space>
         </template>
       </TitleBar>

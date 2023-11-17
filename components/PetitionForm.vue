@@ -156,9 +156,9 @@ const signPetiton = async () => {
     <n-form-item path="comments" :label="$t('petition_form.comment_label')">
       <n-input v-model:value="submission.comments" type="textarea" />
     </n-form-item>
-    <n-p class="text-xs">
+    <Np class="text-xs">
       {{ $t('petition_form.opt_in_text', {group: groupName}) }}
-    </n-p>
+    </Np>
     <n-space justify="center">
       <n-button type="success" size="large" @click.prevent="handleSignPetition">
         {{ $t('petition_form.add_my_name') }}

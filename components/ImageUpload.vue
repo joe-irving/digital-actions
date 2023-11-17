@@ -85,8 +85,8 @@ const beforeUpload = (data: {
         </n-text>
       </n-upload-dragger>
     </n-upload>
-    <n-p v-if="warningMessage">
+    <Np v-if="warningMessage">
       {{ warningMessage }}
-    </n-p>
+    </Np>
   </div>
 </template>

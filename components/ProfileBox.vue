@@ -24,12 +24,12 @@ const handleProfileOptions = async (option: string) => {
       <n-dropdown trigger="click" :options="[{key: 'signOut', label: $i18n.t('profile.sign_out')}]" @select="handleProfileOptions">
         <n-space justify="center">
           <n-space v-if="!collapsed" vertical>
-            <n-p class="font-bold text-right">
+            <Np class="font-bold text-right">
               {{ user?.user?.name }}
-            </n-p>
-            <n-p class="text-xs text-right">
+            </Np>
+            <Np class="text-xs text-right">
               {{ user?.user?.email }}
-            </n-p>
+            </Np>
           </n-space>
           <n-avatar
             round

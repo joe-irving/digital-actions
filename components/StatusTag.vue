@@ -10,7 +10,7 @@ defineProps({
 <template>
   <span>
     <n-tag v-if="status === 'public'" round type="success">
-      {{ $t('petition.approved') }}
+      {{ $t('petition.public') }}
     </n-tag>
     <n-tag v-else-if="status === 'draft'" round>
       {{ $t('petition.draft') }}

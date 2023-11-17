@@ -155,17 +155,24 @@ export const petitionCampaign = router({
     // if petition campaign pubic & petition public & petition approved & has owner (i.e. has been user verified)
     return await ctx.prisma.petition.findMany({
       where: {
+        status: 'public',
         petitionCampaign: {
           id: input.id,
-          status: {
-            equals: 'public'
-          }
-        },
-        status: 'public',
-        permissions: {
-          some: {
-            type: 'owner'
-          }
+          OR: [
+            {
+              status: 'public'
+            },
+            {
+              permissions: {
+                some: {
+                  userId: ctx.user?.id || '0',
+                  type: {
+                    in: ['owner', 'read', 'write']
+                  }
+                }
+              }
+            }
+          ]
         }
       },
       select: {
@@ -408,7 +415,10 @@ export const petitionCampaign = router({
       name: z.string()
     }).optional(),
     limitLocationCountry: z.array(z.string().min(2).max(2)).optional(),
-    status: z.enum(['public', 'draft']).optional()
+    status: z.enum(['public', 'draft']).optional(),
+    slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/gm, {
+      message: 'That is not a valid slug format'
+    }).optional()
   })).mutation(async ({ ctx, input }) => {
     if (!ctx.user) {
       throw new TRPCError({
@@ -426,6 +436,7 @@ export const petitionCampaign = router({
     //     }
     //   }
     // })
+
     const oldCampaign = await ctx.prisma.petitionCampaign.findFirst({
       where: {
         permissions: {
@@ -447,6 +458,24 @@ export const petitionCampaign = router({
         code: 'FORBIDDEN',
         message: 'You do not have permission to update this petition campaign'
       })
+    }
+    const matchSlugs = await ctx.prisma.slug.findFirst({
+      where: {
+        slug: input.slug
+      },
+      include: {
+        petitionCampaign: true
+      }
+    })
+    if (matchSlugs) {
+      if (matchSlugs.petitionCampaign && matchSlugs.petitionCampaign.id === input.id) {
+        input.slug = undefined
+      } else if (matchSlugs.active) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'That slug already exists in the database'
+        })
+      }
     }
     const existingThemes = input.themes
       ? await ctx.prisma.theme.findMany({
@@ -494,7 +523,21 @@ export const petitionCampaign = router({
           : undefined,
         limitLocationCountry: input.limitLocationCountry ? input.limitLocationCountry.join(',') : undefined,
         defaultPetitionImageId: image ? image.id : undefined,
-        status: input.status
+        status: input.status,
+        slugRelation: input.slug
+          ? matchSlugs?.active
+            ? {
+                create: {
+                  slug: input.slug,
+                  active: true
+                }
+              }
+            : {
+                connect: {
+                  slug: input.slug
+                }
+              }
+          : undefined
       },
       select: {
         title: true,
@@ -503,6 +546,7 @@ export const petitionCampaign = router({
         themes: true,
         limitLocationCountry: true,
         status: true,
+        slug: true,
         defaultPetitionImage: {
           select: {
             url: true,
@@ -511,6 +555,24 @@ export const petitionCampaign = router({
         }
       }
     })
+    if (input.slug) {
+      await ctx.prisma.slug.update({
+        where: {
+          slug: oldCampaign.slug
+        },
+        data: {
+          active: false
+        }
+      })
+      await ctx.prisma.slug.update({
+        where: {
+          slug: input.slug
+        },
+        data: {
+          active: true
+        }
+      })
+    }
     return campaign
   })
 })

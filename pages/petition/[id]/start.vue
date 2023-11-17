@@ -271,7 +271,7 @@ definePageMeta({
             <!-- Only if not signed in, otherwise just show button -->
             <div ref="email" class="n-step-description full">
               <div v-if="!user?.authenticated">
-                <n-p>{{ $t("petition_create.email_description") }}</n-p>
+                <Np>{{ $t("petition_create.email_description") }}</Np>
                 <n-form-item path="email">
                   <n-input ref="emailInput" v-model:value="petition.email" type="text" />
                 </n-form-item>

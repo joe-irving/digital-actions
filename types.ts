@@ -105,4 +105,5 @@ export interface PetitionCampaignEdit {
       url: string
   } | null,
   limitLocationCountry: string | null;
+  slug: string;
 }

@@ -40,14 +40,16 @@ const campaignEdit = ref<{
   themes: string[],
   groupName: string,
   defaultImage: UploadFileInfo[],
-  limitLocationCountry: string[]
+  limitLocationCountry: string[],
+  slug: string
 }>({
   title: props.campaign.title,
   description: props.campaign.description || '',
   themes: props.campaign.themes,
   groupName: props.campaign.groupName || '',
   defaultImage: [],
-  limitLocationCountry: props.campaign.limitLocationCountry ? props.campaign.limitLocationCountry.split(',') : []
+  limitLocationCountry: props.campaign.limitLocationCountry ? props.campaign.limitLocationCountry.split(',') : [],
+  slug: props.campaign.slug
 })
 
 const newTheme = ref('')
@@ -72,6 +74,27 @@ const formRules = ref<FormRules>({
         return new Error(i18n.t('petition_create.title_validator_too_big'))
       }
       return true
+    }
+  },
+  slug: {
+    required: true,
+    trigger: ['blur'],
+    validator (_rule, value: string) {
+      return new Promise<void>((resolve, reject) => {
+        if (!value || !value.length) {
+          reject(Error(i18n.t('pc_manage.slug_required')))
+        } else {
+          $client.slug.checkUnique.useQuery({
+            slug: value
+          }).then(({ data: unique }) => {
+            if (!unique.value && value !== props.campaign.slug) {
+              reject(Error(i18n.t('pc_manage.slug_unique')))
+            } else {
+              resolve()
+            }
+          })
+        }
+      })
     }
   },
   description: {
@@ -116,7 +139,8 @@ const updateCampaign = async () => {
           name: campaignEdit.value.defaultImage[0].name
         }
       : undefined,
-    limitLocationCountry: campaignEdit.value.limitLocationCountry
+    limitLocationCountry: campaignEdit.value.limitLocationCountry,
+    slug: campaignEdit.value.slug
   })
   if (updatedPetition) {
     emit('update', updatedPetition)
@@ -129,8 +153,11 @@ const updateCampaign = async () => {
 <template>
   <div>
     <n-form ref="formRef" :model="campaignEdit" :rules="formRules">
-      <n-form-item path="title" :label="$t('pc_manage.title')">
+      <n-form-item path="title" :label="$t('pc_manage.title')" required>
         <n-input v-model:value="campaignEdit.title" />
+      </n-form-item>
+      <n-form-item path="slug" :label="$t('pc_manage.slug')" required>
+        <SlugInput v-model="campaignEdit.slug" />
       </n-form-item>
       <n-form-item path="themes" :label="$t('pc_manage.themes_available')">
         <n-dynamic-tags v-model:value="campaignEdit.themes">

@@ -12,11 +12,11 @@ definePageMeta({
 <template>
   <n-space justify="center" align-items="center">
     <n-space vertical>
-      <n-h1>{{ $t('verification.check_email') }}</n-h1>
-      <n-h2 v-if="email">
+      <Nh1>{{ $t('verification.check_email') }}</Nh1>
+      <Nh2 v-if="email">
         {{ $t('verification.email_address_reminder', {email: email}) }}
-      </n-h2>
-      <n-p>{{ $t('verification.close_tab') }}</n-p>
+      </Nh2>
+      <Np>{{ $t('verification.close_tab') }}</Np>
     </n-space>
   </n-space>
 </template>
