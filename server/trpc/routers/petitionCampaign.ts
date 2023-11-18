@@ -54,6 +54,11 @@ export const petitionCampaign = router({
             id: anKeys.id
           }
         },
+        styleTheme: {
+          create: {
+            name: input.title
+          }
+        },
         actionNetworkAllTag: tags.all,
         actionNetworkResponseTag: tags.response,
         actionNetworkTagId: anTag._links.self.href,
