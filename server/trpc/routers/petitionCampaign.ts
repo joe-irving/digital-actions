@@ -56,23 +56,35 @@ export const petitionCampaign = router({
         },
         styleTheme: {
           create: {
-            name: input.title
+            name: input.title,
+            permissions: {
+              create: {
+                userId: ctx.user.id,
+                type: PermissionLevel.OWNER.toString()
+              }
+            }
           }
         },
         actionNetworkAllTag: tags.all,
         actionNetworkResponseTag: tags.response,
         actionNetworkTagId: anTag._links.self.href,
-        petitionEndpointURL: anPetition._links.self.href
+        petitionEndpointURL: anPetition._links.self.href,
+        permissions: {
+          create: {
+            userId: ctx.user.id,
+            type: PermissionLevel.OWNER.toString()
+          }
+        }
       }
     })
     // Create the owner permissions
-    await ctx.prisma.petitionCampaignPermission.create({
-      data: {
-        userId: ctx.user.id,
-        type: PermissionLevel.OWNER.toString(),
-        campaignId: petitionCampaign.id
-      }
-    })
+    // await ctx.prisma.petitionCampaignPermission.create({
+    //   data: {
+    //     userId: ctx.user.id,
+    //     type: PermissionLevel.OWNER.toString(),
+    //     campaignId: petitionCampaign.id
+    //   }
+    // })
 
     return petitionCampaign
   }),
@@ -332,7 +344,8 @@ export const petitionCampaign = router({
               }
             }
           }
-        }
+        },
+        styleThemeId: true
       }
     })
     return campaign
@@ -512,6 +525,24 @@ export const petitionCampaign = router({
         }
       })
       : undefined
+    // Sort out slug
+    let newSlug
+    if (!matchSlugs && input.slug) {
+      newSlug = await ctx.prisma.slug.create({
+        data: {
+          slug: input.slug,
+          active: true,
+          petitionCampaign: {
+            connect: {
+              id: input.id
+            }
+          }
+        }
+      })
+      if (!newSlug) {
+        input.slug = undefined
+      }
+    }
     const campaign = await ctx.prisma.petitionCampaign.update({
       where: {
         id: input.id
@@ -529,20 +560,7 @@ export const petitionCampaign = router({
         limitLocationCountry: input.limitLocationCountry ? input.limitLocationCountry.join(',') : undefined,
         defaultPetitionImageId: image ? image.id : undefined,
         status: input.status,
-        slugRelation: input.slug
-          ? matchSlugs?.active
-            ? {
-                create: {
-                  slug: input.slug,
-                  active: true
-                }
-              }
-            : {
-                connect: {
-                  slug: input.slug
-                }
-              }
-          : undefined
+        slug: input.slug
       },
       select: {
         title: true,

@@ -141,6 +141,14 @@
     "preview": "Preview",
     "slug": "Slug",
     "slug_required": "A slug is required",
-    "slug_unique": "That link is already taken, please try something different"
+    "slug_unique": "That link is already taken, please try something different",
+    "colors": "Colours",
+    "theme_name": "Theme Name",
+    "background_color": "Background Colour",
+    "background_text_color": "Text colour for on the background",
+    "theme_logo": "Logo",
+    "theme_icon": "Icon",
+    "update_theme": "Update Theme",
+    "theme_saved": "Theme saved"
   }
 }

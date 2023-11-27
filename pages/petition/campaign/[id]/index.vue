@@ -45,18 +45,20 @@ const breadcrumbs = ref([
   }
 ])
 const shareUrl = ref(siteUrl + localePath(`/${campaign.value?.slug}`))
-const campaignEdit = ref(campaign.value
-  ? {
-      id: campaign.value.id,
-      title: campaign.value.title,
-      description: campaign.value.description,
-      themes: campaign.value.themes.map(t => t.title),
-      groupName: campaign.value.groupName,
-      defaultImage: campaign.value.defaultPetitionImage,
-      limitLocationCountry: campaign.value.limitLocationCountry,
-      slug: campaign.value.slug
-    }
-  : undefined)
+const campaignEdit = computed(() => {
+  return campaign.value
+    ? {
+        id: campaign.value.id,
+        title: campaign.value.title,
+        description: campaign.value.description,
+        themes: campaign.value.themes.map(t => t.title),
+        groupName: campaign.value.groupName,
+        defaultImage: campaign.value.defaultPetitionImage,
+        limitLocationCountry: campaign.value.limitLocationCountry,
+        slug: campaign.value.slug
+      }
+    : undefined
+})
 
 const createShareDialog = () => {
   dialog.create({
@@ -95,6 +97,9 @@ const handleManageMenu = (option: string) => {
   }
 }
 
+useSeoMeta({
+  title: campaign.value?.title
+})
 </script>
 
 <template>
@@ -136,8 +141,8 @@ const handleManageMenu = (option: string) => {
           <n-tab-pane name="petitions" :tab="$t('pc_manage.petitions')">
             <PetitionApprovalList :campaign-id="campaign.id" />
           </n-tab-pane>
-          <n-tab-pane name="theme" :tab="$t('pc_manage.theme')">
-            Theme editor here
+          <n-tab-pane v-if="campaign.styleThemeId" name="theme" :tab="$t('pc_manage.theme')">
+            <EditCustomThemeForm :id="campaign.styleThemeId" />
           </n-tab-pane>
           <n-tab-pane name="edit" :tab="$t('pc_manage.edit')">
             <EditPetitionCampaignForm v-if="campaignEdit" :campaign="campaignEdit" @update="handleCampaignUpdate" />
