@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { FormRules, FormValidationError, FormInst, UploadFileInfo } from 'naive-ui'
+import { TRPCClientError } from '@trpc/client'
+
 import { useThemeVars } from 'naive-ui'
 
 const props = defineProps({
@@ -9,8 +11,8 @@ const props = defineProps({
   }
 })
 const { $client } = useNuxtApp()
-
 const siteTheme = useThemeVars()
+const i18n = useI18n()
 
 const { data: theme } = await $client.styleTheme.get.useQuery(props.id)
 // Define form Object
@@ -60,14 +62,65 @@ const handleUpdateTheme = () => {
   })
 }
 
-const updateTheme = () => {
-
+const updateTheme = async () => {
+  try {
+    const updatedTheme = await $client.styleTheme.update.mutate({
+      id: props.id,
+      name: themeEdit.value?.name,
+      backgroundColor: themeEdit.value?.backgroundColor,
+      backgroundTextColor: themeEdit.value?.backgroundTextColor,
+      logo: themeEdit.value?.logo.length && themeEdit.value.logo[0].url
+        ? {
+            name: themeEdit.value.logo[0].name,
+            url: themeEdit.value.logo[0].url
+          }
+        : undefined,
+      icon: themeEdit.value?.icon.length && themeEdit.value.icon[0].url
+        ? {
+            name: themeEdit.value.icon[0].name,
+            url: themeEdit.value.icon[0].url
+          }
+        : undefined
+    })
+    formSuccess.value = true
+    theme.value = updatedTheme
+    return updatedTheme
+  } catch (err) {
+    if (err instanceof TRPCClientError) {
+      formWarningMessages.value = [[{
+        message: i18n.t('pc_manage.server_error')
+      }]]
+    }
+    throw err
+  }
 }
 </script>
 
 <template>
   <div>
-    {{ themeEdit }}
+    <div v-if="themeEdit" class="flex justify-center">
+      <div
+        :style="{
+          backgroundColor: themeEdit.backgroundColor
+        }"
+        class="p-4 rounded shadow text-center"
+      >
+        <Nh1
+          :style="{
+            color: themeEdit.backgroundTextColor
+          }"
+        >
+          {{ themeEdit.name }}
+        </Nh1>
+        <Np
+          :style="{
+            color: themeEdit.backgroundTextColor
+          }"
+        >
+          {{ $t("pc_manage.this_example_theme") }}
+        </Np>
+      </div>
+    </div>
     <n-form v-if="themeEdit && theme" ref="themeEditForm" size="large" :rules="themeEditRules" :model="themeEdit">
       <n-form-item path="name" :label="$t('pc_manage.theme_name')">
         <n-input v-model:value="themeEdit.name" />
@@ -99,8 +152,5 @@ const updateTheme = () => {
         </n-tag>
       </n-space>
     </n-form>
-    <div>
-      Theme example here
-    </div>
   </div>
 </template>

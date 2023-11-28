@@ -2,6 +2,27 @@ import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
 import { publicProcedure, router } from '../trpc'
 
+const selectFields = {
+  id: true,
+  created: true,
+  updated: true,
+  name: true,
+  backgroundColor: true,
+  backgroundTextColor: true,
+  logo: {
+    select: {
+      id: true,
+      url: true
+    }
+  },
+  icon: {
+    select: {
+      id: true,
+      url: true
+    }
+  }
+}
+
 export const styleThemeRouter = router({
   get: publicProcedure.input(z.number().int()).query(async ({ ctx, input }) => {
     if (!ctx.user) {
@@ -25,26 +46,7 @@ export const styleThemeRouter = router({
           }
         }
       },
-      select: {
-        id: true,
-        created: true,
-        updated: true,
-        name: true,
-        backgroundColor: true,
-        backgroundTextColor: true,
-        logo: {
-          select: {
-            id: true,
-            url: true
-          }
-        },
-        icon: {
-          select: {
-            id: true,
-            url: true
-          }
-        }
-      }
+      select: selectFields
     })
   }),
   update: publicProcedure.input(z.object({
@@ -60,13 +62,67 @@ export const styleThemeRouter = router({
       name: z.string(),
       url: z.string()
     }).optional()
-  })).mutation(({ ctx, input }) => {
+  })).mutation(async ({ ctx, input }) => {
     if (!ctx.user) {
       throw new TRPCError({
         code: 'UNAUTHORIZED',
         message: 'You have to be logged in to update a style theme'
       })
     }
-    return input
+    // Check style theme permissions
+    const theme = await ctx.prisma.styleTheme.findFirst({
+      where: {
+        id: input.id,
+        permissions: {
+          some: {
+            userId: ctx.user.id,
+            type: {
+              in: ['write', 'owner']
+            }
+          }
+        }
+      }
+    })
+    if (!theme) {
+      throw new TRPCError({
+        code: 'FORBIDDEN',
+        message: 'You do not have permission to update this theme'
+      })
+    }
+    // Add image record
+    let logoId: number | undefined
+    if (input.logo) {
+      const logoFile = await ctx.prisma.file.create({
+        data: {
+          url: input.logo.url,
+          name: input.logo.name
+        }
+      })
+      logoId = logoFile.id
+    }
+    let iconId: number | undefined
+    if (input.icon) {
+      const iconFile = await ctx.prisma.file.create({
+        data: {
+          url: input.icon.url,
+          name: input.icon.name
+        }
+      })
+      iconId = iconFile.id
+    }
+    // Update
+    return await ctx.prisma.styleTheme.update({
+      where: {
+        id: input.id
+      },
+      data: {
+        name: input.name,
+        backgroundColor: input.backgroundColor,
+        backgroundTextColor: input.backgroundTextColor,
+        logoId,
+        iconId
+      },
+      select: selectFields
+    })
   })
 })

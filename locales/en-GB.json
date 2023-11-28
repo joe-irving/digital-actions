@@ -149,6 +149,8 @@
     "theme_logo": "Logo",
     "theme_icon": "Icon",
     "update_theme": "Update Theme",
-    "theme_saved": "Theme saved"
+    "theme_saved": "Theme saved",
+    "server_error": "There was a server error.",
+    "this_example_theme": "This is an example of how the theme would look"
   }
 }
