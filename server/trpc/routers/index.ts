@@ -9,6 +9,7 @@ import { petition } from './petition'
 import { slugRouter } from './slug'
 import { actionNetwork } from './actionNetwork'
 import { styleThemeRouter } from './styleTheme'
+import { petitionCampaignPermission } from './petitionCampaignPermission'
 
 export const appRouter = router({
   user,
@@ -20,7 +21,8 @@ export const appRouter = router({
   slug: slugRouter,
   actionNetwork,
   theme: themesRouter,
-  styleTheme: styleThemeRouter
+  styleTheme: styleThemeRouter,
+  petitionCampaignPermission
 })
 
 // export type definition of API

@@ -157,7 +157,7 @@ useSeoMeta({
             />
           </n-tab-pane>
           <n-tab-pane name="admins" :tab="$t('pc_manage.admins')">
-            Admins and permission setting
+            <PetitionCampaignAdminSettings :id="campaign.id" />
           </n-tab-pane>
         </n-tabs>
       </div>
