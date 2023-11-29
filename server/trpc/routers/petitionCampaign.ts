@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
 import { publicProcedure, router } from '../trpc'
-import { createActionNetworkPetition, createActionNetworkTags, getTaggingCount } from '~/server/trpc/utils/actionNetwork'
+import { createActionNetworkPetition, createActionNetworkTags, getSignatureCount } from '~/server/trpc/utils/actionNetwork'
 import { PermissionLevel } from '~/types'
 
 export const petitionCampaign = router({
@@ -374,7 +374,7 @@ export const petitionCampaign = router({
         ]
       },
       select: {
-        actionNetworkTagId: true,
+        petitionEndpointURL: true,
         actionNetworkCredential: {
           select: {
             apiKey: true
@@ -394,17 +394,16 @@ export const petitionCampaign = router({
         message: 'No api key attached to this petition campaign'
       })
     }
-    if (!campaign.actionNetworkTagId) {
+    if (!campaign.petitionEndpointURL) {
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
-        message: 'No action network tag attached to petition campaign'
+        message: 'No action network petition attached to petition campaign'
       })
     }
-    const tag = await getTaggingCount(campaign.actionNetworkCredential.apiKey, campaign.actionNetworkTagId)
-    // return {
-    //   count: tag?.total_records
-    // }
-    return tag
+    const signatureCount = await getSignatureCount(campaign.actionNetworkCredential.apiKey, campaign.petitionEndpointURL)
+    return {
+      count: signatureCount?.total_records
+    }
   }),
   getUserPermissions: publicProcedure.input(z.object({
     id: z.number().int()
@@ -485,7 +484,7 @@ export const petitionCampaign = router({
         petitionCampaign: true
       }
     })
-    if (matchSlugs) {
+    if (matchSlugs && input.slug) {
       if (matchSlugs.petitionCampaign && matchSlugs.petitionCampaign.id === input.id) {
         input.slug = undefined
       } else if (matchSlugs.active) {

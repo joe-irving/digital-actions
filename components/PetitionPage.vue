@@ -11,9 +11,9 @@ const props = defineProps({
 const { data: petition } = await $client.petition.getPublic.useQuery({
   id: props.id
 })
-const { data: signatures } = $client.petition.signatureCount.useQuery({
-  id: props.id
-})
+// const { data: signatures } = $client.petition.signatureCount.useQuery({
+//   id: props.id
+// })
 const shareUrl = ref(useShareUrl(petition.value?.slug || ''))
 
 const success = ref(false)
@@ -30,10 +30,13 @@ const success = ref(false)
             <PetitionForm
               class="block sm:hidden mb-8"
               :endpoint="(petition?.actionNetworkPetitionId || '') + '/signatures'"
+              :pc-endpoint="(petition?.petitionCampaign?.petitionEndpointURL || '') + '/signatures'"
               :tag-name="`[${petition?.petitionCampaign?.tagPrefix}]: ${petition?.id}`"
               :tag-prefix="petition?.petitionCampaign?.tagPrefix"
-              :tag-list="[petition?.petitionCampaign?.actionNetworkAllTag, petition?.petitionCampaign?.actionNetworkResponseTag]"
-              :group-name="petition?.petitionCampaign?.groupName"
+              :tag-list="[petition?.petitionCampaign?.actionNetworkAllTag || '', petition?.petitionCampaign?.actionNetworkResponseTag || '']"
+              :group-name="petition?.petitionCampaign?.groupName || ''"
+              :title="petition?.title || ''"
+              :url="shareUrl"
               @success="() => success = true"
             />
             <!-- TODO: When time, use the JSON output from tiptap, then store and parse taht -->
@@ -44,10 +47,13 @@ const success = ref(false)
           <n-space class="max-w-xs border-0 sm:border shadow-none sm:shadow-md rounded p-4">
             <PetitionForm
               :endpoint="(petition?.actionNetworkPetitionId || '') + '/signatures'"
+              :pc-endpoint="(petition?.petitionCampaign?.petitionEndpointURL || '') + '/signatures'"
               :tag-name="`[${petition?.petitionCampaign?.tagPrefix}]: ${petition?.id}`"
               :tag-prefix="petition?.petitionCampaign?.tagPrefix"
-              :tag-list="[petition?.petitionCampaign?.actionNetworkAllTag, petition?.petitionCampaign?.actionNetworkResponseTag]"
-              :group-name="petition?.petitionCampaign?.groupName"
+              :tag-list="[petition?.petitionCampaign?.actionNetworkAllTag || '', petition?.petitionCampaign?.actionNetworkResponseTag || '']"
+              :group-name="petition?.petitionCampaign?.groupName || ''"
+              :title="petition?.title || ''"
+              :url="shareUrl"
               @success="() => success = true"
             />
           </n-space>

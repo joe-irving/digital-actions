@@ -13,6 +13,10 @@ const props = defineProps({
     type: String,
     default: ''
   },
+  pcEndpoint: {
+    type: String,
+    default: ''
+  },
   tagName: {
     type: String,
     default: ''
@@ -28,6 +32,14 @@ const props = defineProps({
   tagList: {
     type: Array as PropType<string[]>,
     default: () => []
+  },
+  title: {
+    type: String,
+    required: true
+  },
+  url: {
+    type: String,
+    required: true
   }
 })
 
@@ -77,7 +89,17 @@ const formRules = ref<FormRules>({
 
 const formRef = ref<FormInst | null>(null)
 
-const countryChanged = (country: {iso2: string, name: string, dialCode: string}) => {
+interface CountryCode {
+  iso2: string;
+  name: string;
+  dialCode: string
+}
+
+interface CountryCodeInput {
+  country: CountryCode
+}
+
+const countryChanged = (country: CountryCode) => {
   submission.value.country = country.iso2
 }
 
@@ -94,6 +116,11 @@ const handleSignPetition = () => {
 }
 
 const signPetiton = async () => {
+  const customFields: {
+    [key: string]: string
+  } = {}
+  customFields[`${props.tagPrefix}_petition_title`] = props.title
+  customFields[`${props.tagPrefix}_petition_url`] = props.url
   const submissionBody = {
     comments: submission.value.comments,
     person: {
@@ -104,7 +131,8 @@ const signPetiton = async () => {
         country: submission.value.country && submission.value.country.length > 0 ? submission.value.country : undefined
       }],
       email_addresses: [{ address: submission.value.email.length > 0 ? submission.value.email : (self.crypto.randomUUID ? self.crypto.randomUUID() : Math.random() * 10 ** 20).toString() }],
-      phone_numbers: [{ number: submission.value.phoneNumber }]
+      phone_numbers: [{ number: submission.value.phoneNumber }],
+      custom_fields: customFields
     },
     add_tags: [
       props.tagName,
@@ -115,7 +143,11 @@ const signPetiton = async () => {
     method: 'POST',
     body: submissionBody
   })
-  if (error.value) {
+  const { error: pcError } = await useFetch(props.pcEndpoint, {
+    method: 'POST',
+    body: submissionBody
+  })
+  if (error.value || pcError.value) {
     formWarningMessages.value = [[{
       message: i18n.t('petition_form.error')
     }]]
@@ -143,7 +175,7 @@ const signPetiton = async () => {
           style-classes="n-input"
           :input-options="{placeholder: ''}"
           @country-changed="countryChanged"
-          @on-input="(_num, input) => countryChanged(input.country)"
+          @on-input="(_num: number, input: CountryCodeInput) => countryChanged(input.country)"
         />
       </client-only>
     </n-form-item>

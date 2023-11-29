@@ -17,6 +17,9 @@ const petitionCampaignId = parseInt(route.params.id.toString())
 const { data: campaign } = await $client.petitionCampaign.getManage.useQuery({
   id: petitionCampaignId
 })
+const { data: signatureCount } = await $client.petitionCampaign.getSignatureStats.useQuery({
+  id: petitionCampaignId
+})
 
 if (!campaign) {
   navigateTo('/petition/campaign')
@@ -106,13 +109,14 @@ useSeoMeta({
   <div>
     <div v-if="campaign">
       <TitleBar :title="campaign?.title" :breadcrumbs="breadcrumbs" class="p-4">
-        <n-row>
-          <n-col :span="3">
-            <n-statistic :label="$t('pc_manage.petitions')">
-              {{ campaign?._count?.petitions }}
-            </n-statistic>
-          </n-col>
-        </n-row>
+        <n-space>
+          <n-statistic :label="$t('pc_manage.petitions')">
+            {{ campaign?._count?.petitions }}
+          </n-statistic>
+          <n-statistic :label="$t('pc_manage.signatures')">
+            {{ signatureCount?.count }}
+          </n-statistic>
+        </n-space>
         <template #extra>
           <n-space>
             <StatusTag :status="campaign.status" />
@@ -135,9 +139,6 @@ useSeoMeta({
       </TitleBar>
       <div class="p-4">
         <n-tabs>
-          <n-tab-pane name="overview" :tab="$t('pc_manage.overview')">
-            Key stats, action network connection info (tag names etc)
-          </n-tab-pane>
           <n-tab-pane name="petitions" :tab="$t('pc_manage.petitions')">
             <PetitionApprovalList :campaign-id="campaign.id" />
           </n-tab-pane>
@@ -146,6 +147,14 @@ useSeoMeta({
           </n-tab-pane>
           <n-tab-pane name="edit" :tab="$t('pc_manage.edit')">
             <EditPetitionCampaignForm v-if="campaignEdit" :campaign="campaignEdit" @update="handleCampaignUpdate" />
+          </n-tab-pane>
+          <n-tab-pane name="action_network" :tab="$t('pc_manage.action_network')">
+            <ActionNetworkInfo
+              :main-tag="campaign.actionNetworkAllTag"
+              :response-tag="campaign.actionNetworkResponseTag"
+              :tag-prefix="campaign.tagPrefix"
+              :action-network-cred-name="campaign.actionNetworkCredential?.name || ''"
+            />
           </n-tab-pane>
           <n-tab-pane name="admins" :tab="$t('pc_manage.admins')">
             Admins and permission setting

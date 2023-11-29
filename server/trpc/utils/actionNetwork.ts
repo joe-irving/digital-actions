@@ -268,8 +268,12 @@ export const getSignatureCount = cachedFunction(async (key: string, actionNetwor
 }, {
   maxAge: 60 * 60 * 10,
   name: 'getActionNetworkSignatureCount',
-  getKey: (actionNetworkId: string) => {
-    return actionNetworkId
+  getKey: (_key: string, actionNetworkId: string) => {
+    const ids = actionNetworkId.match(/[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}/)
+    if (!ids?.length) {
+      return null
+    }
+    return ids[0]
   }
 })
 
@@ -288,7 +292,11 @@ export const getTaggingCount = cachedFunction(async (key: string, id: string) =>
 }, {
   maxAge: 10,
   name: 'getActionNetworkSignatureCount',
-  getKey: (actionNetworkId: string) => {
-    return actionNetworkId
+  getKey: (_key: string, id: string) => {
+    const ids = id.match(/[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}/)
+    if (!ids?.length) {
+      return null
+    }
+    return ids[0]
   }
 })

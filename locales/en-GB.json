@@ -151,6 +151,26 @@
     "update_theme": "Update Theme",
     "theme_saved": "Theme saved",
     "server_error": "There was a server error.",
-    "this_example_theme": "This is an example of how the theme would look"
+    "this_example_theme": "This is an example of how the theme would look",
+    "action_network": "Action Network",
+    "an_connect_title": "Action Network Connection",
+    "an_connect_description": "This petition campaign is connected to an Action Network API key called",
+    "action_network_connection": "The signatures from this petitions are managed in Action Network. For each petition, a tag is generated.",
+    "action_network_connection_tags": "Action Network Tags",
+    "action_network_main_tag_description": "This tag is added on Action Network to every person who signs a petition in this campaign.",
+    "action_network_response_tag_description": "This tag is added specifically to trigger a ladder to send the auto-response when people sign a petition",
+    "action_network_petition_tag_description": "A tag is added for each new petition, with the tag prefix for this action and the id of the petition (which should be a number)",
+    "an_auto_response": "Email Auto Response",
+    "an_auto_response_explainer": "When someone signs a petitions, an automatic response should be sent with some information on how to share the petition. This is set up in Action Network by using the ladders feature.",
+    "an_res_1_title": "Create a ladder",
+    "an_res_1": "Create a ladder for the group this petition campaign is linked to",
+    "an_res_2_title": "Add trigger",
+    "an_res_2": "Create a 'Tag added' trigger for the tag '{tag}'",
+    "an_res_3_title": "Add send email action",
+    "an_res_3": "For the next step, add a 'Send email' action step with all your content to ask people to share.",
+    "an_res_3_line2": "To add in the URL of the petition they signed, include this clip:",
+    "an_res_3_line3": "To add in the title of the petition they signed, include this clip:",
+    "an_res_4_title": "Remove tag",
+    "an_res_4": "Add a step to remove the '{tag}' tag"
   }
 }

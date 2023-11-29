@@ -26,7 +26,7 @@ const themeEdit = ref<{
   ? {
       name: theme.value.name,
       backgroundColor: theme.value.backgroundColor || siteTheme.value.baseColor,
-      backgroundTextColor: theme.value.backgroundTextColor || siteTheme.value.textColorBase,
+      backgroundTextColor: theme.value.backgroundTextColor || '#000',
       logo: [],
       icon: []
     }
