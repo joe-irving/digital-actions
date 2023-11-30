@@ -22,7 +22,7 @@ const handleProfileOptions = async (option: string) => {
   <div>
     <div v-if="user?.authenticated">
       <n-dropdown trigger="click" :options="[{key: 'signOut', label: $i18n.t('profile.sign_out')}]" @select="handleProfileOptions">
-        <UserProfile v-if="user?.user" :user="user.user" :collapsed="collapsed" />
+        <UserProfile v-if="user?.user" :user="user.user" :collapsed="collapsed" class="justify-center" />
       </n-dropdown>
     </div>
     <div v-else class="sign-in-wrapper">

@@ -172,5 +172,21 @@
     "an_res_3_line3": "To add in the title of the petition they signed, include this clip:",
     "an_res_4_title": "Remove tag",
     "an_res_4": "Add a step to remove the '{tag}' tag"
+  },
+  "permission_types": {
+    "read": "Read",
+    "write": "Write",
+    "approval": "Approver",
+    "admin": "Admin",
+    "owner": "Owner"
+  },
+  "permissions": {
+    "confirm": "Confirm permission change",
+    "confirm_button": "Continue",
+    "reject_button": "Go Back",
+    "confirm_demotion": "In changing the permission level, you will loose access to be able to the admin tab and will not be able to add the permission back",
+    "add": "Add",
+    "email": "Email address of collaborator",
+    "email_used": "That person is already a collaborator"
   }
 }

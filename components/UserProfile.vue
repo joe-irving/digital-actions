@@ -1,9 +1,9 @@
 <script setup lang="ts">
 interface User {
     id: string;
-    name: string;
-    email: string;
-    image: string | undefined;
+    name: string | null;
+    email: string | null;
+    image: string | null;
 }
 
 defineProps({
@@ -25,7 +25,7 @@ defineProps({
 
 <template>
   <div
-    class="flex justify-center gap-x-2"
+    class="flex gap-x-2"
     :class="{
       'flex-row-reverse': !alignRight
     }"

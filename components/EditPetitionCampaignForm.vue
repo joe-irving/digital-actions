@@ -201,7 +201,7 @@ const updateCampaign = async () => {
         <ImageUpload :image="campaign.defaultImage || undefined" @change="(fileList) => campaignEdit.defaultImage = fileList" />
       </n-form-item>
       <n-form-item path="limitLocationCountry" :label="$t('pc_manage.limit_country')">
-        <n-select v-model:value="campaignEdit.limitLocationCountry" :options="countryOptions" multiple />
+        <n-select v-model:value="campaignEdit.limitLocationCountry" filterable :options="countryOptions" multiple />
       </n-form-item>
       <n-button @click.prevent="handleUpdate">
         {{ $t('pc_manage.update_pc') }}

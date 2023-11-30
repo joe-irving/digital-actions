@@ -294,14 +294,30 @@ export const petition = router({
     const petition = await ctx.prisma.petition.findFirst({
       where: {
         id: input.id,
-        permissions: {
-          some: {
-            userId: ctx.user.id,
-            type: {
-              in: ['read', 'write', 'owner']
+        OR: [
+          {
+            permissions: {
+              some: {
+                userId: ctx.user.id,
+                type: {
+                  in: ['read', 'write', 'owner']
+                }
+              }
+            }
+          },
+          {
+            petitionCampaign: {
+              permissions: {
+                some: {
+                  userId: ctx.user.id,
+                  type: {
+                    in: ['owner', 'admin', 'approver', 'read']
+                  }
+                }
+              }
             }
           }
-        }
+        ]
       },
       select: selectFields
     })

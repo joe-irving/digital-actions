@@ -290,7 +290,7 @@ export const petitionCampaign = router({
           some: {
             userId: ctx.user.id,
             type: {
-              in: ['read', 'write', 'owner', 'approval']
+              in: ['read', 'write', 'owner', 'approval', 'admin']
             }
           }
         }
@@ -348,6 +348,12 @@ export const petitionCampaign = router({
         styleThemeId: true
       }
     })
+    if (!campaign) {
+      throw new TRPCError({
+        code: 'FORBIDDEN',
+        message: 'You do not have permissions to manage this petition campaign'
+      })
+    }
     return campaign
   }),
   getSignatureStats: publicProcedure.input(z.object({

@@ -20,6 +20,13 @@ const { data: campaign } = await $client.petitionCampaign.getManage.useQuery({
 const { data: signatureCount } = await $client.petitionCampaign.getSignatureStats.useQuery({
   id: petitionCampaignId
 })
+const { data: permissions } = await $client.petitionCampaignPermission.me.useQuery({
+  id: petitionCampaignId
+})
+
+const permissionLevels = computed(() => {
+  return permissions.value ? permissions.value.map(p => p.type) : []
+})
 
 if (!campaign) {
   navigateTo('/petition/campaign')
@@ -99,6 +106,9 @@ const handleManageMenu = (option: string) => {
     updateStatus('draft')
   }
 }
+const hasPermissions = (permissions: Array<string>) => {
+  return !!permissions.filter(p => permissionLevels.value.includes(p)).length
+}
 
 useSeoMeta({
   title: campaign.value?.title
@@ -139,16 +149,16 @@ useSeoMeta({
       </TitleBar>
       <div class="p-4">
         <n-tabs>
-          <n-tab-pane name="petitions" :tab="$t('pc_manage.petitions')">
+          <n-tab-pane v-if="hasPermissions(['approval', 'admin', 'owner', 'read', 'write'])" name="petitions" :tab="$t('pc_manage.petitions')">
             <PetitionApprovalList :campaign-id="campaign.id" />
           </n-tab-pane>
-          <n-tab-pane v-if="campaign.styleThemeId" name="theme" :tab="$t('pc_manage.theme')">
+          <n-tab-pane v-if="campaign.styleThemeId && hasPermissions(['write', 'owner', 'admin'])" name="theme" :tab="$t('pc_manage.theme')">
             <EditCustomThemeForm :id="campaign.styleThemeId" />
           </n-tab-pane>
-          <n-tab-pane name="edit" :tab="$t('pc_manage.edit')">
+          <n-tab-pane v-if="hasPermissions(['write', 'admin', 'owner'])" name="edit" :tab="$t('pc_manage.edit')">
             <EditPetitionCampaignForm v-if="campaignEdit" :campaign="campaignEdit" @update="handleCampaignUpdate" />
           </n-tab-pane>
-          <n-tab-pane name="action_network" :tab="$t('pc_manage.action_network')">
+          <n-tab-pane v-if="hasPermissions(['admin', 'owner'])" name="action_network" :tab="$t('pc_manage.action_network')">
             <ActionNetworkInfo
               :main-tag="campaign.actionNetworkAllTag"
               :response-tag="campaign.actionNetworkResponseTag"
@@ -156,8 +166,12 @@ useSeoMeta({
               :action-network-cred-name="campaign.actionNetworkCredential?.name || ''"
             />
           </n-tab-pane>
-          <n-tab-pane name="admins" :tab="$t('pc_manage.admins')">
-            <PetitionCampaignAdminSettings :id="campaign.id" />
+          <n-tab-pane v-if="hasPermissions(['admin', 'owner'])" name="admins" :tab="$t('pc_manage.admins')">
+            <PetitionCampaignAdminSettings
+              :id="campaign.id"
+              :user-permissions="permissions || []"
+              @user-permission-update="(permissionsUpdate) => permissions = permissionsUpdate"
+            />
           </n-tab-pane>
         </n-tabs>
       </div>
