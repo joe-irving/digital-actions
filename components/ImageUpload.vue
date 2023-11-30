@@ -4,16 +4,25 @@ import type { UploadFileInfo } from 'naive-ui'
 
 const { $i18n } = useNuxtApp()
 
-// defineProps({
-//   modelValue: {
-//     type: Array as PropType<UploadFileInfo[]>,
-//     default: () => []
-//   }
-// })
+const props = defineProps({
+  image: {
+    type: Object as PropType<{id: number; url: string;}>,
+    default: () => null
+  }
+})
 
 const emit = defineEmits(['update:modelValue', 'change'])
 
 const fileList = ref<UploadFileInfo[]>([])
+
+if (props.image) {
+  fileList.value.push({
+    id: props.image.id.toString(),
+    url: props.image.url,
+    name: props.image.url,
+    status: 'finished'
+  })
+}
 
 const warningMessage = ref<string | null>(null)
 
@@ -32,6 +41,7 @@ const uploadFinished = ({
 }
 
 const handleChange = (data: { fileList: UploadFileInfo[] }) => {
+  fileList.value = data.fileList
   emit('change', data.fileList)
 }
 
@@ -48,7 +58,7 @@ const beforeUpload = (data: {
 </script>
 
 <template>
-  <div>
+  <div class="w-full">
     <n-upload
       action="/api/upload"
       accept="image/*"
@@ -57,12 +67,13 @@ const beforeUpload = (data: {
       :default-file-list="fileList"
       response-type="json"
       list-type="image"
+      class="w-full"
       @finish="uploadFinished"
       @change="handleChange"
       @before-upload="beforeUpload"
     >
-      <n-upload-dragger>
-        <div style="margin-bottom: 12px">
+      <n-upload-dragger v-if="fileList.length === 0">
+        <div>
           <NaiveIcon
             :size="48"
             :depth="3"
@@ -74,8 +85,8 @@ const beforeUpload = (data: {
         </n-text>
       </n-upload-dragger>
     </n-upload>
-    <n-p v-if="warningMessage">
+    <Np v-if="warningMessage">
       {{ warningMessage }}
-    </n-p>
+    </Np>
   </div>
 </template>

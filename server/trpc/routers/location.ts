@@ -6,7 +6,13 @@ export const AddressSchema = z.object({
   state: z.optional(z.string()),
   'ISO3166-2-lvl4': z.optional(z.string()),
   country: z.optional(z.string()),
-  country_code: z.optional(z.string())
+  country_code: z.optional(z.string()),
+  road: z.optional(z.string()),
+  neighbourhood: z.optional(z.string()),
+  suburb: z.optional(z.string()),
+  village: z.optional(z.string()),
+  town: z.optional(z.string()),
+  municipality: z.optional(z.string())
 })
 
 export const LocationSchema = z.object({

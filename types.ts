@@ -32,6 +32,12 @@ export interface NominatimLocationInfo {
   name: string;
   display_name: string;
   address: {
+    road: string | undefined;
+    neighbourhood: string | undefined;
+    suburb: string | undefined;
+    village: string | undefined;
+    town: string | undefined;
+    municipality: string | undefined;
     county: string;
     'ISO3166-2-lvl6': string;
     state: string;
@@ -87,3 +93,19 @@ export interface ShareInformation {
   description: string;
   shareImage: DatabaseFile | null;
 }
+
+export interface PetitionCampaignEdit {
+  id: number;
+  title: string;
+  description: string | null;
+  themes: string[];
+  groupName: string | null;
+  defaultImage: {
+      id: number
+      url: string
+  } | null,
+  limitLocationCountry: string | null;
+  slug: string;
+}
+
+export type PermissionType = 'owner' | 'read' | 'write' | 'approval' | 'admin'

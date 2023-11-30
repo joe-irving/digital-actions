@@ -11,6 +11,6 @@ const { data: campaign } = await $client.tweetCampaign.getPublic.useQuery({ slug
 
 <template>
   <div>
-    <n-h1>{{ campaign?.title }}</n-h1>
+    <Nh1>{{ campaign?.title }}</Nh1>
   </div>
 </template>

@@ -50,6 +50,7 @@ model User {
   userPetitionPermissions    UserPetitionPermissions[]
   PetitionCampaignPermission PetitionCampaignPermission[]
   actionNetworkCredentials   ActionNetworkCredential[]
+  styleThemePermissions StyleThemePermission[]
 }
 
 model VerificationToken {
@@ -235,9 +236,10 @@ model Theme {
   updated     DateTime           @default(now()) @updatedAt
   title       String
   description String?
-  icon        String
+  icon        String?
   petitions   Petition[]         @relation("PetitionThemes")
   campaign    PetitionCampaign[] @relation("PetitionCampaignThemes")
+  status      String @default("public")
 }
 
 model PetitionCampaignPermission {
@@ -313,6 +315,18 @@ model StyleTheme {
   icon                  File?              @relation("StyleThemeIcon", fields: [iconId], references: [id])
   iconId                Int?               @unique
   petitionCampaign      PetitionCampaign[]
+  permissions           StyleThemePermission[]
+}
+
+model StyleThemePermission {
+  id Int                @id @default(autoincrement())
+  created               DateTime           @default(now())
+  updated               DateTime           @default(now()) @updatedAt
+  styleTheme    StyleTheme @relation(fields: [styleThemeId], references: [id])
+  styleThemeId Int
+  user User @relation(fields: [userId], references: [id])
+  userId String
+  type  String
 }
 
 model Slug {

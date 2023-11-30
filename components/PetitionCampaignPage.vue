@@ -20,9 +20,9 @@ definePageMeta({
 <template>
   <CustomThemeWrapper :theme="petitionCampaign.styleTheme">
     <n-space class="mt-6" vertical>
-      <n-h1 class="text-center">
+      <Nh1 class="text-center">
         {{ petitionCampaign.title }}
-      </n-h1>
+      </Nh1>
     </n-space>
 
     <n-space justify="center" class="">

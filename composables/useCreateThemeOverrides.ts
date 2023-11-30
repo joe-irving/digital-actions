@@ -1,5 +1,5 @@
-import { GlobalThemeOverrides } from 'naive-ui'
-import { CustomStyleTheme } from '~/types'
+import type { GlobalThemeOverrides } from 'naive-ui'
+import type { CustomStyleTheme } from '~/types'
 
 function lightenDarkenColor (col: string, amt: number) {
   let usePound = false

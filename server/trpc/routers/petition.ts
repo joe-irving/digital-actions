@@ -2,7 +2,8 @@ import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
 import sanitizeHtml from 'sanitize-html'
 import { publicProcedure, router } from '../trpc'
-import { createActionNetworkTags, createActionNetworkPetition, ActionNetworkTag, ActionNetworkPetition, getSignatureCount } from '../utils/actionNetwork'
+import { createActionNetworkTags, createActionNetworkPetition, getSignatureCount } from '../utils/actionNetwork'
+import type { ActionNetworkTag, ActionNetworkPetition } from '../utils/actionNetwork'
 import { LocationSchema } from './location'
 
 const selectFieldAuthorised = {
@@ -42,6 +43,11 @@ const selectFieldAuthorised = {
       title: true,
       icon: true
     }
+  },
+  location: {
+    select: {
+      name: true
+    }
   }
 }
 
@@ -71,8 +77,22 @@ export const petition = router({
     // Check that petition campaign is public to this user
     const petitionCampaign = await ctx.prisma.petitionCampaign.findFirst({
       where: {
-        status: 'public',
-        id: input.petitionCampaign
+        id: input.petitionCampaign,
+        OR: [
+          {
+            status: 'public'
+          },
+          {
+            permissions: {
+              some: {
+                userId: ctx.user?.id || '0',
+                type: {
+                  in: ['owner', 'read', 'write']
+                }
+              }
+            }
+          }
+        ]
       },
       select: {
         id: true,
@@ -129,7 +149,7 @@ export const petition = router({
           place_rank: input.location.place_rank,
           importance: input.location.importance,
           addresstype: input.location.addresstype,
-          name: input.location.name,
+          name: input.location.address.town || input.location.address.village || input.location.address.suburb || input.location.name || '',
           display_name: input.location.display_name,
           county: input.location.address.county,
           ISO3166_2_lvl6: input.location.address['ISO3166-2-lvl6'],
@@ -165,7 +185,7 @@ export const petition = router({
         title: input.title,
         content: sanitizeHtml(input.content),
         targetName: input.target,
-        status: 'public',
+        status: 'request_approval',
         sharingInformation: {
           create: {
             whatsappShareText: '',
@@ -274,14 +294,30 @@ export const petition = router({
     const petition = await ctx.prisma.petition.findFirst({
       where: {
         id: input.id,
-        permissions: {
-          some: {
-            userId: ctx.user.id,
-            type: {
-              in: ['read', 'write', 'owner']
+        OR: [
+          {
+            permissions: {
+              some: {
+                userId: ctx.user.id,
+                type: {
+                  in: ['read', 'write', 'owner']
+                }
+              }
+            }
+          },
+          {
+            petitionCampaign: {
+              permissions: {
+                some: {
+                  userId: ctx.user.id,
+                  type: {
+                    in: ['owner', 'admin', 'approver', 'read']
+                  }
+                }
+              }
             }
           }
-        }
+        ]
       },
       select: selectFields
     })
@@ -408,8 +444,7 @@ export const petition = router({
             }
           },
           {
-            status: 'public',
-            approved: true
+            status: 'public'
           }
         ]
       },
@@ -488,8 +523,7 @@ export const petition = router({
             }
           },
           {
-            status: 'public',
-            approved: true
+            status: 'public'
           }
         ]
       },
@@ -526,7 +560,9 @@ export const petition = router({
     }
     // TODO: get signature count for API created petition
     const signatures = await getSignatureCount(petition.petitionCampaign.actionNetworkCredential.apiKey, petition.actionNetworkPetitionId)
-
+    if (!signatures) {
+      return null
+    }
     // return
     return {
       count: signatures.total_records,
@@ -541,7 +577,7 @@ export const petition = router({
   approval: publicProcedure.input(z.object({
     petitionCampaignId: z.number().int(),
     petitionId: z.number().int(),
-    approved: z.boolean()
+    status: z.enum(['public', 'rejected', 'draft', 'request_approval'])
   })).mutation(async ({ ctx, input }) => {
     if (!ctx.user) {
       throw new TRPCError({
@@ -599,13 +635,13 @@ export const petition = router({
     // Create tag, create petition endpoint
     let anPetition: ActionNetworkPetition | null = null
     let anTag: ActionNetworkTag | null = null
-    if (petitionCampaign?.actionNetworkCredential && input.approved && !petitionCampaign.petitions[0].tagName) {
+    if (petitionCampaign?.actionNetworkCredential && input.status === 'public' && !petitionCampaign.petitions[0].tagName) {
       anTag = await createActionNetworkTags(
         petitionCampaign.actionNetworkCredential?.apiKey,
       `[${petitionCampaign.tagPrefix}]: ${petitionCampaign.petitions[0].id}`
       )
     }
-    if (petitionCampaign?.actionNetworkCredential && input.approved && !petitionCampaign.petitions[0].actionNetworkPetitionId) {
+    if (petitionCampaign?.actionNetworkCredential && input.status === 'public' && !petitionCampaign.petitions[0].actionNetworkPetitionId) {
       anPetition = await createActionNetworkPetition({
         key: petitionCampaign.actionNetworkCredential?.apiKey,
         title: petitionCampaign.petitions[0].title,
@@ -620,7 +656,7 @@ export const petition = router({
         id: input.petitionId
       },
       data: {
-        approved: input.approved,
+        status: input.status,
         actionNetworkPetitionId: anPetition?._links.self.href,
         tagName: anTag?.name
       }

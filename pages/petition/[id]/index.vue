@@ -55,40 +55,15 @@ const createShareDialog = () => {
 </script>
 
 <template>
-  <div class="p-4">
+  <div v-if="petition" class="p-4">
     <n-page-header>
-      <n-tabs>
-        <n-tab-pane name="overview" :tab="$t('petition.overview')">
-          <n-grid cols="1 sm:1 md:2" :x-gap="10" :y-gap="10" responsive="screen">
-            <n-gi><SignatureCount :count="signatures?.count" /></n-gi>
-            <n-gi>
-              <n-card :title="$t('petition.share_petition')">
-                <ShareTile
-                  v-if="petition?.sharingInformation"
-                  :title="petition?.sharingInformation?.shareTitle"
-                  :tweet="petition?.sharingInformation?.tweet"
-                  :whatsapp="petition?.sharingInformation?.whatsappShareText"
-                  :description="petition?.sharingInformation?.description"
-                  :url="shareUrl"
-                />
-              </n-card>
-            </n-gi>
-          </n-grid>
-        </n-tab-pane>
-        <n-tab-pane name="edit" :tab="$t('petition.edit')">
-          <EditPetitionForm
-            :id="petition?.id"
-            :title="petition?.title"
-            :content="petition?.content"
-            :target-name="petition?.targetName || undefined"
-            :themes="petition?.petitionThemes"
-            :image="petition?.image || undefined"
-            :available-themes="petitionCampaign?.themes"
-            :limit-countries="petitionCampaign?.limitLocationCountry || undefined"
-            @update="(update) => petition = update"
-          />
-        </n-tab-pane>
-      </n-tabs>
+      <PetitionApprovalBanner
+        v-if="petition.petitionCampaignId"
+        :status="petition.status"
+        :petition-id="petition.id"
+        :petition-campaign-id="petition.petitionCampaignId"
+        @update="(status) => {petition?.status ? petition.status = status : null}"
+      />
       <template #header>
         <n-breadcrumb>
           <n-breadcrumb-item>
@@ -109,18 +84,48 @@ const createShareDialog = () => {
         </n-breadcrumb>
       </template>
       <template #title>
-        <n-h1>{{ petition?.title }}</n-h1>
+        <Nh1>{{ petition?.title }}</Nh1>
       </template>
       <template #extra>
         <n-space>
-          <n-tag round :type="petition?.approved ? 'success' : 'warning'">
-            {{ petition?.approved ? $t('petition.approved') : $t('petition.awaiting_approval') }}
-          </n-tag>
-          <n-button v-if="petition?.approved" @click="createShareDialog">
+          <StatusTag :status="petition.status" />
+          <n-button v-if="petition?.status === 'public'" @click="createShareDialog">
             {{ $t('petition.share') }}
           </n-button>
         </n-space>
       </template>
     </n-page-header>
+    <n-tabs>
+      <n-tab-pane name="overview" :tab="$t('petition.overview')">
+        <n-grid cols="1 sm:1 md:2" :x-gap="10" :y-gap="10" responsive="screen">
+          <n-gi><SignatureCount :count="signatures?.count" /></n-gi>
+          <n-gi>
+            <n-card :title="$t('petition.share_petition')">
+              <ShareTile
+                v-if="petition?.sharingInformation"
+                :title="petition?.sharingInformation?.shareTitle"
+                :tweet="petition?.sharingInformation?.tweet"
+                :whatsapp="petition?.sharingInformation?.whatsappShareText"
+                :description="petition?.sharingInformation?.description"
+                :url="shareUrl"
+              />
+            </n-card>
+          </n-gi>
+        </n-grid>
+      </n-tab-pane>
+      <n-tab-pane name="edit" :tab="$t('petition.edit')">
+        <EditPetitionForm
+          :id="petition?.id"
+          :title="petition?.title"
+          :content="petition?.content"
+          :target-name="petition?.targetName || undefined"
+          :themes="petition?.petitionThemes"
+          :image="petition?.image || undefined"
+          :available-themes="petitionCampaign?.themes || []"
+          :limit-countries="petitionCampaign?.limitLocationCountry || undefined"
+          @update="(update) => petition = update"
+        />
+      </n-tab-pane>
+    </n-tabs>
   </div>
 </template>

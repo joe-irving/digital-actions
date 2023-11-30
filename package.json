@@ -71,6 +71,7 @@
     "next-auth": "4.21.1",
     "postcss": "^8.4.21",
     "sanitize-html": "^2.11.0",
+    "slugify": "^1.6.6",
     "svgo-loader": "^4.0.0",
     "trpc-nuxt": "^0.10.12",
     "unhead": ">=1.7.4",
