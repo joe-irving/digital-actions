@@ -54,7 +54,10 @@ const breadcrumbs = ref([
     icon: null
   }
 ])
-const shareUrl = ref(siteUrl + localePath(`/${campaign.value?.slug}`))
+const shareUrl = computed(() => {
+  return siteUrl + localePath(`/${campaign.value?.slug}`)
+})
+
 const campaignEdit = computed(() => {
   return campaign.value
     ? {

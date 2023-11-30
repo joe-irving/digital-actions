@@ -58,7 +58,7 @@ const createShareDialog = () => {
   <div v-if="petition" class="p-4">
     <n-page-header>
       <PetitionApprovalBanner
-        v-if="petition.petitionCampaignId && petition.status=='request_approval'"
+        v-if="petition.petitionCampaignId"
         :status="petition.status"
         :petition-id="petition.id"
         :petition-campaign-id="petition.petitionCampaignId"

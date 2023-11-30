@@ -70,6 +70,7 @@ const addPermission = () => {
       return
     }
     emit('create', newPermission.value)
+    newPermission.value.email = null
   })
 }
 </script>

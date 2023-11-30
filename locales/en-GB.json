@@ -82,7 +82,8 @@
     "approval_question": "Is this petition ready to be made public?",
     "reject": "Reject",
     "approve": "Approve",
-    "public": "Public"
+    "public": "Public",
+    "back_to_campaign": "Back to petition campaign"
   },
   "share": {
     "twitter": "Twitter",
