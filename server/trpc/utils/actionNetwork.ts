@@ -221,31 +221,35 @@ export const createActionNetworkPetition = async ({
 }) => {
   const apiKey = decryptData(key)
   const { siteName } = useRuntimeConfig()
-  // const originSystem = siteUrl
+  if (!siteName.length) {
+    throw new Error('The site title must not be an empty string or creating an action network petition will fail')
+  }
+  const body = {
+    title,
+    origin_system: siteName, // Cannot be an empty string
+    target: [
+      {
+        name: target
+      }
+    ],
+    description,
+    'osdi:creator': creatorEmail
+      ? {
+          email_addresses: [
+            {
+              address: creatorEmail
+            }
+          ]
+        }
+      : undefined
+  }
+  const headers = {
+    'OSDI-API-Token': apiKey
+  }
   const query = await $fetch<ActionNetworkPetition>('https://actionnetwork.org/api/v2/petitions', {
     method: 'POST',
-    headers: {
-      'OSDI-API-Token': apiKey
-    },
-    body: {
-      title,
-      origin_system: siteName, // Cannot be an empty string?
-      target: [
-        {
-          name: target
-        }
-      ],
-      description,
-      'osdi:creator': creatorEmail
-        ? {
-            email_addresses: [
-              {
-                address: creatorEmail
-              }
-            ]
-          }
-        : undefined
-    }
+    headers,
+    body
   })
   return query
 }
