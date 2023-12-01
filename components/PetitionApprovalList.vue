@@ -1,19 +1,26 @@
 <script setup lang="ts">
+import type { inferRouterOutputs } from '@trpc/server'
+import type { AppRouter } from '~/server/trpc/routers'
+type RouterOutput = inferRouterOutputs<AppRouter>;
+
+type PetitionList = RouterOutput['petition']['userList'];
+
 const { $client } = useNuxtApp()
 const localePath = useLocalePath()
 
 const props = defineProps({
   campaignId: {
     type: Number,
-    required: true
+    required: false,
+    default: undefined
   }
 })
-const { data: petitions } = await $client.petitionCampaign.getManageList.useQuery({
-  id: props.campaignId
+const { data: petitions } = await $client.petition.userList.useQuery({
+  campaignId: props.campaignId
 })
 
 const orderedPetitions = petitions.value
-  ? petitions.value.sort((a, b) => {
+  ? petitions.value.sort((a: PetitionList[0], b: PetitionList[0]) => {
     const aDate = Date.parse(a.created)
     const bDate = Date.parse(b.created)
     return bDate - aDate
@@ -28,14 +35,6 @@ const groupedPetitions = statusOrder.value.map((status) => {
   }
 })
 const displayPetitions = groupedPetitions.filter(s => !!s.petitions.length)
-// const approve = async (id: number) => {
-//   const petition = await $client.petition.approval.mutate({
-//     petitionId: id,
-//     petitionCampaignId,
-//     approved: true
-//   })
-//   return petition
-// }
 </script>
 
 <template>
@@ -64,6 +63,12 @@ const displayPetitions = groupedPetitions.filter(s => !!s.petitions.length)
                       </template>
                       <span v-if="petition.location.name">{{ petition.location.name }}, {{ petition.location.country }}</span>
                       <span v-else>{{ petition.location.display_name }}</span>
+                    </n-tag>
+                    <n-tag v-if="!campaignId && petition.petitionCampaign" round>
+                      <template #icon>
+                        <NaiveIcon name="mdi:clipboard-multiple-outline" />
+                      </template>
+                      {{ petition.petitionCampaign.title }}
                     </n-tag>
                   </n-space>
                 </div>
