@@ -21,7 +21,7 @@ export default defineNuxtConfig({
     authSecret: '',
     apiKeySecret: '',
     apiKeyInitVector: '',
-    siteName: ''
+    siteName: 'Digital Actions'
   },
   modules: [
     '@nuxtjs/tailwindcss',

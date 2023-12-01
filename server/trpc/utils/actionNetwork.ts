@@ -246,14 +246,11 @@ export const createActionNetworkPetition = async ({
   const headers = {
     'OSDI-API-Token': apiKey
   }
-  console.log(JSON.stringify(body))
-  console.log(headers)
   const query = await $fetch<ActionNetworkPetition>('https://actionnetwork.org/api/v2/petitions', {
     method: 'POST',
     headers,
     body
   })
-  console.log(query)
   return query
 }
 
