@@ -21,7 +21,7 @@ const localePath = useLocalePath()
 const { data: permissions } = await $client.petitionCampaign.getUserPermissions.useQuery({
   id: props.petitionCampaignId
 })
-const isApprover = permissions.value ? !!permissions.value.filter(p => ['approval', 'owner'].includes(p.type)).length : false
+const isApprover = permissions.value ? !!permissions.value.filter(p => ['approval', 'admin', 'owner'].includes(p.type)).length : false
 
 const updateStatus = async (status: 'public' | 'rejected') => {
   const newPetition = await $client.petition.approval.mutate({
