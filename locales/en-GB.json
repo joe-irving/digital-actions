@@ -1,6 +1,8 @@
 {
   "intro_text": "Welcome, to get started creating and managing your digital actions log in 👇",
   "your_actions": "Your actions",
+  "email_login_text": "To continue to sign into {site} click the button below or copy and paste the whole link into a browser.",
+  "email_login_subject": "Sign in link for {site}",
   "menu": {
     "home": "Home",
     "tweet_campaign": "Tweet Campaign",

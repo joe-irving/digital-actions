@@ -7,6 +7,32 @@ import { NuxtAuthHandler } from '#auth'
 const prisma = new PrismaClient()
 const runtimeConfig = useRuntimeConfig()
 
+const loginEmailText = () => {
+  return `To continue to sign into ${runtimeConfig.siteName} click the button below or copy and paste the whole link into a browser.`
+}
+
+const makeHtmlEmail = (url: string) => {
+  return `
+  <p>${loginEmailText()}</p>
+  <table align="center"><tr><td align="center"><div>
+  <!--[if mso]>
+  <v:rect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="http://sendgrid" style="height:50px;v-text-anchor:middle;width:150px;" stroke="f" fillcolor="#4aae1e">
+    <w:anchorlock/>
+    <center>
+  <![endif]-->
+      <a href="${url}" target="_blank" style="background-color:#4aae1e;color:#ffffff;display:block;font-family:Helvetica,Arial,sans-serif;font-size:20px;line-height:50px;height:50px;text-align:center;font-weight:bold;text-decoration:none;width:150px;border-radius:5px;-webkit-text-size-adjust:none;">SIGN IN</a>
+  <!--[if mso]>
+    </center>
+  </v:rect>
+<![endif]-->
+</div></td></tr></table>
+<br />
+<br />
+<br />
+${url}
+  `
+}
+
 export default NuxtAuthHandler({
   adapter: PrismaAdapter(prisma),
   secret: runtimeConfig.authSecret,
@@ -35,12 +61,16 @@ export default NuxtAuthHandler({
           // for further details.
           body: JSON.stringify({
             personalizations: [{ to: [{ email }] }],
-            from: { email: 'joe@tippingpointuk.org' },
-            subject: 'Sign in to Your page',
+            from: { email: runtimeConfig.sendgridEmail },
+            subject: `Sign in link for ${runtimeConfig.siteName}`,
             content: [
               {
                 type: 'text/plain',
-                value: `Please click here to authenticate - ${url}`
+                value: `${loginEmailText()}\n\n${url}`
+              },
+              {
+                type: 'text/html',
+                value: makeHtmlEmail(url)
               }
             ]
           }),
