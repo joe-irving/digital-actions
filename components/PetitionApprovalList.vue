@@ -5,6 +5,8 @@ type RouterOutput = inferRouterOutputs<AppRouter>;
 
 type PetitionList = RouterOutput['petition']['userList'];
 
+type PermissionType = 'read' | 'write' | 'owner' | 'approval'
+
 const { $client } = useNuxtApp()
 const localePath = useLocalePath()
 
@@ -13,10 +15,15 @@ const props = defineProps({
     type: Number,
     required: false,
     default: undefined
+  },
+  limitPermissions: {
+    type: Array as PropType<PermissionType[]>,
+    default: undefined
   }
 })
 const { data: petitions } = await $client.petition.userList.useQuery({
-  campaignId: props.campaignId
+  campaignId: props.campaignId,
+  limitPermissions: props.limitPermissions
 })
 
 const orderedPetitions = petitions.value

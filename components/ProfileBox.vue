@@ -11,24 +11,25 @@ defineProps({
 
 const { data: user } = $client.user.me.useQuery()
 
+const options = ref([
+  user.value?.authenticated ? { key: 'signOut', label: $i18n.t('profile.sign_out') } : { key: 'signIn', label: $i18n.t('profile.log_in') }
+])
+
 const handleProfileOptions = async (option: string) => {
   if (option === 'signOut') {
     await signOut()
+  } else if (option === 'signIn') {
+    await signIn(undefined)
   }
 }
 </script>
 
 <template>
   <div>
-    <div v-if="user?.authenticated">
-      <n-dropdown trigger="click" :options="[{key: 'signOut', label: $i18n.t('profile.sign_out')}]" @select="handleProfileOptions">
-        <UserProfile v-if="user?.user" :user="user.user" :collapsed="collapsed" class="justify-center" />
+    <div>
+      <n-dropdown trigger="click" :options="options" @select="handleProfileOptions">
+        <UserProfile :user="user?.user || undefined" :collapsed="collapsed" class="justify-center" />
       </n-dropdown>
-    </div>
-    <div v-else class="sign-in-wrapper">
-      <n-button @click="() => signIn(undefined)">
-        {{ $t('profile.log_in') }}
-      </n-button>
     </div>
   </div>
 </template>

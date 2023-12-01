@@ -9,7 +9,15 @@ interface User {
 defineProps({
   user: {
     type: Object as PropType<User>,
-    required: true
+    required: false,
+    default: () => {
+      return {
+        id: '',
+        name: null,
+        email: null,
+        image: null
+      }
+    }
   },
   collapsed: {
     type: Boolean,
