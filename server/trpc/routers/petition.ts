@@ -662,5 +662,62 @@ export const petition = router({
       }
     })
     return petition
+  }),
+  list: publicProcedure.input(z.object({
+    campaignId: z.number.int().optional()
+  })).query(async ({ ctx, input }) => {
+    if (!ctx.user) {
+      throw new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'You need to be logged in to list petitions on this page'
+      })
+    }
+    return await ctx.prisma.petition.findMany({
+      where: {
+        petitionCampaign: {
+          id: input.campaignId,
+          permissions: {
+            some: {
+              userId: ctx.user.id,
+              type: {
+                in: ['read', 'write', 'owner', 'approval']
+              }
+            }
+          }
+        }
+      },
+      select: {
+        id: true,
+        created: true,
+        updated: true,
+        title: true,
+        content: true,
+        slug: true,
+        approved: true,
+        status: true,
+        targetName: true,
+        image: {
+          select: {
+            id: true,
+            url: true
+          }
+        },
+        petitionThemes: {
+          select: {
+            id: true,
+            title: true,
+            icon: true
+          }
+        },
+        location: {
+          select: {
+            id: true,
+            country: true,
+            name: true,
+            display_name: true
+          }
+        }
+      }
+    })
   })
 })

@@ -5,10 +5,11 @@ const localePath = useLocalePath()
 const props = defineProps({
   campaignId: {
     type: Number,
-    required: true
+    required: false,
+    default: undefined
   }
 })
-const { data: petitions } = await $client.petitionCampaign.getManageList.useQuery({
+const { data: petitions } = await $client.petition.list.useQuery({
   id: props.campaignId
 })
 
