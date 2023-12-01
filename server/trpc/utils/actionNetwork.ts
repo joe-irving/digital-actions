@@ -271,7 +271,7 @@ export const getSignatureCount = cachedFunction(async (key: string, actionNetwor
   getKey: (_key: string, actionNetworkId: string) => {
     const ids = actionNetworkId.match(/[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}/)
     if (!ids?.length) {
-      return null
+      return actionNetworkId
     }
     return ids[0]
   }
@@ -295,7 +295,7 @@ export const getTaggingCount = cachedFunction(async (key: string, id: string) =>
   getKey: (_key: string, id: string) => {
     const ids = id.match(/[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}/)
     if (!ids?.length) {
-      return null
+      return id
     }
     return ids[0]
   }
