@@ -13,6 +13,9 @@ services:
       - NUXT_SENDGRID_API_KEY
       - NUXT_AUTH_SECRET
       - AUTH_ORIGIN
+      - NUXT_API_KEY_SECRET
+      - NUXT_API_KEY_INIT_VECTOR
+      - NUXT_SITE_NAME
       - NUXT_SITE_URL
       # For uploading images
       - GOOGLE_PROJECT_ID

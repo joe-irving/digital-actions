@@ -221,7 +221,9 @@ export const createActionNetworkPetition = async ({
 }) => {
   const apiKey = decryptData(key)
   const { siteName } = useRuntimeConfig()
-  // const originSystem = siteUrl
+  if (!siteName.length) {
+    throw new Error('The site title must not be an empty string or creating an action network petition will fail')
+  }
   const query = await $fetch<ActionNetworkPetition>('https://actionnetwork.org/api/v2/petitions', {
     method: 'POST',
     headers: {
@@ -229,7 +231,7 @@ export const createActionNetworkPetition = async ({
     },
     body: {
       title,
-      origin_system: siteName, // Cannot be an empty string?
+      origin_system: siteName, // Cannot be an empty string
       target: [
         {
           name: target
