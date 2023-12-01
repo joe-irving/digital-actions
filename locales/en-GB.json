@@ -3,6 +3,7 @@
     "home": "Home",
     "tweet_campaign": "Tweet Campaign",
     "petition_campaign": "Petition Campaign",
+    "petition_campaigns": "Petition Campaigns",
     "petitions": "Petitions",
     "petition": "Petition",
     "create_petition_campaign": "Create Petition Campaign",
@@ -172,7 +173,9 @@
     "an_res_3_line2": "To add in the URL of the petition they signed, include this clip:",
     "an_res_3_line3": "To add in the title of the petition they signed, include this clip:",
     "an_res_4_title": "Remove tag",
-    "an_res_4": "Add a step to remove the '{tag}' tag"
+    "an_res_4": "Add a step to remove the '{tag}' tag",
+    "themes": "Themes",
+    "about_petition_campaign": "Here are all your petition campaigns"
   },
   "permission_types": {
     "read": "Read",

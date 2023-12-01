@@ -229,7 +229,7 @@ export const createActionNetworkPetition = async ({
     },
     body: {
       title,
-      origin_system: siteName,
+      origin_system: siteName, // Cannot be an empty string?
       target: [
         {
           name: target

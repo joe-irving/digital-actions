@@ -602,5 +602,48 @@ export const petitionCampaign = router({
       })
     }
     return campaign
+  }),
+  userCampaigns: publicProcedure.query(async ({ ctx }) => {
+    if (!ctx.user?.id) {
+      throw new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'You are not logged in'
+      })
+    }
+    return await ctx.prisma.petitionCampaign.findMany({
+      where: {
+        permissions: {
+          some: {
+            userId: ctx.user.id,
+            type: {
+              in: ['read', 'write', 'admin', 'owner', 'approval']
+            }
+          }
+        }
+      },
+      select: {
+        id: true,
+        created: true,
+        updated: true,
+        title: true,
+        status: true,
+        slug: true,
+        defaultPetitionImage: {
+          select: {
+            id: true,
+            url: true
+          }
+        },
+        _count: {
+          select: {
+            petitions: true,
+            themes: true
+          }
+        }
+      },
+      orderBy: {
+        updated: 'desc'
+      }
+    })
   })
 })

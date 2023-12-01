@@ -2,30 +2,34 @@
 const { $client } = useNuxtApp()
 // get petition campaigns that user has permission to manage
 
-const testCreate = () => {
-  $client.petitionCampaign.create.mutate({
-    title: 'Test title',
-    tagPrefix: 'Another Test'
-  })
-}
+const { data: campaigns } = await $client.petitionCampaign.userCampaigns.useQuery()
+
+const breadcrumbs = ref([
+  {
+    title: 'menu.home',
+    link: '/',
+    icon: null
+  },
+  {
+    title: 'menu.petition',
+    link: '/petition',
+    icon: null
+  },
+  {
+    title: 'menu.campaign',
+    link: '/petition/campaign',
+    icon: null
+  }
+])
 </script>
 
 <template>
   <div>
-    <n-breadcrumb>
-      <n-breadcrumb-item>
-        <NuxtLink to="/">
-          <NaiveIcon name="dashicons:admin-home" />
-        </NuxtLink>
-      </n-breadcrumb-item>
-      <n-breadcrumb-item>
-        <NuxtLink to="/petition/campaign">
-          {{ $t('menu.petition_campaign') }}
-        </NuxtLink>
-      </n-breadcrumb-item>
-    </n-breadcrumb>
-    <n-button to="new">
-      Click me
-    </n-button>
+    <TitleBar :title="$t('menu.petition_campaigns')" :breadcrumbs="breadcrumbs" class="p-4">
+      <Np>{{ $t('pc_manage.about_petition_campaign') }}</Np>
+    </TitleBar>
+    <div class="p-4">
+      <PetitionCampaignList v-if="campaigns" :campaigns="campaigns" />
+    </div>
   </div>
 </template>
