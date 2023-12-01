@@ -6,11 +6,9 @@ import { NuxtAuthHandler } from '#auth'
 
 const prisma = new PrismaClient()
 const runtimeConfig = useRuntimeConfig()
-const i18n = useI18n()
-const { name: siteName } = useSiteConfig()
 
 const loginEmailText = () => {
-  return i18n.t('email_login_text', { site: siteName })
+  return `To continue to sign into ${runtimeConfig.siteName} click the button below or copy and paste the whole link into a browser.`
 }
 
 const makeHtmlEmail = (url: string) => {
@@ -63,12 +61,16 @@ export default NuxtAuthHandler({
           // for further details.
           body: JSON.stringify({
             personalizations: [{ to: [{ email }] }],
-            from: { email: 'joe@tippingpointuk.org' },
-            subject: 'Sign in to Your page',
+            from: { email: runtimeConfig.sendgridEmail },
+            subject: `Sign in link for ${runtimeConfig.siteName}`,
             content: [
               {
                 type: 'text/plain',
                 value: `${loginEmailText()}\n\n${url}`
+              },
+              {
+                type: 'text/html',
+                value: makeHtmlEmail(url)
               }
             ]
           }),

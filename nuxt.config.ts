@@ -18,6 +18,7 @@ export default defineNuxtConfig({
     githubClientSecret: '',
     googleClientSecret: '',
     sendgridApiKey: '',
+    sendgridEmail: '',
     authSecret: '',
     apiKeySecret: '',
     apiKeyInitVector: '',
