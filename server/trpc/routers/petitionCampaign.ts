@@ -603,7 +603,9 @@ export const petitionCampaign = router({
     }
     return campaign
   }),
-  userCampaigns: publicProcedure.query(async ({ ctx }) => {
+  userCampaigns: publicProcedure.input(z.object({
+    limitPermissions: z.array(z.enum(['read', 'write', 'admin', 'owner', 'approval'])).optional()
+  }).optional()).query(async ({ input, ctx }) => {
     if (!ctx.user?.id) {
       throw new TRPCError({
         code: 'UNAUTHORIZED',
@@ -616,7 +618,7 @@ export const petitionCampaign = router({
           some: {
             userId: ctx.user.id,
             type: {
-              in: ['read', 'write', 'admin', 'owner', 'approval']
+              in: input?.limitPermissions || ['read', 'write', 'admin', 'owner', 'approval']
             }
           }
         }

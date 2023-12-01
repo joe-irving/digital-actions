@@ -37,14 +37,32 @@ export const styleThemeRouter = router({
     return await ctx.prisma.styleTheme.findFirst({
       where: {
         id: input,
-        permissions: {
-          some: {
-            userId: ctx.user.id,
-            type: {
-              in: ['read', 'write', 'owner']
+        OR: [
+          {
+            permissions: {
+              some: {
+                userId: ctx.user.id,
+                type: {
+                  in: ['read', 'write', 'owner']
+                }
+              }
+            }
+          },
+          {
+            petitionCampaign: {
+              some: {
+                permissions: {
+                  some: {
+                    userId: ctx.user.id,
+                    type: {
+                      in: ['read', 'write', 'admin', 'owner']
+                    }
+                  }
+                }
+              }
             }
           }
-        }
+        ]
       },
       select: selectFields
     })
@@ -73,14 +91,32 @@ export const styleThemeRouter = router({
     const theme = await ctx.prisma.styleTheme.findFirst({
       where: {
         id: input.id,
-        permissions: {
-          some: {
-            userId: ctx.user.id,
-            type: {
-              in: ['write', 'owner']
+        OR: [
+          {
+            permissions: {
+              some: {
+                userId: ctx.user.id,
+                type: {
+                  in: ['read', 'write', 'owner']
+                }
+              }
+            }
+          },
+          {
+            petitionCampaign: {
+              some: {
+                permissions: {
+                  some: {
+                    userId: ctx.user.id,
+                    type: {
+                      in: ['read', 'write', 'admin', 'owner']
+                    }
+                  }
+                }
+              }
             }
           }
-        }
+        ]
       }
     })
     if (!theme) {

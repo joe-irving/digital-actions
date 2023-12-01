@@ -664,7 +664,8 @@ export const petition = router({
     return petition
   }),
   userList: publicProcedure.input(z.object({
-    campaignId: z.number().int().optional()
+    campaignId: z.number().int().optional(),
+    limitPermissions: z.array(z.enum(['read', 'write', 'owner', 'admin', 'approval'])).default(['read', 'write', 'owner', 'admin', 'approval'])
   })).query(async ({ ctx, input }) => {
     if (!ctx.user?.id) {
       throw new TRPCError({
@@ -680,7 +681,7 @@ export const petition = router({
             some: {
               userId: ctx.user.id,
               type: {
-                in: ['read', 'write', 'owner', 'approval']
+                in: input.limitPermissions || ['read', 'write', 'owner', 'admin', 'approval']
               }
             }
           }
