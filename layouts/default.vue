@@ -21,14 +21,14 @@ const menuOptions = ref<MenuOption[]>([
     icon: createIcon('dashicons:admin-home')
   },
   {
-    key: 'tweet-campaigns',
-    label: createLabel($i18n.t('menu.tweet_campaign'), '/tweet'),
-    icon: createIcon('cib:twitter')
-  },
-  {
     key: 'petitions',
     label: createLabel($i18n.t('menu.petitions'), '/petition'),
-    icon: createIcon('mdi:clipboard-edit-outline')
+    icon: createIcon('mdi:clipboard-outline')
+  },
+  {
+    key: 'petition-campaigns',
+    label: createLabel($i18n.t('menu.petition_campaigns'), '/petition/campaign'),
+    icon: createIcon('mdi:clipboard-multiple-outline')
   }
 ])
 </script>

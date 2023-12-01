@@ -663,13 +663,13 @@ export const petition = router({
     })
     return petition
   }),
-  list: publicProcedure.input(z.object({
-    campaignId: z.number.int().optional()
+  userList: publicProcedure.input(z.object({
+    campaignId: z.number().int().optional()
   })).query(async ({ ctx, input }) => {
-    if (!ctx.user) {
+    if (!ctx.user?.id) {
       throw new TRPCError({
         code: 'UNAUTHORIZED',
-        message: 'You need to be logged in to list petitions on this page'
+        message: 'You are not logged in'
       })
     }
     return await ctx.prisma.petition.findMany({
@@ -715,6 +715,12 @@ export const petition = router({
             country: true,
             name: true,
             display_name: true
+          }
+        },
+        petitionCampaign: {
+          select: {
+            id: true,
+            title: true
           }
         }
       }
