@@ -491,7 +491,13 @@ export const petition = router({
             styleTheme: true,
             groupName: true,
             actionNetworkAllTag: true,
-            actionNetworkResponseTag: true
+            actionNetworkResponseTag: true,
+            defaultPetitionImage: {
+              select: {
+                id: true,
+                url: true
+              }
+            }
           }
         }
       }

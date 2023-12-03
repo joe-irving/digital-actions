@@ -18,6 +18,9 @@ services:
       - NUXT_API_KEY_INIT_VECTOR
       - NUXT_SITE_NAME
       - NUXT_SITE_URL
+      - NUXT_SITE_DESCRIPTION
+      - NUXT_SITE_DEFAULT_LOCALE
+      - NUXT_SITE_TWITTER
       # For uploading images
       - GOOGLE_PROJECT_ID
       - GOOGLE_BUCKET_ID

@@ -42,6 +42,14 @@ export default defineNuxtConfig({
     defaultLocale: 'en'
   },
   site: {
-    url: process.env.NUXT_SITE_URL
+    url: process.env.NUXT_SITE_URL,
+    name: process.env.NUXT_SITE_NAME,
+    description: process.env.NUXT_SITE_DESCRIPTION,
+    defaultLocale: process.env.NUXT_SITE_DEFAULT_LOCALE || 'en-GB',
+    identity: {
+      type: 'Organization'
+    },
+    twitter: process.env.NUXT_SITE_TWITTER,
+    trailingSlash: true
   }
 })
