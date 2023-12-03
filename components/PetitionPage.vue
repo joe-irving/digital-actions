@@ -17,6 +17,13 @@ const { data: petition } = await $client.petition.getPublic.useQuery({
 const shareUrl = ref(useShareUrl(petition.value?.slug || ''))
 
 const success = ref(false)
+
+// Set SEO Meta
+useSeoMeta({
+  title: petition.value?.title,
+  ogTitle: petition.value?.title,
+  ogImage: petition.value?.image?.url || petition.value?.petitionCampaign?.defaultPetitionImage?.url
+})
 </script>
 
 <template>

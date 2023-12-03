@@ -15,13 +15,19 @@ definePageMeta({
   layout: 'public',
   auth: false
 })
+
+useSeoMeta({
+  title: petitionCampaign.value?.title,
+  ogTitle: petitionCampaign.value?.title,
+  ogImage: petitionCampaign.value?.defaultPetitionImage?.url
+})
 </script>
 
 <template>
   <CustomThemeWrapper :theme="petitionCampaign.styleTheme">
     <n-space class="mt-6" vertical>
       <Nh1 class="text-center">
-        {{ petitionCampaign.title }}
+        {{ petitionCampaign?.title }}
       </Nh1>
     </n-space>
 
