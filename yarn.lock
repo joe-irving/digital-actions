@@ -2058,15 +2058,15 @@
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-2.0.0.tgz#f544a148d3ab35801c1f633a7441fd87c2e484bf"
   integrity sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A==
 
-"@trpc/client@^10.40.0":
-  version "10.43.3"
-  resolved "https://registry.yarnpkg.com/@trpc/client/-/client-10.43.3.tgz#28f6724c037361b4c430a28b828955e342d06627"
-  integrity sha512-r/aE1l2iybJMlXCf+KWqSQpIloOqw/3jQhZD8F4VpvczWPI5fEQCmZZuPHAz2L/PiGE5K/ZwXQrJsT207ZQ2AQ==
+"@trpc/client@^10.44.1":
+  version "10.44.1"
+  resolved "https://registry.yarnpkg.com/@trpc/client/-/client-10.44.1.tgz#5666f5b81566d2e44802706581d9e6f2b591502e"
+  integrity sha512-vTWsykNcgz1LnwePVl2fKZnhvzP9N3GaaLYPkfGINo314ZOS0OBqe9x0ytB2LLUnRVTAAZ2WoONzARd8nHiqrA==
 
-"@trpc/server@^10.40.0":
-  version "10.43.3"
-  resolved "https://registry.yarnpkg.com/@trpc/server/-/server-10.43.3.tgz#eb232662320b2ab4092c464d38dd19d4ead527ee"
-  integrity sha512-U7HsNtgjupNvPzH6ho4rPlIXZ2t5PctOH6pmFX4jv4YJi98RjGuOhHUNhiiVb8KUw6Kuh5EHTAv7cUV+igbMuQ==
+"@trpc/server@^10.44.1":
+  version "10.44.1"
+  resolved "https://registry.yarnpkg.com/@trpc/server/-/server-10.44.1.tgz#0d089a3cd5d1268aa8f6845a183329fcac7f2fac"
+  integrity sha512-mF7B+K6LjuboX8I1RZgKE5GA/fJhsJ8tKGK2UBt3Bwik7hepEPb4NJgNr7vO6BK5IYwPdBLRLTctRw6XZx0sRg==
 
 "@trysound/sax@0.2.0":
   version "0.2.0"
