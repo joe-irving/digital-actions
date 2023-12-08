@@ -41,7 +41,7 @@
     "h3": "^1.0.2",
     "jsdom": "^21.0.0",
     "nuxt": "3.8.1",
-    "nuxt-svgo": "^1.1.0",
+    "nuxt-svgo": "^3.7.0",
     "nuxt3-leaflet": "^1.0.12",
     "playwright": "^1.29.2",
     "prisma": "^4.8.1",
