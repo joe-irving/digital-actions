@@ -6164,19 +6164,19 @@ h3-formidable@^1.0.0:
   dependencies:
     formidable "^3.5.1"
 
-h3@^1.0.2, h3@^1.6.4, h3@^1.8.0, h3@^1.8.1, h3@^1.8.2:
-  version "1.8.2"
-  resolved "https://registry.yarnpkg.com/h3/-/h3-1.8.2.tgz#69ea8ca0285c1bb268cd08b9a7017e02939f88b7"
-  integrity sha512-1Ca0orJJlCaiFY68BvzQtP2lKLk46kcLAxVM8JgYbtm2cUg6IY7pjpYgWMwUvDO9QI30N5JAukOKoT8KD3Q0PQ==
+h3@^1.10.0, h3@^1.6.4, h3@^1.8.0, h3@^1.8.1, h3@^1.8.2:
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/h3/-/h3-1.10.0.tgz#55ac36deb6e250ada5ff1940b6324bc6acc4085f"
+  integrity sha512-Tw1kcIC+AeimwRmviiObaD5EB430Yt+lTgOxLJxNr96Vd/fGRu04EF7aKfOAcpwKCI+U2JlbxOLhycD86p3Ciw==
   dependencies:
     cookie-es "^1.0.0"
-    defu "^6.1.2"
-    destr "^2.0.1"
-    iron-webcrypto "^0.10.1"
+    defu "^6.1.3"
+    destr "^2.0.2"
+    iron-webcrypto "^1.0.0"
     radix3 "^1.1.0"
-    ufo "^1.3.0"
+    ufo "^1.3.2"
     uncrypto "^0.1.3"
-    unenv "^1.7.4"
+    unenv "^1.8.0"
 
 has-bigints@^1.0.1, has-bigints@^1.0.2:
   version "1.0.2"
@@ -6511,11 +6511,6 @@ ip@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ip/-/ip-2.0.0.tgz#4cf4ab182fee2314c75ede1276f8c80b479936da"
   integrity sha512-WKa+XuLG1A1R0UWhl2+1XQSi+fZWMsYKffMZTTYsiZaUD8k2yDAj5atimTUD2TZkyCkNEeYE5NhFZmupOGtjYQ==
-
-iron-webcrypto@^0.10.1:
-  version "0.10.1"
-  resolved "https://registry.yarnpkg.com/iron-webcrypto/-/iron-webcrypto-0.10.1.tgz#cab8636a468685533a8521bfd7f06b19b7174809"
-  integrity sha512-QGOS8MRMnj/UiOa+aMIgfyHcvkhqNUsUxb1XzskENvbo+rEfp6TOwqd1KPuDzXC4OnGHcMSVxDGRoilqB8ViqA==
 
 iron-webcrypto@^1.0.0:
   version "1.0.0"
@@ -7905,6 +7900,11 @@ node-fetch-native@^1.4.0, node-fetch-native@^1.4.1:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/node-fetch-native/-/node-fetch-native-1.4.1.tgz#5a336e55b4e1b1e72b9927da09fecd2b374c9be5"
   integrity sha512-NsXBU0UgBxo2rQLOeWNZqS3fvflWePMECr8CoSWoSTqCqGbVVsvl9vZu1HfQicYN0g5piV9Gh8RTEvo/uP752w==
+
+node-fetch-native@^1.6.1:
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/node-fetch-native/-/node-fetch-native-1.6.1.tgz#f95c74917d3cebc794cdae0cd2a9c7594aad0cb4"
+  integrity sha512-bW9T/uJDPAJB2YNYEpWzE54U5O3MQidXsOyTfnbKYtTtFexRvGzb1waphBN4ZwP6EcIvYYEOwW0b72BpAqydTw==
 
 node-fetch@^2.6.7, node-fetch@^2.6.9:
   version "2.7.0"
@@ -10918,15 +10918,15 @@ undici@^5.27.2:
   dependencies:
     "@fastify/busboy" "^2.0.0"
 
-unenv@^1.7.4:
-  version "1.7.4"
-  resolved "https://registry.yarnpkg.com/unenv/-/unenv-1.7.4.tgz#a0e5a78de2c7c3c4563c06ba9763c96c59db3333"
-  integrity sha512-fjYsXYi30It0YCQYqLOcT6fHfMXsBr2hw9XC7ycf8rTG7Xxpe3ZssiqUnD0khrjiZEmkBXWLwm42yCSCH46fMw==
+unenv@^1.7.4, unenv@^1.8.0:
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/unenv/-/unenv-1.9.0.tgz#469502ae85be1bd3a6aa60f810972b1a904ca312"
+  integrity sha512-QKnFNznRxmbOF1hDgzpqrlIf6NC5sbZ2OJ+5Wl3OX8uM+LUJXbj4TXvLJCtwbPTmbMHCLIz6JLKNinNsMShK9g==
   dependencies:
     consola "^3.2.3"
-    defu "^6.1.2"
+    defu "^6.1.3"
     mime "^3.0.0"
-    node-fetch-native "^1.4.0"
+    node-fetch-native "^1.6.1"
     pathe "^1.1.1"
 
 unhead@1.8.4, unhead@>=1.7.4:
