@@ -1,18 +1,24 @@
 <script setup lang=ts>
-import { useEditor, EditorContent, BubbleMenu, FloatingMenu } from '@tiptap/vue-3'
+import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 
 const props = defineProps({
   modelValue: {
     type: String,
-    default: 'test'
+    required: true
   }
 })
 
 const emit = defineEmits(['update:modelValue'])
 
 const editor = useEditor({
-  extensions: [StarterKit],
+  extensions: [
+    StarterKit.configure({
+      heading: {
+        levels: [2, 3]
+      }
+    })
+  ],
   content: props.modelValue,
   onUpdate: ({ editor }) => {
     emit('update:modelValue', editor.getHTML())
@@ -21,33 +27,27 @@ const editor = useEditor({
 </script>
 
 <template>
-  <div class="w-full">
-    <BubbleMenu
-      v-if="editor"
-      :editor="editor"
-      :tippy-options="{ duration: 100 }"
-    >
-      <n-button size="tiny" @click="editor.chain().focus().toggleBold().run()">
-        {{ $t('tiptap.bold') }}
+  <div v-if="editor" class="w-full border-2 rounded">
+    <div class="tiptap-buttons flex gap-2 p-2">
+      <n-button size="small" quaternary :class="{ 'active': editor.isActive('bold') }" @click="editor.chain().focus().toggleBold().run()">
+        <NaiveIcon name="material-symbols:format-bold" />
       </n-button>
-      <n-button size="tiny" @click="editor.chain().focus().toggleItalic().run()">
-        {{ $t('tiptap.italic') }}
+      <n-button size="small" quaternary :class="{ 'active': editor.isActive('italic') }" @click="editor.chain().focus().toggleItalic().run()">
+        <NaiveIcon name="material-symbols:format-italic" />
       </n-button>
-    </BubbleMenu>
-    <FloatingMenu v-if="editor" :editor="editor" :tippy-options="{ duration: 100 }">
-      <n-button size="tiny" :class="{ 'is-active': editor.isActive('heading', { level: 1 }) }" @click="editor.chain().focus().toggleHeading({ level: 1 }).run()">
-        {{ $t('tiptap.big_heading') }}
+      <n-button size="small" quaternary :class="{ 'active': editor.isActive('heading', { level: 2 }) }" @click="editor.chain().focus().toggleHeading({ level: 2 }).run()">
+        <NaiveIcon name="material-symbols:format-h1" />
       </n-button>
-      <n-button size="tiny" :class="{ 'is-active': editor.isActive('heading', { level: 2 }) }" @click="editor.chain().focus().toggleHeading({ level: 2 }).run()">
-        {{ $t('tiptap.small_heading') }}
+      <n-button size="small" quaternary :class="{ 'active': editor.isActive('heading', { level: 3 }) }" @click="editor.chain().focus().toggleHeading({ level: 3 }).run()">
+        <NaiveIcon name="material-symbols:format-h2" />
       </n-button>
-    </FloatingMenu>
+    </div>
     <EditorContent class="editor-window" :editor="editor" />
   </div>
 </template>
 
 <style>
-h1, h2 {
+h1, h2, h3 {
     margin-top: 10px;
     padding-bottom: 5px;
 }
@@ -57,9 +57,17 @@ h1 {
 h2 {
     font-size: 1.7em;
 }
+h3 {
+    font-size: 1.5em;
+}
 
 .editor-window .tiptap {
     padding: 10px;
-    border-width: 3px;
+    outline: none;
+}
+
+.tiptap-buttons .n-button.active {
+  background-color: var(--n-color-hover);
+  color: var(--n-text-color-hover);
 }
 </style>
