@@ -28,7 +28,7 @@ useSeoMeta({
 
 <template>
   <CustomThemeWrapper :theme="petition?.petitionCampaign?.styleTheme">
-    <n-space justify="center" class="mt-10 mb-10">
+    <n-space justify="center" class="mt-10 mb-10 pt-16">
       <div v-if="!success" class="flex justify-center gap-10 items-start">
         <n-space class="max-w-lg border-0 sm:border shadow-none sm:shadow-md rounded p-4">
           <n-space vertical>

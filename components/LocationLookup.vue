@@ -1,13 +1,19 @@
 <script setup lang="ts">
 // import { PropType } from 'nuxt/dist/app/compat/capi'
+import type { inferRouterInputs } from '@trpc/server'
 import type { AutoCompleteOption } from 'naive-ui'
-import type { NominatimLocationInfo } from '~/types'
+import type { AppRouter } from '~/server/trpc/routers'
+// import type { NominatimLocationInfo } from '~/types'
+
+type RouterInput = inferRouterInputs<AppRouter>;
+
+type Location = RouterInput['petition']['create']['location'];
 
 // set model prop for location selected
 
 const props = defineProps({
   modelValue: {
-    type: Object as PropType<NominatimLocationInfo | null>,
+    type: Object as PropType<Location | null>,
     default: () => null
   },
   limitCountry: {
@@ -17,15 +23,15 @@ const props = defineProps({
   }
 })
 
-const locationSearch = ref<NominatimLocationInfo[]>([])
+const locationSearch = ref<Location[]>([])
 
 const locationSearchQuery = ref('')
 
 const locationSearchOptions = computed((): AutoCompleteOption[] => {
-  return locationSearch.value.map((loc) => {
+  return locationSearch.value.filter(loc => loc).map((loc) => {
     return {
-      label: loc.display_name,
-      value: loc.place_id.toString()
+      label: loc?.display_name,
+      value: loc?.place_id.toString()
     }
   })
 })
@@ -41,7 +47,7 @@ const isClear = computed(() => {
 const emit = defineEmits(['update:modelValue'])
 // define lookup function to nomiatim
 const lookupNominatim = async () => {
-  const { data: lookup } = await useFetch<NominatimLocationInfo[]>('https://nominatim.openstreetmap.org/search.php', {
+  const { data: lookup } = await useFetch<Location[]>('https://nominatim.openstreetmap.org/search.php', {
     query: {
       q: encodeURIComponent(locationSearchQuery.value),
       format: 'jsonv2',
@@ -56,7 +62,7 @@ const lookupNominatim = async () => {
 }
 
 const optionSelected = (value: string) => {
-  const selectedLocation = locationSearch.value.find(loc => loc.place_id === parseInt(value))
+  const selectedLocation = locationSearch.value.find(loc => loc?.place_id === parseInt(value))
   emit('update:modelValue', selectedLocation || null)
 }
 

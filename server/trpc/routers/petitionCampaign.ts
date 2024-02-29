@@ -129,6 +129,7 @@ export const petitionCampaign = router({
             url: true
           }
         },
+        styleThemeId: true,
         styleTheme: input.includeStyle
           ? {
               select: {

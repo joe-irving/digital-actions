@@ -1,61 +1,51 @@
 <script setup lang="ts">
-import type { StepsProps, SelectOption, InputInst, FormRules, FormItemRule, FormValidationError, FormInst, UploadFileInfo, SelectInst } from 'naive-ui'
-// import { LocationQueryValue } from 'vue-router'
+import type { FormRules, FormItemRule, SelectOption, FormValidationError, UploadFileInfo, FormInst } from 'naive-ui'
 import { TRPCClientError } from '@trpc/client'
-import type { NominatimLocationInfo } from '~/types'
-const { $client } = useNuxtApp()
+
+import type { inferRouterInputs } from '@trpc/server'
+import type { AppRouter } from '~/server/trpc/routers'
+
+type RouterInput = inferRouterInputs<AppRouter>;
+
+type PetitionInput = RouterInput['petition']['create'];
+
+const { $client, $i18n } = useNuxtApp()
 // const { signIn } = useAuth()
 const route = useRoute()
-const { $i18n } = useNuxtApp()
+// const { $i18n } = useNuxtApp()
 
-const { data: user } = $client.user.me.useQuery()
+// const { data: user } = $client.user.me.useQuery()
 
 // Get id prop, if it is an int then get the campaign, if not create without link to campaign?
 const petitionCampaignId = parseInt(route.params.id instanceof Array ? route.params.id[0] : route.params.id)
-const { data: petitionCampaign } = await $client.petitionCampaign.getPublic.useQuery({ id: petitionCampaignId, includeStyle: true })
-const themeOptions = ref(petitionCampaign.value?.themes.map((t): SelectOption => { return { label: t.title, value: t.id } }))
+const { data: petitionCampaign } = await $client.petitionCampaign.getPublic.useQuery({ id: petitionCampaignId })
+const { data: styleTheme } = petitionCampaign.value?.styleThemeId ? await $client.styleTheme.get.useQuery(petitionCampaign.value?.styleThemeId) : { data: undefined }
+const { data: user } = $client.user.me.useQuery()
+
 if (!petitionCampaign.value) {
   navigateTo('/')
 }
-// Set layout to be plain
-const currentRef = ref<number>(1)
-const currentStatus = ref<StepsProps['status']>('process')
 
-// Element references
-const title = ref<HTMLElement | null>(null)
-const titleInput = ref<InputInst | null>(null)
-const targetRef = ref<HTMLElement | null>(null)
-const targetInput = ref<InputInst | null>(null)
-const description = ref<HTMLElement | null>(null)
-// const descriptionInput = ref<InputInst | null>(null)
-const themes = ref<HTMLElement | null>(null)
-const themesInput = ref<SelectInst | null>(null)
-const location = ref<HTMLElement | null>(null)
-const image = ref<HTMLElement | null>(null)
-// const imageInput = ref<InputInst | null>(null)
-const email = ref<HTMLElement | null>(null)
-const emailInput = ref<InputInst | null>(null)
-const formRef = ref<FormInst | null>(null)
+const themeOptions = ref(petitionCampaign.value?.themes.map((t): SelectOption => { return { label: t.title, value: t.id } }))
 
-// Define other template data
-const petition = ref<{
-  title: string,
-  content: string,
-  image: UploadFileInfo[],
-  email: string,
-  themes: number[],
-  location: NominatimLocationInfo | null,
-  target: string
-}>({
-  title: route.query.title?.toString() || '',
-  content: route.query.content?.toString() || '',
-  image: [],
-  email: route.query.email?.toString() || '',
-  themes: useParseTheme(route.query.theme, themeOptions.value || []),
-  location: null,
-  target: route.query.target?.toString() || ''
+// This page is for creating a petition through a step by step form
+const petitionInput = ref<PetitionInput>({
+  petitionCampaign: petitionCampaign.value?.id || 0,
+  title: '',
+  target: '',
+  content: '',
+  themes: [],
+  location: undefined,
+  creatorEmail: undefined
 })
 
+const currentPage = ref(0)
+const totalPages = ref(7)
+
+const formRef = ref<FormInst | null>(null)
+
+const formWarningMessages = ref<FormValidationError[]>([])
+// Form setup
 const formRules = ref<FormRules>({
   title: {
     required: true,
@@ -69,7 +59,7 @@ const formRules = ref<FormRules>({
       return true
     }
   },
-  email: {
+  creatorEmail: {
     required: true,
     trigger: ['blur'],
     validator (_rule: FormItemRule, value: string) {
@@ -83,66 +73,32 @@ const formRules = ref<FormRules>({
   }
 })
 
-// TODO validate input from TipTap.
-
-const formWarningMessages = ref<FormValidationError[]>([])
-
-// Other data
-const steps = [
-  {
-    name: 'title',
-    jump: title,
-    inputFocus: titleInput
-  },
-  {
-    name: 'themes',
-    jump: themes,
-    inputFocus: themesInput
-  },
-  {
-    name: 'location',
-    jump: location,
-    inputFocus: null
-  },
-  {
-    name: 'target',
-    jump: targetRef,
-    inputFocus: targetInput
-  },
-  {
-    name: 'description',
-    jump: description,
-    inputFocus: null
-  },
-  {
-    name: 'image',
-    jump: image,
-    inputFocus: null
-  },
-  {
-    name: 'email',
-    jump: email,
-    inputFocus: emailInput
+const updateImage = (files: UploadFileInfo[]) => {
+  if (files.length > 0 && files[0].url) {
+    petitionInput.value.image = {
+      url: files[0].url,
+      name: files[0].name
+    }
   }
-]
-const totalSteps = ref(steps.length)
-
-const goToStep = (stepNumber: number) => {
-  currentRef.value = stepNumber
-  const step = steps[stepNumber - 1]
-  step.inputFocus?.value?.focus()
-  step.jump.value?.closest('.n-step-content')?.scrollIntoView({ behavior: 'smooth' })
 }
+
 const nextStep = () => {
-  if (currentRef.value < totalSteps.value) {
-    goToStep(currentRef.value + 1)
+  if (currentPage.value < (totalPages.value - 1)) {
+    currentPage.value += 1
   }
 }
 const prevStep = () => {
-  if (currentRef.value > 1) {
-    goToStep(currentRef.value - 1)
+  if (currentPage.value >= 1) {
+    currentPage.value -= 1
   }
 }
+
+const showPrev = computed(() => {
+  return currentPage.value >= 1
+})
+const showNext = computed(() => {
+  return currentPage.value < (totalPages.value - 1)
+})
 
 const handleCreatePetition = () => {
   // Check if all values needed are entered, if not show clear error message about what is missing.
@@ -160,25 +116,11 @@ const createPetition = async () => {
   // If not logged in, create a verification code that is attached to the petition and passed to the redirect page.
   // neeed to do sign in on server side to send code. Then it would be redirect to /petition/[id]?verification=fkdsjafldjsf-dfanwklfnes-feasjklfehjaithdsifi54tw
   try {
-    const petitionCreated = await $client.petition.create.mutate({
-      title: petition.value.title,
-      content: petition.value.content,
-      creatorEmail: petition.value.email,
-      image: (petition.value.image.length && petition.value.image[0].url)
-        ? {
-            url: petition.value.image[0].url,
-            name: petition.value.image[0].name
-          }
-        : undefined,
-      petitionCampaign: petitionCampaignId,
-      themes: petition.value.themes,
-      location: petition.value.location || undefined,
-      target: petition.value.target
-    })
+    const petitionCreated = await $client.petition.create.mutate(petitionInput.value)
     if (user.value?.user) {
       navigateTo(`/petition/${petitionCreated.id}`)
     } else {
-      navigateTo('/verify?email=' + encodeURIComponent(petition.value.email))
+      navigateTo('/verify?email=' + encodeURIComponent(petitionInput.value?.creatorEmail || ''))
     }
   } catch (err) {
     if (err instanceof TRPCClientError) {
@@ -200,50 +142,55 @@ definePageMeta({
 </script>
 
 <template>
-  <CustomThemeWrapper :theme="petitionCampaign?.styleTheme">
-    <div class="main-content">
-      <n-form ref="formRef" :rules="formRules" :model="petition">
-        <n-steps v-model:current="currentRef" :vertical="true" :status="currentStatus">
-          <n-step :title="$t('petition_create.title')">
-            <span ref="title" />
-            <n-space class="n-step-description full" justify="center" vertical>
-              <p>{{ $t('petition_create.title_description') }}</p>
-              <n-form-item path="title">
-                <n-input
-                  ref="titleInput"
-                  v-model:value="petition.title"
-                  type="text"
-                  :placeholder="$t('petition_create.title_placeholder')"
-                  size="large"
-                  @keyup.enter="nextStep()"
-                />
-              </n-form-item>
-            </n-space>
-          </n-step>
-          <n-step :title="$t('petition_create.theme_title')">
-            <span ref="themes" />
+  <CustomThemeWrapper :theme="styleTheme">
+    <div class="min-h-screen flex flex-col pt-16 min-h-screen justify-between">
+      <FormPages
+        :current-page="currentPage"
+        :show-prev="showPrev"
+        :show-next="showNext"
+        :progress="(currentPage+1) / totalPages"
+        @next="nextStep()"
+        @prev="prevStep()"
+      >
+        <n-form ref="formRef" :rules="formRules" :model="petitionInput">
+          <FormPage :page="0" :current-page="currentPage">
+            <Nh2>{{ $t('petition_create.title') }}</Nh2>
+            <p>{{ $t('petition_create.title_description') }}</p>
+            <n-form-item path="title">
+              <n-input
+                ref="titleInput"
+                v-model:value="petitionInput.title"
+                type="text"
+                :placeholder="$t('petition_create.title_placeholder')"
+                size="large"
+                @keyup.enter="nextStep()"
+              />
+            </n-form-item>
+          </FormPage>
+          <FormPage :page="1" :current-page="currentPage">
             <n-space class="n-step-description full" vertical justify="center" height="100%">
+              <Nh2>{{ $t('petition_create.theme_title') }}</Nh2>
               <p>{{ $t('petition_create.theme_description') }}</p>
               <n-form-item path="themes">
-                <n-select ref="themesInput" v-model:value="petition.themes" multiple :options="themeOptions" />
+                <n-select ref="themesInput" v-model:value="petitionInput.themes" multiple :options="themeOptions" />
               </n-form-item>
             </n-space>
-          </n-step>
-          <n-step :title="`${$t('petition_create.location_title')}  (${$t('petition_create.optional')})`">
-            <span ref="location" />
+          </FormPage>
+          <FormPage :page="2" :current-page="currentPage">
+            <Nh2>{{ $t('petition_create.location_title') }}</Nh2>
             <n-space class="n-step-description full" vertical justify="center" height="100%">
               <p>{{ $t('petition_create.location_description') }}</p>
-              <LocationLookup v-model="petition.location" :limit-country="petitionCampaign?.limitLocationCountry || undefined" />
+              <LocationLookup v-model="petitionInput.location" :limit-country="petitionCampaign?.limitLocationCountry || undefined" />
             </n-space>
-          </n-step>
-          <n-step :title="$t('petition_create.target_title')">
-            <span ref="targetRef" />
+          </FormPage>
+          <FormPage :page="3" :current-page="currentPage">
+            <Nh2>{{ $t('petition_create.target_title') }}</Nh2>
             <n-space class="n-step-description full" justify="center" vertical>
               <p>{{ $t('petition_create.target_description') }}</p>
               <n-form-item path="target">
                 <n-input
                   ref="targetInput"
-                  v-model:value="petition.target"
+                  v-model:value="petitionInput.target"
                   type="text"
                   :placeholder="$t('petition_create.target_placeholder')"
                   size="large"
@@ -251,81 +198,45 @@ definePageMeta({
                 />
               </n-form-item>
             </n-space>
-          </n-step>
-          <n-step :title="$t('petition_create.petition_title')">
-            <span ref="description" />
+          </FormPage>
+          <FormPage :page="4" :current-page="currentPage">
+            <Nh2>{{ $t('petition_create.petition_title') }}</Nh2>
             <n-space class="n-step-description full" vertical justify="center" height="100%">
               <p>{{ $t('petition_create.petition_description') }}</p>
               <client-only @keyup.ctrl.enter="nextStep()">
-                <TiptapEditor v-model="petition.content" />
+                <TiptapEditor v-model="petitionInput.content" />
               </client-only>
             </n-space>
-          </n-step>
-          <n-step :title="`${$t('petition_create.image_title')}  (${$t('petition_create.optional')})`">
+          </FormPage>
+          <FormPage :page="5" :current-page="currentPage">
+            <Nh2>{{ $t('petition_create.image_title') }}  ({{ $t('petition_create.optional') }})</Nh2>
             <div ref="image" class="n-step-description full">
               <p>{{ $t('petition_create.image_description') }}</p>
-              <ImageUpload @change="(fileList) => petition.image = fileList" />
+              <ImageUpload @change="files => updateImage(files)" />
             </div>
-          </n-step>
-          <n-step :title="user?.authenticated ? $t('petition_create.create_button') : $t('petition_create.email_title')">
+          </FormPage>
+          <FormPage :page="6" :current-page="currentPage">
+            <Nh2>{{ user?.authenticated ? $t('petition_create.create_button') : $t('petition_create.email_title') }}</Nh2>
             <!-- Only if not signed in, otherwise just show button -->
+            <!-- Include steps here with the validation status of the form -->
             <div ref="email" class="n-step-description full">
               <div v-if="!user?.authenticated">
                 <Np>{{ $t("petition_create.email_description") }}</Np>
                 <n-form-item path="email">
-                  <n-input ref="emailInput" v-model:value="petition.email" type="text" />
+                  <n-input ref="emailInput" v-model:value="petitionInput.creatorEmail" type="text" />
                 </n-form-item>
               </div>
               <!-- , { username: petition.email, callbackUrl: '/peition' }) -->
-              <n-button @click="handleCreatePetition()">
+              <n-button type="primary" @click="handleCreatePetition()">
                 {{ $t('petition_create.create_button') }}
               </n-button>
               <div v-if="formWarningMessages.length > 0">
                 <FormErrorList :errors="formWarningMessages" />
               </div>
             </div>
-          </n-step>
-        </n-steps>
-      </n-form>
-      <n-space class="navigation-buttons" justify="space-between">
-        <div class="left">
-          <n-button v-if="currentRef > 1" @click="prevStep()">
-            {{ $t("petition_create.nav_previous") }}
-          </n-button>
-        </div>
-        <div class="right">
-          <n-button v-if="currentRef < totalSteps" @click.prevent="nextStep()">
-            {{ $t("petition_create.nav_next") }}
-          </n-button>
-        </div>
-      </n-space>
+          </FormPage>
+        </n-form>
+      </FormPages>
     </div>
   </CustomThemeWrapper>
 </template>
-
-<style scoped>
-.main-content {
-    padding: 10px;
-    max-width: 600px;
-    margin: 0 auto;
-}
-.n-step-description.full {
-    min-height: 90vh;
-}
-
-.expand-text-box{
-  flex-grow: 2;
-}
-.navigation-buttons{
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    padding: 10px;
-}
-
-/* .n-step-description.title {
-  display: flex;
-  flex-direction: ver;
-} */
-</style>

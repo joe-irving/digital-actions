@@ -1,5 +1,10 @@
 import type { GlobalThemeOverrides } from 'naive-ui'
-import type { CustomStyleTheme } from '~/types'
+import type { inferRouterOutputs } from '@trpc/server'
+import type { AppRouter } from '~/server/trpc/routers'
+
+type RouterOutput = inferRouterOutputs<AppRouter>;
+
+type StyleOutput = RouterOutput['styleTheme']['get'];
 
 function lightenDarkenColor (col: string, amt: number) {
   let usePound = false
@@ -39,7 +44,7 @@ function hexToRgb (hex: string, opacity: number = 1) {
     : undefined
 }
 
-export const useCreateThemeOverrides = (theme: CustomStyleTheme) => {
+export const useCreateThemeOverrides = (theme: StyleOutput) => {
   const themeOverrides: GlobalThemeOverrides = {
     common: {
       fontFamily: theme.font || undefined,

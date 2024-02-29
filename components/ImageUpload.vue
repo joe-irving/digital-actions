@@ -11,7 +11,8 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['update:modelValue', 'change'])
+// const emit = defineEmits(['update:modelValue', 'change'])
+const emit = defineEmits<{(e: 'change', value: UploadFileInfo[]): void}>()
 
 const fileList = ref<UploadFileInfo[]>([])
 
