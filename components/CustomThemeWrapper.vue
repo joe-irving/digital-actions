@@ -58,7 +58,14 @@ onUnmounted(() => {
           >
             <n-space>
               <NuxtLink to="/">
-                <n-image v-if="theme?.logo" :src="theme?.logo?.url" width="64" height="64" />
+                <n-image
+                  v-if="theme?.logo"
+                  :src="theme?.logo?.url"
+                  preview-disabled
+                  :img-props="{
+                    class: 'max-h-12'
+                  }"
+                />
                 <Nh1 v-else>
                   {{ theme?.name }}
                 </Nh1>
