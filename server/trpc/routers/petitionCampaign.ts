@@ -104,7 +104,7 @@ export const petitionCampaign = router({
               some: {
                 userId: ctx.user?.id || '0',
                 type: {
-                  in: ['owner', 'read', 'write']
+                  in: ['owner', 'read', 'write', 'admin', 'approval']
                 }
               }
             }
@@ -184,7 +184,7 @@ export const petitionCampaign = router({
                 some: {
                   userId: ctx.user?.id || '0',
                   type: {
-                    in: ['owner', 'read', 'write']
+                    in: ['owner', 'read', 'write', 'admin', 'approval']
                   }
                 }
               }
@@ -234,7 +234,7 @@ export const petitionCampaign = router({
             some: {
               userId: ctx.user.id,
               type: {
-                in: ['read', 'write', 'owner', 'approval']
+                in: ['read', 'write', 'owner', 'approval', 'admin']
               }
             }
           }
@@ -372,7 +372,7 @@ export const petitionCampaign = router({
               some: {
                 userId: ctx.user?.id || 'NEVER',
                 type: {
-                  in: ['read', 'write', 'owner', 'approval']
+                  in: ['read', 'write', 'owner', 'approval', 'admin']
                 }
               }
             }
@@ -420,6 +420,7 @@ export const petitionCampaign = router({
         message: 'You need to be logged in to get user permissions'
       })
     }
+    // Can only get permissions of user that is logged in.
     return await ctx.prisma.petitionCampaignPermission.findMany({
       where: {
         userId: ctx.user.id,
@@ -467,7 +468,7 @@ export const petitionCampaign = router({
             userId: ctx.user.id,
             campaignId: input.id,
             type: {
-              in: ['write', 'owner']
+              in: ['write', 'owner', 'admin']
             }
           }
         }
