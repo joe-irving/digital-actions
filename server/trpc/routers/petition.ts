@@ -87,7 +87,7 @@ export const petition = router({
               some: {
                 userId: ctx.user?.id || '0',
                 type: {
-                  in: ['owner', 'read', 'write']
+                  in: ['owner', 'read', 'write', 'admin']
                 }
               }
             }
@@ -311,7 +311,7 @@ export const petition = router({
                 some: {
                   userId: ctx.user.id,
                   type: {
-                    in: ['owner', 'admin', 'approver', 'read']
+                    in: ['owner', 'admin', 'approval', 'read', 'write']
                   }
                 }
               }
@@ -374,14 +374,30 @@ export const petition = router({
     const petitionAllowed = await ctx.prisma.petition.findFirst({
       where: {
         id: input.id,
-        permissions: {
-          some: {
-            userId: ctx.user.id,
-            type: {
-              in: ['write', 'owner']
+        OR: [
+          {
+            permissions: {
+              some: {
+                userId: ctx.user.id,
+                type: {
+                  in: ['write', 'owner']
+                }
+              }
+            }
+          },
+          {
+            petitionCampaign: {
+              permissions: {
+                some: {
+                  userId: ctx.user.id,
+                  type: {
+                    in: ['owner', 'admin', 'approval', 'write']
+                  }
+                }
+              }
             }
           }
-        }
+        ]
       },
       select: {
         id: true,
@@ -445,6 +461,18 @@ export const petition = router({
           },
           {
             status: 'public'
+          },
+          {
+            petitionCampaign: {
+              permissions: {
+                some: {
+                  userId: ctx.user?.id || 'NEVER',
+                  type: {
+                    in: ['owner', 'admin', 'approval', 'read', 'write']
+                  }
+                }
+              }
+            }
           }
         ]
       },
@@ -530,6 +558,18 @@ export const petition = router({
           },
           {
             status: 'public'
+          },
+          {
+            petitionCampaign: {
+              permissions: {
+                some: {
+                  userId: ctx.user?.id || 'NEVER',
+                  type: {
+                    in: ['owner', 'admin', 'approval', 'read', 'write']
+                  }
+                }
+              }
+            }
           }
         ]
       },
@@ -598,7 +638,7 @@ export const petition = router({
           some: {
             userId: ctx.user.id,
             type: {
-              in: ['approval', 'owner']
+              in: ['approval', 'owner', 'admin']
             }
           }
         },
@@ -657,6 +697,7 @@ export const petition = router({
       })
     }
     // write in approved and link in tag and petition
+    // This will error if action network returns error.
     const petition = await ctx.prisma.petition.update({
       where: {
         id: input.petitionId
