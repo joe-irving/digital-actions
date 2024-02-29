@@ -25,7 +25,7 @@ useSeoMeta({
 
 <template>
   <CustomThemeWrapper :theme="petitionCampaign.styleTheme">
-    <n-space class="mt-6" vertical>
+    <n-space class="mt-6 pt-16" vertical>
       <Nh1 class="text-center">
         {{ petitionCampaign?.title }}
       </Nh1>

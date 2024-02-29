@@ -1,12 +1,19 @@
 <script setup lang="ts">
 // import { PropType } from 'nuxt/dist/app/compat/capi'
-import type { NominatimLocationInfo } from '~/types'
+import type { inferRouterInputs } from '@trpc/server'
+// import type { NominatimLocationInfo } from '~/types'
+import type { AppRouter } from '~/server/trpc/routers'
+// import type { NominatimLocationInfo } from '~/types'
+
+type RouterInput = inferRouterInputs<AppRouter>;
+
+type Location = RouterInput['petition']['create']['location'];
 
 const emit = defineEmits(['close'])
 
 const props = defineProps({
   locationValue: {
-    type: Object as PropType<NominatimLocationInfo | null>,
+    type: Object as PropType<Location | null>,
     default: () => null
   }
 })

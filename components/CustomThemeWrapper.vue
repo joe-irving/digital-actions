@@ -1,10 +1,16 @@
 <script setup lang="ts">
-import type { CustomStyleTheme } from '~/types'
+// import type { CustomStyleTheme } from '~/types'
+import type { inferRouterOutputs } from '@trpc/server'
+import type { AppRouter } from '~/server/trpc/routers'
+
+type RouterOutput = inferRouterOutputs<AppRouter>;
+
+type StyleOutput = RouterOutput['styleTheme']['get'];
 
 const props = defineProps({
   theme: {
-    type: Object as PropType<CustomStyleTheme | null>,
-    default: () => null
+    type: Object as PropType<StyleOutput | undefined>,
+    default: () => undefined
   }
 })
 
@@ -49,12 +55,13 @@ onUnmounted(() => {
     <n-space vertical size="large">
       <n-layout @scroll="console.log">
         <n-layout-header>
-          <n-space
+          <div
             :class="{
               '-translate-y-16': scrollDown
             }"
-            class="p-2 shadow-md rounded-none fixed z-40 w-full h-16 transition-transform duration-400"
+            class="p-2 shadow-md rounded-none fixed z-40 w-full h-16 transition-transform duration-400 flex justify-between"
             justify="space-between"
+            :style="`background-color: var(--n-color)`"
           >
             <n-space>
               <NuxtLink to="/">
@@ -75,12 +82,12 @@ onUnmounted(() => {
               <slot name="menu" />
               <ProfileBox />
             </n-space>
-          </n-space>
+          </div>
         </n-layout-header>
         <n-layout-content class="h-screen" :native-scrollbar="false" @scroll="handleScroll()">
-          <div ref="pageContent" class="pt-16">
-            <slot />
-          </div>
+          <!-- <div ref="pageContent" class="min-h-screen pt-16"> -->
+          <slot />
+          <!-- </div> -->
         </n-layout-content>
       </n-layout>
     </n-space>
