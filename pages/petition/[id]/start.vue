@@ -12,6 +12,7 @@ type PetitionInput = RouterInput['petition']['create'];
 const { $client, $i18n } = useNuxtApp()
 // const { signIn } = useAuth()
 const route = useRoute()
+const sourceCode = route.query.source?.toString() || route.query.utm_source?.toString() || route.query.source_code?.toString() || undefined
 // const { $i18n } = useNuxtApp()
 
 // const { data: user } = $client.user.me.useQuery()
@@ -36,7 +37,8 @@ const petitionInput = ref<PetitionInput>({
   content: petitionCampaign.value?.petitionContentTemplate || '',
   themes: [],
   location: undefined,
-  creatorEmail: undefined
+  creatorEmail: undefined,
+  sourceCode
 })
 
 const currentPage = ref(0)
@@ -144,6 +146,7 @@ definePageMeta({
 <template>
   <CustomThemeWrapper :theme="styleTheme">
     <div class="min-h-screen flex flex-col pt-16 min-h-screen justify-between">
+      {{ petitionInput }}
       <FormPages
         :current-page="currentPage"
         :show-prev="showPrev"

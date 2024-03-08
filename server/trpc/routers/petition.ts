@@ -65,7 +65,8 @@ export const petition = router({
     }).or(z.string().min(0).max(0)).or(z.null())),
     themes: z.array(z.number().int()),
     location: z.optional(LocationSchema),
-    target: z.string().max(100)
+    target: z.string().max(100),
+    sourceCode: z.string().max(1000).optional()
   })).mutation(async ({ input, ctx }) => {
     const creatorEmail = !input.creatorEmail || input.creatorEmail === '' ? ctx.user?.email : input.creatorEmail
     if (!creatorEmail) {
@@ -186,6 +187,7 @@ export const petition = router({
         content: sanitizeHtml(input.content),
         targetName: input.target,
         status: 'request_approval',
+        sourceCode: input.sourceCode,
         sharingInformation: {
           create: {
             whatsappShareText: '',
@@ -772,6 +774,7 @@ export const petition = router({
         approved: true,
         status: true,
         targetName: true,
+        sourceCode: true,
         image: {
           select: {
             id: true,
