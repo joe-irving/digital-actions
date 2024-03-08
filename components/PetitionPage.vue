@@ -11,6 +11,7 @@ const props = defineProps({
 const { data: petition } = await $client.petition.getPublic.useQuery({
   id: props.id
 })
+const { data: theme } = petition.value?.petitionCampaign?.styleThemeId ? await $client.styleTheme.get.useQuery(petition.value?.petitionCampaign?.styleThemeId) : { data: undefined }
 // const { data: signatures } = $client.petition.signatureCount.useQuery({
 //   id: props.id
 // })
@@ -27,7 +28,7 @@ useSeoMeta({
 </script>
 
 <template>
-  <CustomThemeWrapper :theme="petition?.petitionCampaign?.styleTheme">
+  <CustomThemeWrapper :theme="theme">
     <n-space justify="center" class="mt-10 mb-10 pt-16">
       <div v-if="!success" class="flex justify-center gap-10 items-start">
         <n-space class="max-w-lg border-0 sm:border shadow-none sm:shadow-md rounded p-4">
