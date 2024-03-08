@@ -41,7 +41,8 @@ const campaignEdit = ref<{
   groupName: string,
   defaultImage: UploadFileInfo[],
   limitLocationCountry: string[],
-  slug: string
+  slug: string,
+  petitionContentTemplate: string
 }>({
   title: props.campaign.title,
   description: props.campaign.description || '',
@@ -49,7 +50,8 @@ const campaignEdit = ref<{
   groupName: props.campaign.groupName || '',
   defaultImage: [],
   limitLocationCountry: props.campaign.limitLocationCountry ? props.campaign.limitLocationCountry.split(',') : [],
-  slug: props.campaign.slug
+  slug: props.campaign.slug,
+  petitionContentTemplate: props.campaign.petitionContentTemplate || ''
 })
 
 const newTheme = ref('')
@@ -140,7 +142,8 @@ const updateCampaign = async () => {
         }
       : undefined,
     limitLocationCountry: campaignEdit.value.limitLocationCountry,
-    slug: campaignEdit.value.slug
+    slug: campaignEdit.value.slug,
+    petitionContentTemplate: (campaignEdit.value.petitionContentTemplate && campaignEdit.value.petitionContentTemplate !== '') ? campaignEdit.value.petitionContentTemplate : undefined
   })
   if (updatedPetition) {
     emit('update', updatedPetition)
@@ -202,6 +205,13 @@ const updateCampaign = async () => {
       </n-form-item>
       <n-form-item path="limitLocationCountry" :label="$t('pc_manage.limit_country')">
         <n-select v-model:value="campaignEdit.limitLocationCountry" filterable :options="countryOptions" multiple />
+      </n-form-item>
+      <n-form-item path="petitionContentTemplate" :label="$t('pc_manage.petition_campaign_template')">
+        <client-only>
+          <div class="w-full justify-stretch">
+            <TiptapEditor v-model="campaignEdit.petitionContentTemplate" />
+          </div>
+        </client-only>
       </n-form-item>
       <n-button @click.prevent="handleUpdate">
         {{ $t('pc_manage.update_pc') }}

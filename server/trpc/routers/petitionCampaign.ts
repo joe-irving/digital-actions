@@ -116,6 +116,7 @@ export const petitionCampaign = router({
         id: true,
         title: true,
         limitLocationCountry: true,
+        petitionContentTemplate: true,
         themes: {
           select: {
             id: true,
@@ -346,7 +347,8 @@ export const petitionCampaign = router({
             }
           }
         },
-        styleThemeId: true
+        styleThemeId: true,
+        petitionContentTemplate: true
       }
     })
     if (!campaign) {
@@ -443,7 +445,8 @@ export const petitionCampaign = router({
     status: z.enum(['public', 'draft']).optional(),
     slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/gm, {
       message: 'That is not a valid slug format'
-    }).optional()
+    }).optional(),
+    petitionContentTemplate: z.optional(z.string().max(10000))
   })).mutation(async ({ ctx, input }) => {
     if (!ctx.user) {
       throw new TRPCError({
@@ -567,7 +570,8 @@ export const petitionCampaign = router({
         limitLocationCountry: input.limitLocationCountry ? input.limitLocationCountry.join(',') : undefined,
         defaultPetitionImageId: image ? image.id : undefined,
         status: input.status,
-        slug: input.slug
+        slug: input.slug,
+        petitionContentTemplate: input.petitionContentTemplate
       },
       select: {
         title: true,
@@ -577,6 +581,7 @@ export const petitionCampaign = router({
         limitLocationCountry: true,
         status: true,
         slug: true,
+        petitionContentTemplate: true,
         defaultPetitionImage: {
           select: {
             url: true,

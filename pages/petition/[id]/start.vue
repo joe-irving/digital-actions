@@ -33,7 +33,7 @@ const petitionInput = ref<PetitionInput>({
   petitionCampaign: petitionCampaign.value?.id || 0,
   title: '',
   target: '',
-  content: '',
+  content: petitionCampaign.value?.petitionContentTemplate || '',
   themes: [],
   location: undefined,
   creatorEmail: undefined

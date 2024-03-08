@@ -13,8 +13,8 @@ type Location = RouterInput['petition']['create']['location'];
 
 const props = defineProps({
   modelValue: {
-    type: Object as PropType<Location | null>,
-    default: () => null
+    type: Object as PropType<Location | undefined>,
+    default: () => undefined
   },
   limitCountry: {
     type: String,
@@ -38,7 +38,7 @@ const locationSearchOptions = computed((): AutoCompleteOption[] => {
 
 const isClear = computed(() => {
   if (!locationSearchQuery.value || locationSearchQuery.value === '') {
-    emit('update:modelValue', null)
+    emit('update:modelValue', undefined)
     return true
   }
   return false
@@ -57,17 +57,17 @@ const lookupNominatim = async () => {
   })
   locationSearch.value = lookup.value || []
   if (!locationSearchQuery.value || locationSearchQuery.value === '') {
-    emit('update:modelValue', null)
+    emit('update:modelValue', undefined)
   }
 }
 
 const optionSelected = (value: string) => {
   const selectedLocation = locationSearch.value.find(loc => loc?.place_id === parseInt(value))
-  emit('update:modelValue', selectedLocation || null)
+  emit('update:modelValue', selectedLocation || undefined)
 }
 
 const locationClosed = () => {
-  emit('update:modelValue', null)
+  emit('update:modelValue', undefined)
   locationSearchQuery.value = ''
   locationSearch.value = []
 }
