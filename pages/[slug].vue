@@ -6,6 +6,8 @@ const { data: slug } = await $client.slug.get.useQuery({
   slug: route.params.slug.toString()
 })
 
+// TODO better 404 page
+
 definePageMeta({
   auth: false,
   layout: 'public'

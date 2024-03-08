@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import type { PetitionListItem } from '~/types'
+import type { inferRouterOutputs } from '@trpc/server'
+import type { AppRouter } from '~/server/trpc/routers'
+
+type RouterOutput = inferRouterOutputs<AppRouter>;
+
+type PetitionListItem = RouterOutput['petitionCampaign']['getPublicList'][number];
 
 defineProps({
   petition: {

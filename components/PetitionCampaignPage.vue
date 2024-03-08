@@ -7,9 +7,9 @@ const props = defineProps({
 })
 
 const { $client } = useNuxtApp()
-const { data: petitionCampaign } = await $client.petitionCampaign.getPublic.useQuery({ id: props.id, includeStyle: true })
+const { data: petitionCampaign } = await $client.petitionCampaign.getPublic.useQuery({ id: props.id })
+const { data: theme } = petitionCampaign.value?.styleThemeId ? await $client.styleTheme.get.useQuery(petitionCampaign.value?.styleThemeId) : { data: undefined }
 const { data: petitions } = $client.petitionCampaign.getPublicList.useQuery({ id: props.id })
-// TODO handle not found
 
 definePageMeta({
   layout: 'public',
@@ -24,7 +24,7 @@ useSeoMeta({
 </script>
 
 <template>
-  <CustomThemeWrapper :theme="petitionCampaign.styleTheme">
+  <CustomThemeWrapper :theme="theme">
     <n-space class="mt-6 pt-16" vertical>
       <Nh1 class="text-center">
         {{ petitionCampaign?.title }}

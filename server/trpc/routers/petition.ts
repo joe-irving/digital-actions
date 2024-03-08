@@ -516,6 +516,7 @@ export const petition = router({
             description: true,
             petitionEndpointURL: true,
             tagPrefix: true,
+            styleThemeId: true,
             styleTheme: true,
             groupName: true,
             actionNetworkAllTag: true,
