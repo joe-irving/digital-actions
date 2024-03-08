@@ -77,6 +77,17 @@ const displayPetitions = groupedPetitions.filter(s => !!s.petitions.length)
                       </template>
                       {{ petition.petitionCampaign.title }}
                     </n-tag>
+                    <n-tag v-if="petition.permissions?.length > 0" round>
+                      {{ petition.permissions[0].user.name || petition.permissions[0].user.email }}
+                      <template v-if="petition.permissions[0].user.image" #avatar>
+                        <n-avatar
+                          :src="petition.permissions[0].user.image"
+                        />
+                      </template>
+                      <template v-else #icon>
+                        <NaiveIcon name="material-symbols:person" />
+                      </template>
+                    </n-tag>
                   </n-space>
                 </div>
                 <div

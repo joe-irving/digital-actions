@@ -722,19 +722,46 @@ export const petition = router({
       })
     }
     return await ctx.prisma.petition.findMany({
-      where: {
-        petitionCampaign: {
-          id: input.campaignId,
-          permissions: {
-            some: {
-              userId: ctx.user.id,
-              type: {
-                in: input.limitPermissions || ['read', 'write', 'owner', 'admin', 'approval']
+      where: input.campaignId
+        ? {
+            petitionCampaign: {
+              id: input.campaignId,
+              permissions: {
+                some: {
+                  userId: ctx.user.id,
+                  type: {
+                    in: input.limitPermissions || ['read', 'write', 'owner', 'admin', 'approval']
+                  }
+                }
               }
             }
           }
-        }
-      },
+        : {
+            OR: [
+              {
+                petitionCampaign: {
+                  permissions: {
+                    some: {
+                      userId: ctx.user.id,
+                      type: {
+                        in: input.limitPermissions || ['read', 'write', 'owner', 'admin', 'approval']
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                permissions: {
+                  some: {
+                    userId: ctx.user.id,
+                    type: {
+                      in: input.limitPermissions || ['read', 'write', 'owner', 'admin', 'approval']
+                    }
+                  }
+                }
+              }
+            ]
+          },
       select: {
         id: true,
         created: true,
@@ -770,6 +797,20 @@ export const petition = router({
           select: {
             id: true,
             title: true
+          }
+        },
+        permissions: {
+          where: {
+            type: 'owner'
+          },
+          select: {
+            user: {
+              select: {
+                name: true,
+                image: true,
+                email: true
+              }
+            }
           }
         }
       }

@@ -4,7 +4,10 @@ import type { AppRouter } from '~/server/trpc/routers'
 
 type RouterOutput = inferRouterOutputs<AppRouter>;
 
-type PetitionListItem = RouterOutput['petitionCampaign']['getPublicList'][number];
+type PetitionListItemPublic = RouterOutput['petitionCampaign']['getPublicList'][number];
+type PetitionListItemManage = RouterOutput['petition']['userList'][number];
+
+type PetitionListItem = PetitionListItemManage & PetitionListItemPublic
 
 defineProps({
   petition: {
