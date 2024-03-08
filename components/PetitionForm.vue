@@ -4,6 +4,9 @@ import type { FormValidationError, FormRules, FormItemRule, FormInst } from 'nai
 const i18n = useI18n()
 const countries = useGetCountryList()
 
+const route = useRoute()
+const sourceCode = route.query.source?.toString() || route.query.utm_source?.toString() || route.query.source_code?.toString() || null
+
 const emit = defineEmits(['success'])
 
 const countryOptions = ref(countries.map((c) => { return { label: c.name, value: c.iso2 } }))
@@ -137,7 +140,12 @@ const signPetiton = async () => {
     add_tags: [
       props.tagName,
       ...props.tagList
-    ]
+    ],
+    'action_network:referrer_data': sourceCode
+      ? {
+          source: sourceCode
+        }
+      : undefined
   }
   const { error } = await useFetch(props.endpoint, {
     method: 'POST',
