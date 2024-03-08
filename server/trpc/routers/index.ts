@@ -4,7 +4,7 @@ import { themesRouter } from './themesRouter'
 import { targetList } from './targetList'
 import { tweetCampaign } from './tweetCampaign'
 import { tweetRouter } from './tweets'
-import { petitionCampaign } from './petitionCampaign'
+import { petitionCampaignRouter } from './petitionCampaign'
 import { petition } from './petition'
 import { slugRouter } from './slug'
 import { actionNetwork } from './actionNetwork'
@@ -16,7 +16,7 @@ export const appRouter = router({
   tweetCampaign,
   targetList,
   tweetRouter,
-  petitionCampaign,
+  petitionCampaign: petitionCampaignRouter,
   petition,
   slug: slugRouter,
   actionNetwork,

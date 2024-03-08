@@ -4,7 +4,7 @@ import { publicProcedure, router } from '../trpc'
 import { createActionNetworkPetition, createActionNetworkTags, getSignatureCount } from '~/server/trpc/utils/actionNetwork'
 import { PermissionLevel } from '~/types'
 
-export const petitionCampaign = router({
+export const petitionCampaignRouter = router({
   create: publicProcedure.input(z.object({
     title: z.string(),
     tagPrefix: z.string(),
