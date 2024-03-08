@@ -179,7 +179,8 @@
     "an_res_4_title": "Remove tag",
     "an_res_4": "Add a step to remove the '{tag}' tag",
     "themes": "Themes",
-    "about_petition_campaign": "Here are all your petition campaigns"
+    "about_petition_campaign": "Here are all your petition campaigns",
+    "petition_campaign_template": "Include a template for people to start from for creating petitions"
   },
   "permission_types": {
     "read": "Read",

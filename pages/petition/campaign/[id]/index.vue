@@ -68,7 +68,8 @@ const campaignEdit = computed(() => {
         groupName: campaign.value.groupName,
         defaultImage: campaign.value.defaultPetitionImage,
         limitLocationCountry: campaign.value.limitLocationCountry,
-        slug: campaign.value.slug
+        slug: campaign.value.slug,
+        petitionContentTemplate: campaign.value.petitionContentTemplate
       }
     : undefined
 })

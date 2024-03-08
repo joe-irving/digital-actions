@@ -106,6 +106,7 @@ export interface PetitionCampaignEdit {
   } | null,
   limitLocationCountry: string | null;
   slug: string;
+  petitionContentTemplate: string | undefined | null;
 }
 
 export type PermissionType = 'owner' | 'read' | 'write' | 'approval' | 'admin'
