@@ -180,7 +180,8 @@
     "an_res_4": "Add a step to remove the '{tag}' tag",
     "themes": "Themes",
     "about_petition_campaign": "Here are all your petition campaigns",
-    "petition_campaign_template": "Include a template for people to start from for creating petitions"
+    "petition_campaign_template": "Include a template for people to start from for creating petitions",
+    "petition_theme_form_rule": "Theme's must be only letters, numbers and spaces"
   },
   "permission_types": {
     "read": "Read",
