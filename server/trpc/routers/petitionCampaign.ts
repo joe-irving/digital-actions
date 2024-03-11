@@ -435,7 +435,9 @@ export const petitionCampaignRouter = router({
     id: z.number().int(),
     title: z.string().max(200).optional(),
     description: z.string().max(1000).optional(),
-    themes: z.array(z.string()).optional(),
+    themes: z.array(z.string().regex(/^[A-Za-z0-9 _]*[A-Za-z0-9][A-Za-z0-9 _]*$/gm, {
+      message: 'Themes must only have letters, numbers and spaces'
+    })).optional(), // Make sure themes are formatted okay with only chars, numbers and spaces
     groupName: z.string().max(200).optional(),
     image: z.object({
       url: z.string(),
@@ -454,16 +456,6 @@ export const petitionCampaignRouter = router({
         message: 'You need to be logged in to modify petition campaigns'
       })
     }
-    // allowed?
-    // const permissions = await ctx.prisma.petitionCampaignPermission.findFirst({
-    //   where: {
-    //     userId: ctx.user.id,
-    //     campaignId: input.id,
-    //     type: {
-    //       in: ['write', 'owner']
-    //     }
-    //   }
-    // })
 
     const oldCampaign = await ctx.prisma.petitionCampaign.findFirst({
       where: {
@@ -478,7 +470,8 @@ export const petitionCampaignRouter = router({
         }
       },
       include: {
-        themes: true
+        themes: true,
+        actionNetworkCredential: true
       }
     })
     if (!oldCampaign) {
@@ -524,8 +517,15 @@ export const petitionCampaignRouter = router({
           status: 'suggested'
         }
       }))
+      // Add tag to action network here
     }
     const themeConnect = [...newThemes, ...existingThemes]
+    for (const newlyConnectedTheme of themeConnect) {
+      if (oldCampaign.actionNetworkCredential?.apiKey) {
+        await createActionNetworkTags(oldCampaign.actionNetworkCredential?.apiKey, `[${oldCampaign.tagPrefix}] Theme - ${newlyConnectedTheme.title}`)
+      }
+    }
+
     // Sort out image
     const image = input.image
       ? await ctx.prisma.file.create({

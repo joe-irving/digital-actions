@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { FormRules, FormValidationError, FormInst, UploadFileInfo } from 'naive-ui'
+import type { FormRules, FormValidationError, FormInst, UploadFileInfo, FormItemInst } from 'naive-ui'
 import type { PetitionCampaignEdit } from '~/types'
 
 // interface CampaignSharing {
@@ -34,6 +34,7 @@ const emit = defineEmits(['update'])
 
 const { data: themeRes } = await $client.theme.available.useQuery()
 const themes = ref(themeRes.value || [])
+
 const campaignEdit = ref<{
   title: string,
   description: string,
@@ -58,11 +59,16 @@ const newTheme = ref('')
 const formWarningMessages = ref<FormValidationError[]>([])
 const formSuccess = ref(false)
 const formRef = ref<FormInst | null>(null)
+const themeTags = ref<FormItemInst | null>(null)
 
 const themeOptions = computed(() => {
   const filteredThemes = themes.value.filter(t => t.title.slice(0, newTheme.value.length).toLowerCase() === newTheme.value.toLowerCase())
   const stringThemes = filteredThemes.map(t => t.title)
-  return [...stringThemes, newTheme.value.trim()].filter(t => !campaignEdit.value.themes.map(th => th.toLowerCase()).includes(t.toLowerCase()))
+  const newThemeValid = /^[A-Za-z0-9 _]*[A-Za-z0-9][A-Za-z0-9 _]*$/gm.test(newTheme.value)
+  if (newThemeValid) {
+    stringThemes.push(newTheme.value.trim())
+  }
+  return stringThemes.filter(t => !campaignEdit.value.themes.map(th => th.toLowerCase()).includes(t.toLowerCase()))
 })
 
 const formRules = ref<FormRules>({
@@ -97,6 +103,15 @@ const formRules = ref<FormRules>({
           })
         }
       })
+    }
+  },
+  themes: {
+    trigger: ['input', 'blur'],
+    validator (_rule, _value: string) {
+      if (!/^[A-Za-z0-9 _]*[A-Za-z0-9][A-Za-z0-9 _]*$/gm.test(newTheme.value)) {
+        return new Error(i18n.t('pc_manage.petition_theme_form_rule'))
+      }
+      return true
     }
   },
   description: {
@@ -162,7 +177,7 @@ const updateCampaign = async () => {
       <n-form-item path="slug" :label="$t('pc_manage.slug')" required>
         <SlugInput v-model="campaignEdit.slug" />
       </n-form-item>
-      <n-form-item path="themes" :label="$t('pc_manage.themes_available')">
+      <n-form-item ref="themeTags" path="themes" :label="$t('pc_manage.themes_available')" @keyup="() => themeTags?.validate()">
         <n-dynamic-tags v-model:value="campaignEdit.themes">
           <template #input="{ submit, deactivate }">
             <n-auto-complete

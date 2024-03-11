@@ -15,6 +15,10 @@ const props = defineProps({
   actionNetworkCredName: {
     type: String,
     required: true
+  },
+  themes: {
+    type: Array as PropType<string[]>,
+    required: true
   }
 })
 
@@ -33,6 +37,7 @@ const makeCustomFieldClip = (fieldName: string) => {
       <ActionNetworkTagExplainer :tag="mainTag" :description="$t('pc_manage.action_network_main_tag_description')" />
       <ActionNetworkTagExplainer :tag="responseTag" :description="$t('pc_manage.action_network_response_tag_description')" />
       <ActionNetworkTagExplainer :tag="'['+tagPrefix+'] 12'" :description="$t('pc_manage.action_network_petition_tag_description')" />
+      <ActionNetworkTagExplainer v-for="theme in themes" :key="theme" :tag="`[${tagPrefix}] Theme - ${theme}`" :description="$t('pc_manage.action_network_theme_tag_description', { theme })" />
     </n-space>
     <Nh2>{{ $t("pc_manage.an_auto_response") }}</Nh2>
     <Np>{{ $t("pc_manage.an_auto_response_explainer") }}</Np>

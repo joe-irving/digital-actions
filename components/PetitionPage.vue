@@ -19,6 +19,12 @@ const shareUrl = ref(useShareUrl(petition.value?.slug || ''))
 
 const success = ref(false)
 
+const tagList = ref<string[]>([petition.value?.petitionCampaign?.actionNetworkAllTag || '', petition.value?.petitionCampaign?.actionNetworkResponseTag || ''])
+
+for (const tagName of (petition.value?.petitionThemes || [])) {
+  tagList.value.push(`[${petition.value?.petitionCampaign?.tagPrefix}] Theme - ${tagName.title}`)
+}
+
 // Set SEO Meta
 useSeoMeta({
   title: petition.value?.title,
@@ -41,7 +47,7 @@ useSeoMeta({
               :pc-endpoint="(petition?.petitionCampaign?.petitionEndpointURL || '') + '/signatures'"
               :tag-name="`[${petition?.petitionCampaign?.tagPrefix}]: ${petition?.id}`"
               :tag-prefix="petition?.petitionCampaign?.tagPrefix"
-              :tag-list="[petition?.petitionCampaign?.actionNetworkAllTag || '', petition?.petitionCampaign?.actionNetworkResponseTag || '']"
+              :tag-list="tagList"
               :group-name="petition?.petitionCampaign?.groupName || ''"
               :title="petition?.title || ''"
               :url="shareUrl"
@@ -58,7 +64,7 @@ useSeoMeta({
               :pc-endpoint="(petition?.petitionCampaign?.petitionEndpointURL || '') + '/signatures'"
               :tag-name="`[${petition?.petitionCampaign?.tagPrefix}]: ${petition?.id}`"
               :tag-prefix="petition?.petitionCampaign?.tagPrefix"
-              :tag-list="[petition?.petitionCampaign?.actionNetworkAllTag || '', petition?.petitionCampaign?.actionNetworkResponseTag || '']"
+              :tag-list="tagList"
               :group-name="petition?.petitionCampaign?.groupName || ''"
               :title="petition?.title || ''"
               :url="shareUrl"

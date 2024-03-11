@@ -166,6 +166,7 @@
     "action_network_main_tag_description": "This tag is added on Action Network to every person who signs a petition in this campaign.",
     "action_network_response_tag_description": "This tag is added specifically to trigger a ladder to send the auto-response when people sign a petition",
     "action_network_petition_tag_description": "A tag is added for each new petition, with the tag prefix for this action and the id of the petition (which should be a number)",
+    "action_network_theme_tag_description": "This tag is added to anyone who signs a petition with the theme '{theme}'",
     "an_auto_response": "Email Auto Response",
     "an_auto_response_explainer": "When someone signs a petitions, an automatic response should be sent with some information on how to share the petition. This is set up in Action Network by using the ladders feature.",
     "an_res_1_title": "Create a ladder",
@@ -180,7 +181,8 @@
     "an_res_4": "Add a step to remove the '{tag}' tag",
     "themes": "Themes",
     "about_petition_campaign": "Here are all your petition campaigns",
-    "petition_campaign_template": "Include a template for people to start from for creating petitions"
+    "petition_campaign_template": "Include a template for people to start from for creating petitions",
+    "petition_theme_form_rule": "Theme's must be only letters, numbers and spaces"
   },
   "permission_types": {
     "read": "Read",
