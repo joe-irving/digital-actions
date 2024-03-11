@@ -517,12 +517,15 @@ export const petitionCampaignRouter = router({
           status: 'suggested'
         }
       }))
-      if (oldCampaign.actionNetworkCredential?.apiKey) {
-        await createActionNetworkTags(oldCampaign.actionNetworkCredential?.apiKey, `[${oldCampaign.tagPrefix}] Theme - ${newTheme}`)
-      }
       // Add tag to action network here
     }
     const themeConnect = [...newThemes, ...existingThemes]
+    for (const newlyConnectedTheme of themeConnect) {
+      if (oldCampaign.actionNetworkCredential?.apiKey) {
+        await createActionNetworkTags(oldCampaign.actionNetworkCredential?.apiKey, `[${oldCampaign.tagPrefix}] Theme - ${newlyConnectedTheme.title}`)
+      }
+    }
+
     // Sort out image
     const image = input.image
       ? await ctx.prisma.file.create({
