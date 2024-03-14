@@ -58,7 +58,7 @@ const menuOptions = ref<MenuOption[]>([
         </n-space>
       </n-layout-sider>
       <n-layout class="h-screen" :native-scrollbar="false">
-        <n-dialog-provider><slot /></n-dialog-provider>
+        <n-dialog-provider><NewUserFormWrapper><slot /></NewUserFormWrapper></n-dialog-provider>
       </n-layout>
     </n-layout>
   </n-space>

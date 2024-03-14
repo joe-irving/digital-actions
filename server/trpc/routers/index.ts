@@ -1,5 +1,5 @@
 import { router } from '../trpc'
-import { user } from './userRouter'
+import { userRouter } from './user'
 import { themesRouter } from './themesRouter'
 import { targetList } from './targetList'
 import { tweetCampaign } from './tweetCampaign'
@@ -12,7 +12,7 @@ import { styleThemeRouter } from './styleTheme'
 import { petitionCampaignPermission } from './petitionCampaignPermission'
 
 export const appRouter = router({
-  user,
+  user: userRouter,
   tweetCampaign,
   targetList,
   tweetRouter,

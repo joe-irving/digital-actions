@@ -199,5 +199,13 @@
     "add": "Add",
     "email": "Email address of collaborator",
     "email_used": "That person is already a collaborator"
+  },
+  "user": {
+    "no_details": "We are missing some details, please fill them out below:",
+    "name_label": "Your name",
+    "phone_label": "Your mobile phone number",
+    "country_label": "Your country",
+    "post_code_label": "Your post code",
+    "update_button": "Update"
   }
 }
