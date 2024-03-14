@@ -146,7 +146,6 @@ definePageMeta({
 <template>
   <CustomThemeWrapper :theme="styleTheme">
     <div class="min-h-screen flex flex-col pt-16 min-h-screen justify-between">
-      {{ petitionInput }}
       <FormPages
         :current-page="currentPage"
         :show-prev="showPrev"
