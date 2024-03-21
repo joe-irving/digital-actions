@@ -62,7 +62,7 @@ const createShareDialog = () => {
         :status="petition.status"
         :petition-id="petition.id"
         :petition-campaign-id="petition.petitionCampaignId"
-        @update="(status) => {petition?.status ? petition.status = status : null}"
+        @update="(status: string) => {petition?.status ? petition.status = status : null}"
       />
       <template #header>
         <n-breadcrumb>
