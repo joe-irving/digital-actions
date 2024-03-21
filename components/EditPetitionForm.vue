@@ -1,7 +1,14 @@
 <script setup lang="ts">
 import type { SelectOption, FormRules, FormItemRule, FormValidationError, FormInst, UploadFileInfo } from 'naive-ui'
 import { TRPCClientError } from '@trpc/client'
+import type { inferRouterOutputs } from '@trpc/server'
 import type { NominatimLocationInfo } from '~/types'
+import type { AppRouter } from '~/server/trpc/routers'
+
+type RouterOutput = inferRouterOutputs<AppRouter>;
+
+type PetitionOutput = RouterOutput['petition']['getManage'];
+type PetitionCampaignOutput = RouterOutput['petitionCampaign']['getPublic'];
 
 const i18n = useI18n()
 const { $client } = useNuxtApp()
@@ -13,6 +20,14 @@ interface themeType {
 }
 
 const props = defineProps({
+  petition: {
+    type: Object as PropType<PetitionOutput>,
+    required: true
+  },
+  petitionCampaign: {
+    type: Object as PropType<PetitionCampaignOutput>,
+    required: true
+  },
   id: {
     type: Number,
     default: 0
@@ -54,7 +69,7 @@ const emit = defineEmits(['update'])
 
 const formRef = ref<FormInst | null>(null)
 
-const themeOptions = ref(props.availableThemes.map((t): SelectOption => { return { label: t.title, value: t.id } }))
+const themeOptions = ref((props.petitionCampaign?.themes || []).map((t): SelectOption => { return { label: t.title, value: t.id } }))
 const formWarningMessages = ref<FormValidationError[]>([])
 const formSuccess = ref(false)
 
@@ -86,7 +101,7 @@ const formRules = ref<FormRules>({
   }
 })
 
-const petition = ref<{
+const petitionUpdate = ref<{
   title: string,
   content: string,
   image: UploadFileInfo[],
@@ -94,12 +109,12 @@ const petition = ref<{
   location: NominatimLocationInfo | null,
   target: string
 }>({
-  title: props.title,
-  content: props.content,
+  title: props.petition.title,
+  content: props.petition.content,
   image: [],
-  themes: props.themes.map(t => t.id),
+  themes: props.petition.petitionThemes.map(t => t.id),
   location: null,
-  target: props.targetName
+  target: props.petition.targetName || ''
 })
 
 const savePetition = () => {
@@ -114,16 +129,16 @@ const savePetition = () => {
   })
 }
 const updatePetition = async () => {
-  if (props.id === 0) {
+  if (props.petition.id === 0) {
     throw new Error('No petition id')
   }
   try {
     const updatedPetition = await $client.petition.update.mutate({
-      id: props.id,
-      title: petition.value.title,
-      content: petition.value.content,
-      target: petition.value.target,
-      themes: petition.value.themes
+      id: props.petition.id,
+      title: petitionUpdate.value.title,
+      content: petitionUpdate.value.content,
+      target: petitionUpdate.value.target,
+      themes: petitionUpdate.value.themes
     })
     // emit update to parent
     emit('update', updatedPetition)
@@ -143,31 +158,31 @@ const updatePetition = async () => {
 </script>
 
 <template>
-  <n-form ref="formRef" :rules="formRules" :model="petition" size="large">
+  <n-form ref="formRef" :rules="formRules" :model="petitionUpdate" size="large">
     <n-form-item
       path="title"
       :label="$t('petition_create.title')"
     >
       <n-input
-        v-model:value="petition.title"
+        v-model:value="petitionUpdate.title"
         type="text"
         :placeholder="$t('petition_create.title_placeholder')"
       />
     </n-form-item>
     <n-form-item path="target" :label="$t('petition_create.target_title')">
       <n-input
-        v-model:value="petition.target"
+        v-model:value="petitionUpdate.target"
         type="text"
         :placeholder="$t('petition_create.target_placeholder')"
       />
     </n-form-item>
     <n-form-item path="themes" :label="$t('petition_create.theme_title')">
-      <n-select v-model:value="petition.themes" multiple :options="themeOptions" />
+      <n-select v-model:value="petitionUpdate.themes" multiple :options="themeOptions" />
     </n-form-item>
     <n-form-item path="content" :label="$t('petition.content_of_petition')">
       <client-only>
         <div class="w-full justify-stretch">
-          <TiptapEditor v-model="petition.content" />
+          <TiptapEditor v-model="petitionUpdate.content" />
         </div>
       </client-only>
     </n-form-item>

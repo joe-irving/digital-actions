@@ -284,14 +284,14 @@ export const petition = router({
         message: 'You have to be logged in to get a petition on the manage page'
       })
     }
-    const selectFields = {
-      ...selectFieldAuthorised,
-      permissions: {
-        where: {
-          userId: ctx.user.id
-        }
-      }
-    }
+    // const selectFields = {
+    //   ...selectFieldAuthorised,
+    //   permissions: {
+    //     where: {
+    //       userId: ctx.user.id
+    //     }
+    //   }
+    // }
 
     const petition = await ctx.prisma.petition.findFirst({
       where: {
@@ -321,7 +321,7 @@ export const petition = router({
           }
         ]
       },
-      select: selectFields
+      select: selectFieldAuthorised
     })
     if (!petition && !input.token) {
       throw new TRPCError({
@@ -339,7 +339,7 @@ export const petition = router({
         verificationToken: input.token,
         creatorEmail: ctx.user.email
       },
-      select: selectFields
+      select: selectFieldAuthorised
     })
     if (!verifiedPetition) {
       throw new TRPCError({
