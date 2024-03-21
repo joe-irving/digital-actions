@@ -29,6 +29,7 @@ const updateUser = async (update: UserOutput) => {
     country: update.country || undefined,
     postCode: update.postCode || undefined
   })
+  dialog.destroyAll()
   return updatedUser
 }
 
