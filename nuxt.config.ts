@@ -13,7 +13,8 @@ export default defineNuxtConfig({
     version: '0.0.1',
     public: {
       githubClientId: '',
-      googleClientId: ''
+      googleClientId: '',
+      defaultCountry: ''
     },
     githubClientSecret: '',
     googleClientSecret: '',
