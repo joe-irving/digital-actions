@@ -98,6 +98,7 @@ export const petition = router({
       select: {
         id: true,
         tagPrefix: true,
+        defaultPetitionImageId: true,
         themes: {
           select: {
             id: true
@@ -130,7 +131,7 @@ export const petition = router({
         }
       })
       : undefined
-    const imageId = image?.id
+    const imageId = image?.id || petitionCampaign.defaultPetitionImageId || undefined
 
     // if  location create it
     const location = input.location
