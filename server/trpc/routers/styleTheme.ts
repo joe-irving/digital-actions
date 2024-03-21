@@ -25,14 +25,6 @@ const selectFields = {
 
 export const styleThemeRouter = router({
   get: publicProcedure.input(z.number().int()).query(async ({ ctx, input }) => {
-    if (!ctx.user) {
-      throw new TRPCError({
-        code: 'UNAUTHORIZED',
-        message: 'You have to be logged in to get a style theme'
-      })
-    }
-    // TODO
-    // Check permissions as read
     // Get style theme
     return await ctx.prisma.styleTheme.findFirst({
       where: {
@@ -41,7 +33,7 @@ export const styleThemeRouter = router({
           {
             permissions: {
               some: {
-                userId: ctx.user.id,
+                userId: ctx.user?.id || 'NEVER',
                 type: {
                   in: ['read', 'write', 'owner']
                 }
@@ -53,12 +45,19 @@ export const styleThemeRouter = router({
               some: {
                 permissions: {
                   some: {
-                    userId: ctx.user.id,
+                    userId: ctx.user?.id || 'NEVER',
                     type: {
                       in: ['read', 'write', 'admin', 'owner']
                     }
                   }
                 }
+              }
+            }
+          },
+          {
+            petitionCampaign: {
+              some: {
+                status: 'public'
               }
             }
           }
