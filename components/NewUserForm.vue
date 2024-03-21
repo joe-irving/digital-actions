@@ -36,12 +36,9 @@ const updateUser = () => {
 }
 
 const onPhoneInput = (input: PhoneInput) => {
-//   console.log(_num)
-  console.log(input)
-//   phoneNumber.value = input
-  // if (input.country?.iso2) {
-  //   countryChanged(input.country?.iso2)
-  // }
+  if (input.country?.iso2 && userInput.value && userInput.value.country) {
+    userInput.value.country = input.country.iso2
+  }
 }
 </script>
 
@@ -55,7 +52,7 @@ const onPhoneInput = (input: PhoneInput) => {
       <client-only>
         <VueTelInput
           v-model="userInput.phone"
-          @on-input="(_num: number, input: PhoneInput) => console.log(input)"
+          @on-input="(_num: number, input: PhoneInput) => onPhoneInput(input)"
         />
       </client-only>
     </n-form-input>

@@ -12,6 +12,14 @@ const props = defineProps({
 })
 const emit = defineEmits<{(e: 'update:modelValue', value: string): void}>()
 
+watch(() => props.modelValue, () => {
+  if (props.modelValue !== country.value) {
+    if (typeof props.modelValue === 'string') {
+      country.value = props.modelValue
+    }
+  }
+})
+
 const country = ref<string>(props.modelValue || '')
 const countryOptions = ref(countries.map((c) => { return { label: c.name, value: c.iso2 } }))
 

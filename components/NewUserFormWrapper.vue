@@ -40,10 +40,10 @@ onMounted(async () => {
       dialog.create({
         title: t('user.no_details'),
         content: () => h(NewUserForm, {
-          onUpdate: (update) => {
+          onUpdate: (update: UserOutput) => {
             userValueUpdated(update)
           },
-          onSubmit: (update) => {
+          onSubmit: (update: UserOutput) => {
             updateUser(update)
           },
           user
