@@ -108,7 +108,7 @@ const formRules = ref<FormRules>({
   themes: {
     trigger: ['input', 'blur'],
     validator (_rule, _value: string) {
-      if (!/^[A-Za-z0-9 _]*[A-Za-z0-9][A-Za-z0-9 _]*$/gm.test(newTheme.value)) {
+      if (newTheme.value && newTheme.value !== '' && !/^[A-Za-z0-9 _]*[A-Za-z0-9][A-Za-z0-9 _]*$/gm.test(newTheme.value)) {
         return new Error(i18n.t('pc_manage.petition_theme_form_rule'))
       }
       return true
@@ -216,7 +216,7 @@ const updateCampaign = async () => {
         <n-input v-model:value="campaignEdit.groupName" />
       </n-form-item>
       <n-form-item path="defaultImage" :label="$t('pc_manage.default_image')">
-        <ImageUpload :image="campaign.defaultImage || undefined" @change="(fileList) => campaignEdit.defaultImage = fileList" />
+        <ImageUpload :image="campaign.defaultImage || undefined" @change="(fileList: UploadFileInfo[]) => campaignEdit.defaultImage = fileList" />
       </n-form-item>
       <n-form-item path="limitLocationCountry" :label="$t('pc_manage.limit_country')">
         <n-select v-model:value="campaignEdit.limitLocationCountry" filterable :options="countryOptions" multiple />

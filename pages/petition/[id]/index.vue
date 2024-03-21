@@ -2,7 +2,14 @@
 // Get and set up petition
 import { useDialog } from 'naive-ui'
 import { h } from 'vue'
+import type { inferRouterOutputs } from '@trpc/server'
 import { NaiveIcon, ShareTile } from '#components'
+import type { AppRouter } from '~/server/trpc/routers'
+
+type RouterOutput = inferRouterOutputs<AppRouter>;
+
+type PetitionUpdate = RouterOutput['petition']['getManage'];
+
 const route = useRoute()
 const router = useRouter()
 const { $client } = useNuxtApp()
@@ -115,15 +122,11 @@ const createShareDialog = () => {
       </n-tab-pane>
       <n-tab-pane name="edit" :tab="$t('petition.edit')">
         <EditPetitionForm
-          :id="petition?.id"
-          :title="petition?.title"
-          :content="petition?.content"
-          :target-name="petition?.targetName || undefined"
-          :themes="petition?.petitionThemes"
-          :image="petition?.image || undefined"
-          :available-themes="petitionCampaign?.themes || []"
-          :limit-countries="petitionCampaign?.limitLocationCountry || undefined"
-          @update="(update) => petition = update"
+          :petition="petition"
+          :petition-campaign="petitionCampaign || null"
+          @update="(update: PetitionUpdate) => {
+            petition = update
+          }"
         />
       </n-tab-pane>
     </n-tabs>
