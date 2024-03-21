@@ -302,7 +302,7 @@ export const petition = router({
               some: {
                 userId: ctx.user.id,
                 type: {
-                  in: ['read', 'write', 'owner']
+                  in: ['read', 'write', 'admin', 'owner']
                 }
               }
             }
@@ -330,8 +330,7 @@ export const petition = router({
       })
     }
     if (petition) {
-      // TODO replace with real data
-      return { ...petition, signatures: 11323 }
+      return petition
     }
     // Otherwise attempt to verify & update permissions
     const verifiedPetition = await ctx.prisma.petition.findFirst({
@@ -349,14 +348,14 @@ export const petition = router({
       })
     }
     // Add owner permissions
-    ctx.prisma.userPetitionPermissions.create({
+    await ctx.prisma.userPetitionPermissions.create({
       data: {
         type: 'owner',
         petitionId: verifiedPetition.id,
         userId: ctx.user.id
       }
     })
-    return { ...verifiedPetition, signatures: 0 }
+    return verifiedPetition
   }),
   update: publicProcedure.input(z.object({
     id: z.number().int(),
