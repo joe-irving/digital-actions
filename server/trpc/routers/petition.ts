@@ -5,6 +5,7 @@ import { publicProcedure, router } from '../trpc'
 import { createActionNetworkTags, createActionNetworkPetition, getSignatureCount } from '../utils/actionNetwork'
 import type { ActionNetworkTag, ActionNetworkPetition } from '../utils/actionNetwork'
 import { LocationSchema } from './location'
+import type { LocationSchemaType } from './location'
 
 const selectFieldAuthorised = {
   id: true,
@@ -48,6 +49,36 @@ const selectFieldAuthorised = {
     select: {
       name: true
     }
+  }
+}
+
+const upsertLocationSchema = (location: LocationSchemaType) => {
+  const upsertValue = {
+    place_id: location.place_id,
+    licence: location.licence,
+    osm_type: location.osm_type,
+    osm_id: location.osm_id,
+    lat: location.lat,
+    lon: location.lon,
+    category: location.category,
+    type: location.type,
+    place_rank: location.place_rank,
+    importance: location.importance,
+    addresstype: location.addresstype,
+    name: location.address.town || location.address.village || location.address.suburb || location.name || '',
+    display_name: location.display_name,
+    county: location.address.county,
+    ISO3166_2_lvl6: location.address['ISO3166-2-lvl6'],
+    state: location.address.state,
+    ISO3166_2_lvl4: location.address['ISO3166-2-lvl4'],
+    country: location.address.country
+  }
+  return {
+    where: {
+      place_id: location.place_id
+    },
+    create: upsertValue,
+    update: upsertValue
   }
 }
 
@@ -134,53 +165,7 @@ export const petition = router({
     const imageId = image?.id || petitionCampaign.defaultPetitionImageId || undefined
 
     // if  location create it
-    const location = input.location
-      ? await ctx.prisma.location.upsert({
-        where: {
-          place_id: input.location.place_id
-        },
-        create: {
-          place_id: input.location.place_id,
-          licence: input.location.licence,
-          osm_type: input.location.osm_type,
-          osm_id: input.location.osm_id,
-          lat: input.location.lat,
-          lon: input.location.lon,
-          category: input.location.category,
-          type: input.location.type,
-          place_rank: input.location.place_rank,
-          importance: input.location.importance,
-          addresstype: input.location.addresstype,
-          name: input.location.address.town || input.location.address.village || input.location.address.suburb || input.location.name || '',
-          display_name: input.location.display_name,
-          county: input.location.address.county,
-          ISO3166_2_lvl6: input.location.address['ISO3166-2-lvl6'],
-          state: input.location.address.state,
-          ISO3166_2_lvl4: input.location.address['ISO3166-2-lvl4'],
-          country: input.location.address.country
-        },
-        update: {
-          place_id: input.location.place_id,
-          licence: input.location.licence,
-          osm_type: input.location.osm_type,
-          osm_id: input.location.osm_id,
-          lat: input.location.lat,
-          lon: input.location.lon,
-          category: input.location.category,
-          type: input.location.type,
-          place_rank: input.location.place_rank,
-          importance: input.location.importance,
-          addresstype: input.location.addresstype,
-          name: input.location.name,
-          display_name: input.location.display_name,
-          county: input.location.address.county,
-          ISO3166_2_lvl6: input.location.address['ISO3166-2-lvl6'],
-          state: input.location.address.state,
-          ISO3166_2_lvl4: input.location.address['ISO3166-2-lvl4'],
-          country: input.location.address.country
-        }
-      })
-      : undefined
+    const location = input.location ? await ctx.prisma.location.upsert(upsertLocationSchema(input.location)) : undefined
     // TODO add image to petition, include slug.
     const petition = await ctx.prisma.petition.create({
       data: {
@@ -363,7 +348,12 @@ export const petition = router({
     title: z.optional(z.string().max(200)),
     content: z.optional(z.string().max(10000)),
     target: z.optional(z.string().max(200)),
-    themes: z.optional(z.array(z.number().int()))
+    themes: z.optional(z.array(z.number().int())),
+    location: z.optional(LocationSchema),
+    image: z.optional(z.object({
+      url: z.string().max(1000),
+      name: z.string().max(100)
+    }))
   })).mutation(async ({ ctx, input }) => {
     if (!ctx.user?.id) {
       throw new TRPCError({
@@ -424,7 +414,17 @@ export const petition = router({
     const allowedThemes = allowedThemesLimit.filter((theme) => {
       return input.themes?.includes(theme.id)
     })
-
+    // Define or add location
+    const location = input.location ? await ctx.prisma.location.upsert(upsertLocationSchema(input.location)) : undefined
+    // Define or add image
+    const image = input.image
+      ? await ctx.prisma.file.create({
+        data: {
+          name: input.image.name,
+          url: input.image.url
+        }
+      })
+      : undefined
     // Authorized and has appropriate permissions
     const petition = await ctx.prisma.petition.update({
       where: {
@@ -436,7 +436,21 @@ export const petition = router({
         targetName: input.target,
         petitionThemes: {
           connect: allowedThemes
-        }
+        },
+        location: location
+          ? {
+              connect: {
+                id: location.id
+              }
+            }
+          : undefined,
+        image: image?.id
+          ? {
+              connect: {
+                id: image.id
+              }
+            }
+          : undefined
       },
       select: selectFieldAuthorised
     })
