@@ -45,6 +45,7 @@ const currentPage = ref(0)
 const totalPages = ref(7)
 
 const formRef = ref<FormInst | null>(null)
+const formProcessing = ref<boolean>(false)
 
 const formWarningMessages = ref<FormValidationError[]>([])
 // Form setup
@@ -116,7 +117,10 @@ const handleCreatePetition = () => {
 
 const createPetition = async () => {
   // If not logged in, create a verification code that is attached to the petition and passed to the redirect page.
-  // neeed to do sign in on server side to send code. Then it would be redirect to /petition/[id]?verification=fkdsjafldjsf-dfanwklfnes-feasjklfehjaithdsifi54tw
+  // need to do sign in on server side to send code. Then it would be redirect to /petition/[id]?verification=fkdsjafldjsf-dfanwklfnes-feasjklfehjaithdsifi54tw
+  // Deactivate button
+  formProcessing.value = true
+  // add loading symbol
   try {
     const petitionCreated = await $client.petition.create.mutate(petitionInput.value)
     if (user.value?.user) {
@@ -126,10 +130,12 @@ const createPetition = async () => {
     }
   } catch (err) {
     if (err instanceof TRPCClientError) {
+      formProcessing.value = false
       formWarningMessages.value = [[{
         message: $i18n.t('petition_create.server_error')
       }]]
     }
+    // TODO deal with this!!
     throw err
   }
   // Create petition in back end, with either user email attached or linked to logged in userEmail
@@ -218,24 +224,26 @@ definePageMeta({
             </div>
           </FormPage>
           <FormPage :page="6" :current-page="currentPage">
-            <Nh2>{{ user?.authenticated ? $t('petition_create.create_button') : $t('petition_create.email_title') }}</Nh2>
-            <!-- Only if not signed in, otherwise just show button -->
-            <!-- Include steps here with the validation status of the form -->
-            <div ref="email" class="n-step-description full">
-              <div v-if="!user?.authenticated">
-                <Np>{{ $t("petition_create.email_description") }}</Np>
-                <n-form-item path="email">
-                  <n-input ref="emailInput" v-model:value="petitionInput.creatorEmail" type="text" />
-                </n-form-item>
+            <n-spin :show="formProcessing">
+              <Nh2>{{ user?.authenticated ? $t('petition_create.create_button') : $t('petition_create.email_title') }}</Nh2>
+              <!-- Only if not signed in, otherwise just show button -->
+              <!-- Include steps here with the validation status of the form -->
+              <div ref="email" class="n-step-description full">
+                <div v-if="!user?.authenticated">
+                  <Np>{{ $t("petition_create.email_description") }}</Np>
+                  <n-form-item path="creatorEmail">
+                    <n-input v-model:value="petitionInput.creatorEmail" r f="creatorEmail" type="text" />
+                  </n-form-item>
+                </div>
+                <!-- , { username: petition.email, callbackUrl: '/petition' }) -->
+                <n-button type="primary" :disabled="formProcessing" @click="handleCreatePetition()">
+                  {{ $t('petition_create.create_button') }}
+                </n-button>
+                <div v-if="formWarningMessages.length > 0">
+                  <FormErrorList :errors="formWarningMessages" />
+                </div>
               </div>
-              <!-- , { username: petition.email, callbackUrl: '/peition' }) -->
-              <n-button type="primary" @click="handleCreatePetition()">
-                {{ $t('petition_create.create_button') }}
-              </n-button>
-              <div v-if="formWarningMessages.length > 0">
-                <FormErrorList :errors="formWarningMessages" />
-              </div>
-            </div>
+            </n-spin>
           </FormPage>
         </n-form>
       </FormPages>
