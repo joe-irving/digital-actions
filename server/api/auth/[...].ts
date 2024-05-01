@@ -43,16 +43,19 @@ export default NuxtAuthHandler({
     // @ts-expect-error You need to use .default here for it to work during SSR. May be fixed via Vite at some point
     GithubProvider.default({
       clientId: runtimeConfig.public.githubClientId,
-      clientSecret: runtimeConfig.githubClientSecret
+      clientSecret: runtimeConfig.githubClientSecret,
+      allowDangerousEmailAccountLinking: true
     }),
     // @ts-expect-error You need to use .default here for it to work during SSR. May be fixed via Vite at some point
     Google.default({
       clientId: runtimeConfig.public.googleClientId,
-      clientSecret: runtimeConfig.googleClientSecret
+      clientSecret: runtimeConfig.googleClientSecret,
+      allowDangerousEmailAccountLinking: true
     }),
     {
       id: 'sendgrid',
       type: 'email',
+      allowDangerousEmailAccountLinking: true,
       async sendVerificationRequest ({ identifier: email, url }) {
         // Call the cloud Email provider API for sending emails
         // See https://docs.sendgrid.com/api-reference/mail-send/mail-send
