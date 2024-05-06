@@ -220,7 +220,7 @@ definePageMeta({
             <Nh2>{{ $t('petition_create.image_title') }}  ({{ $t('petition_create.optional') }})</Nh2>
             <div ref="image" class="n-step-description full">
               <p>{{ $t('petition_create.image_description') }}</p>
-              <ImageUpload @change="files => updateImage(files)" />
+              <ImageUpload @change="(files: UploadFileInfo[]) => updateImage(files)" />
             </div>
           </FormPage>
           <FormPage :page="6" :current-page="currentPage">

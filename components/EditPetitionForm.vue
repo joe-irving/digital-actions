@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import type { SelectOption, FormRules, FormItemRule, FormValidationError, FormInst, UploadFileInfo } from 'naive-ui'
 import { TRPCClientError } from '@trpc/client'
-import type { inferRouterOutputs } from '@trpc/server'
-import type { NominatimLocationInfo } from '~/types'
+import type { inferRouterOutputs, inferRouterInputs } from '@trpc/server'
 import type { AppRouter } from '~/server/trpc/routers'
 
 type RouterOutput = inferRouterOutputs<AppRouter>;
+type RouterInput = inferRouterInputs<AppRouter>;
 
 type PetitionOutput = RouterOutput['petition']['getManage'];
 type PetitionCampaignOutput = RouterOutput['petitionCampaign']['getPublic'];
+
+type Location = RouterInput['petition']['create']['location'];
 
 const i18n = useI18n()
 const { $client } = useNuxtApp()
@@ -98,24 +100,61 @@ const formRules = ref<FormRules>({
       }
       return true
     }
+  },
+  slug: {
+    required: true,
+    trigger: ['blur'],
+    validator (_rule, value: string) {
+      return new Promise<void>((resolve, reject) => {
+        if (!value || !value.length) {
+          reject(Error(i18n.t('pc_manage.slug_required')))
+        } else {
+          $client.slug.checkUnique.useQuery({
+            slug: value
+          }).then(({ data: unique }) => {
+            if (!unique.value && value !== props.petition.slug) {
+              reject(Error(i18n.t('pc_manage.slug_unique')))
+            } else {
+              resolve()
+            }
+          })
+        }
+      })
+    }
   }
 })
 
 const petitionUpdate = ref<{
+  id: number
   title: string,
   content: string,
-  image: UploadFileInfo[],
+  image: {
+    url: string,
+    name: string
+  } | undefined,
   themes: number[],
-  location: NominatimLocationInfo | null,
-  target: string
+  location: Location | undefined,
+  target: string,
+  slug: string
 }>({
+  id: props.petition.id,
   title: props.petition.title,
   content: props.petition.content,
-  image: [],
+  image: undefined,
   themes: props.petition.petitionThemes.map(t => t.id),
-  location: null,
-  target: props.petition.targetName || ''
+  location: undefined,
+  target: props.petition.targetName || '',
+  slug: props.petition.slug
 })
+
+const updateImage = (files: UploadFileInfo[]) => {
+  if (files.length > 0 && files[0].url) {
+    petitionUpdate.value.image = {
+      url: files[0].url,
+      name: files[0].name
+    }
+  }
+}
 
 const savePetition = () => {
   // Check if all values needed are entered, if not show clear error message about what is missing.
@@ -133,13 +172,7 @@ const updatePetition = async () => {
     throw new Error('No petition id')
   }
   try {
-    const updatedPetition = await $client.petition.update.mutate({
-      id: props.petition.id,
-      title: petitionUpdate.value.title,
-      content: petitionUpdate.value.content,
-      target: petitionUpdate.value.target,
-      themes: petitionUpdate.value.themes
-    })
+    const updatedPetition = await $client.petition.update.mutate(petitionUpdate.value)
     // emit update to parent
     emit('update', updatedPetition)
     // mark as sucesss
@@ -153,8 +186,6 @@ const updatePetition = async () => {
     throw err
   }
 }
-
-// TODO include location
 </script>
 
 <template>
@@ -169,6 +200,9 @@ const updatePetition = async () => {
         :placeholder="$t('petition_create.title_placeholder')"
       />
     </n-form-item>
+    <n-form-item path="slug" :label="$t('pc_manage.slug')" required>
+      <SlugInput v-model="petitionUpdate.slug" />
+    </n-form-item>
     <n-form-item path="target" :label="$t('petition_create.target_title')">
       <n-input
         v-model:value="petitionUpdate.target"
@@ -178,6 +212,12 @@ const updatePetition = async () => {
     </n-form-item>
     <n-form-item path="themes" :label="$t('petition_create.theme_title')">
       <n-select v-model:value="petitionUpdate.themes" multiple :options="themeOptions" />
+    </n-form-item>
+    <n-form-item path="location" :label="$t('petition_create.location_title')">
+      <LocationLookup v-model="petitionUpdate.location" :default="petition.location" :limit-country="petitionCampaign?.limitLocationCountry || undefined" />
+    </n-form-item>
+    <n-form-item path="image" :label="$t('petition_create.image_title')">
+      <ImageUpload :image="petition.image" @change="(files: UploadFileInfo[]) => updateImage(files)" />
     </n-form-item>
     <n-form-item path="content" :label="$t('petition.content_of_petition')">
       <client-only>

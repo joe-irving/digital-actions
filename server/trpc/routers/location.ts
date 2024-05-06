@@ -32,3 +32,5 @@ export const LocationSchema = z.object({
   address: AddressSchema,
   boundingbox: z.optional(z.array(z.string()))
 })
+
+export type LocationSchemaType = z.infer<typeof LocationSchema>;
