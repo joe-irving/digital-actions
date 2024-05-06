@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // This is formating weird
 import type { inferRouterOutputs } from '@trpc/server'
+// import { useDialog } from 'naive-ui'
 import type { AppRouter } from '~/server/trpc/routers'
 
 type RouterOutput = inferRouterOutputs<AppRouter>;
@@ -15,8 +16,16 @@ const props = defineProps({
     required: true
   },
   petitionPermissions: {
-    type: Object as PropType<RouterOutput['petitionPermission']['me']>,
+    type: Array as PropType<RouterOutput['petitionPermission']['me']>,
     required: true
+  },
+  petitionCampaign: {
+    type: Object as PropType<RouterOutput['petitionCampaign']['getPublic']>,
+    required: true
+  },
+  petitionCampaignPermissions: {
+    type: Array as PropType<RouterOutput['petitionCampaign']['getUserPermissions']>,
+    default: () => []
   }
 })
 // List all petition permissions
@@ -96,6 +105,29 @@ const addPermission = async (input: PermissionCreate) => {
     permissions.value.push(newPermission)
   }
 }
+
+const deletePetition = async () => {
+  await $client.petition.delete.mutate({
+    id: props.petition.id
+  })
+  if (props.petitionCampaignPermissions.length) {
+    navigateTo(`/petition/campaign/${props.petitionCampaign?.id}`)
+  } else {
+    navigateTo('/petition')
+  }
+}
+
+const deletePressed = () => {
+  dialog.warning({
+    title: t('petition.are_you_sure'),
+    content: t('petition.delete_info'),
+    positiveText: t('petition.yes_delete'),
+    negativeText: t('petition.no_back'),
+    onPositiveClick: () => {
+      deletePetition()
+    }
+  })
+}
 </script>
 
 <template>
@@ -108,7 +140,12 @@ const addPermission = async (input: PermissionCreate) => {
       @delete="deletePermission"
       @create="addPermission"
     />
-    <p>Action Network tags</p>
-    <p>Delete Petition</p>
+    <Nh2>{{ $t('petition.action_network') }}</Nh2>
+    <p>{{ $t('petition.action_network_explainer') }}</p>
+    <ActionNetworkTagExplainer :tag="`[${petitionCampaign?.tagPrefix}]: ${petition.id}`" :description="$t('petition.action_network_tag_explainer')" />
+    <Nh2>{{ $t('petition.delete_petition') }}</Nh2>
+    <n-button type="error" @click="deletePressed()">
+      {{ $t('petition.delete') }}
+    </n-button>
   </div>
 </template>

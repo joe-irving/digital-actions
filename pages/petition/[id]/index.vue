@@ -148,6 +148,7 @@ const createShareDialog = () => {
       <n-tab-pane v-if="isAdmin" name="admin" :tab="$t('petition.admin')">
         <PetitionAdminTab
           :petition="petition"
+          :petition-campaign="petitionCampaign"
           :petition-campaign-permissions="petitionCampaignPermissions"
           :petition-permissions="petitionPermissions"
         />

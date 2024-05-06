@@ -117,6 +117,7 @@ export const petitionCampaignRouter = router({
         title: true,
         limitLocationCountry: true,
         petitionContentTemplate: true,
+        tagPrefix: true,
         themes: {
           select: {
             id: true,

@@ -90,7 +90,17 @@
     "public": "Public",
     "back_to_campaign": "Back to petition campaign",
     "admin": "Admin",
-    "permissions_title": "Permissions"
+    "permissions_title": "Permissions",
+    "action_network": "Action Network",
+    "action_network_explainer": "Signatures from this petition are processed directly in action network.",
+    "action_network_tag_explainer": "This tag is added to anyone who signs the petition. You should be able to find it in the Action Network group the petition campaign is linked to.",
+    "delete_petition": "Delete this petition",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "are_you_sure": "Are you sure?",
+    "yes_delete": "Yes, delete",
+    "no_back": "No, take me back",
+    "delete_info": "Once this has been deleted, the tag and people stay in the Action Network system. However, the public page will be lost and you won't be able to get it back."
   },
   "share": {
     "twitter": "Twitter",
