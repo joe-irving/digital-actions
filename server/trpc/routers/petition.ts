@@ -47,7 +47,10 @@ const selectFieldAuthorised = {
   },
   location: {
     select: {
-      name: true
+      name: true,
+      lat: true,
+      lon: true,
+      display_name: true
     }
   }
 }
@@ -455,7 +458,6 @@ export const petition = router({
       select: selectFieldAuthorised
     })
 
-    // placeholder
     return petition
   }),
   getPublic: publicProcedure.input(z.object({

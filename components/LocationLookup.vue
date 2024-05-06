@@ -1,11 +1,12 @@
 <script setup lang="ts">
 // import { PropType } from 'nuxt/dist/app/compat/capi'
-import type { inferRouterInputs } from '@trpc/server'
+import type { inferRouterInputs, inferRouterOutputs } from '@trpc/server'
 import type { AutoCompleteOption } from 'naive-ui'
 import type { AppRouter } from '~/server/trpc/routers'
 // import type { NominatimLocationInfo } from '~/types'
 
 type RouterInput = inferRouterInputs<AppRouter>;
+type RouterOutput = inferRouterOutputs<AppRouter>;
 
 type Location = RouterInput['petition']['create']['location'];
 
@@ -16,12 +17,18 @@ const props = defineProps({
     type: Object as PropType<Location | undefined>,
     default: () => undefined
   },
+  default: {
+    type: Object as PropType<RouterOutput['petition']['getManage']['location'] | undefined>,
+    default: () => undefined
+  },
   limitCountry: {
     type: String,
     required: false,
     default: undefined
   }
 })
+
+const defaultValue = ref<RouterOutput['petition']['getManage']['location'] | undefined>(props.default)
 
 const locationSearch = ref<Location[]>([])
 
@@ -34,14 +41,6 @@ const locationSearchOptions = computed((): AutoCompleteOption[] => {
       value: loc?.place_id.toString()
     }
   })
-})
-
-const isClear = computed(() => {
-  if (!locationSearchQuery.value || locationSearchQuery.value === '') {
-    emit('update:modelValue', undefined)
-    return true
-  }
-  return false
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -68,6 +67,7 @@ const optionSelected = (value: string) => {
 
 const locationClosed = () => {
   emit('update:modelValue', undefined)
+  defaultValue.value = undefined
   locationSearchQuery.value = ''
   locationSearch.value = []
 }
@@ -76,13 +76,13 @@ const locationClosed = () => {
 <template>
   <div>
     <n-auto-complete
-      v-if="!modelValue"
+      v-if="!modelValue && !defaultValue"
       v-model:value="locationSearchQuery"
       :options="locationSearchOptions"
       clearable
       @keyup="lookupNominatim"
       @select="optionSelected"
     />
-    <LocationPreview v-if="!isClear && modelValue" :location-value="modelValue" @close="locationClosed" />
+    <LocationPreview v-if="modelValue || defaultValue" :location-value="modelValue || defaultValue" @close="locationClosed" />
   </div>
 </template>

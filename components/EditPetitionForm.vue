@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import type { SelectOption, FormRules, FormItemRule, FormValidationError, FormInst, UploadFileInfo } from 'naive-ui'
 import { TRPCClientError } from '@trpc/client'
-import type { inferRouterOutputs } from '@trpc/server'
-import type { NominatimLocationInfo } from '~/types'
+import type { inferRouterOutputs, inferRouterInputs } from '@trpc/server'
 import type { AppRouter } from '~/server/trpc/routers'
 
 type RouterOutput = inferRouterOutputs<AppRouter>;
+type RouterInput = inferRouterInputs<AppRouter>;
 
 type PetitionOutput = RouterOutput['petition']['getManage'];
 type PetitionCampaignOutput = RouterOutput['petitionCampaign']['getPublic'];
+
+type Location = RouterInput['petition']['create']['location'];
 
 const i18n = useI18n()
 const { $client } = useNuxtApp()
@@ -106,14 +108,14 @@ const petitionUpdate = ref<{
   content: string,
   image: UploadFileInfo[],
   themes: number[],
-  location: NominatimLocationInfo | null,
+  location: Location | undefined,
   target: string
 }>({
   title: props.petition.title,
   content: props.petition.content,
   image: [],
   themes: props.petition.petitionThemes.map(t => t.id),
-  location: null,
+  location: undefined,
   target: props.petition.targetName || ''
 })
 
@@ -138,7 +140,8 @@ const updatePetition = async () => {
       title: petitionUpdate.value.title,
       content: petitionUpdate.value.content,
       target: petitionUpdate.value.target,
-      themes: petitionUpdate.value.themes
+      themes: petitionUpdate.value.themes,
+      location: petitionUpdate.value.location
     })
     // emit update to parent
     emit('update', updatedPetition)
@@ -178,6 +181,9 @@ const updatePetition = async () => {
     </n-form-item>
     <n-form-item path="themes" :label="$t('petition_create.theme_title')">
       <n-select v-model:value="petitionUpdate.themes" multiple :options="themeOptions" />
+    </n-form-item>
+    <n-form-item path="location" :label="$t('petition_create.location_title')">
+      <LocationLookup v-model="petitionUpdate.location" :default="petition.location" :limit-country="petitionCampaign?.limitLocationCountry || undefined" />
     </n-form-item>
     <n-form-item path="content" :label="$t('petition.content_of_petition')">
       <client-only>
