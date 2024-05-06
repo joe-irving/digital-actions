@@ -15,13 +15,8 @@ const props = defineProps({
   }
 })
 const emit = defineEmits(['update'])
-// get permissions
-const { $client } = useNuxtApp()
 const localePath = useLocalePath()
-const { data: permissions } = await $client.petitionCampaign.getUserPermissions.useQuery({
-  id: props.petitionCampaignId
-})
-const isApprover = permissions.value ? !!permissions.value.filter(p => ['approval', 'admin', 'owner'].includes(p.type)).length : false
+const { $client } = useNuxtApp()
 
 const updateStatus = async (status: 'public' | 'rejected') => {
   const newPetition = await $client.petition.approval.mutate({
@@ -36,7 +31,7 @@ const updateStatus = async (status: 'public' | 'rejected') => {
 
 <template>
   <div>
-    <div v-if="isApprover">
+    <div>
       <n-alert v-if="status=='request_approval'" type="info">
         <Nh2>{{ $t('petition.approval_question') }}</Nh2>
         <n-space>

@@ -88,7 +88,9 @@
     "reject": "Reject",
     "approve": "Approve",
     "public": "Public",
-    "back_to_campaign": "Back to petition campaign"
+    "back_to_campaign": "Back to petition campaign",
+    "admin": "Admin",
+    "permissions_title": "Permissions"
   },
   "share": {
     "twitter": "Twitter",
