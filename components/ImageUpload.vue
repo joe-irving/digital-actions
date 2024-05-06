@@ -1,17 +1,21 @@
 <script setup lang=ts>
 import type { UploadFileInfo } from 'naive-ui'
-// import { PropType } from 'nuxt/dist/app/compat/capi'
+import type { inferRouterOutputs } from '@trpc/server'
+import type { AppRouter } from '~/server/trpc/routers'
+
+type RouterOutput = inferRouterOutputs<AppRouter>;
+
+type ImageOutput = RouterOutput['petition']['getManage']['image'];
 
 const { $i18n } = useNuxtApp()
 
 const props = defineProps({
   image: {
-    type: Object as PropType<{id: number; url: string;}>,
-    default: () => null
+    type: Object as PropType<ImageOutput | undefined>,
+    default: () => undefined
   }
 })
 
-// const emit = defineEmits(['update:modelValue', 'change'])
 const emit = defineEmits<{(e: 'change', value: UploadFileInfo[]): void}>()
 
 const fileList = ref<UploadFileInfo[]>([])

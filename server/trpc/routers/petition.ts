@@ -356,7 +356,10 @@ export const petition = router({
     image: z.optional(z.object({
       url: z.string().max(1000),
       name: z.string().max(100)
-    }))
+    })),
+    slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/gm, {
+      message: 'That is not a valid slug format'
+    }).optional()
   })).mutation(async ({ ctx, input }) => {
     if (!ctx.user?.id) {
       throw new TRPCError({
@@ -413,6 +416,41 @@ export const petition = router({
         message: 'You do not have permission to edit this petition.'
       })
     }
+    const matchSlugs = await ctx.prisma.slug.findFirst({
+      where: {
+        slug: input.slug
+      },
+      include: {
+        petition: true
+      }
+    })
+    if (matchSlugs && input.slug) {
+      if (matchSlugs.petition && matchSlugs.petition.id === input.id) {
+        input.slug = undefined
+      } else if (matchSlugs.active) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'That slug already exists in the database'
+        })
+      }
+    }
+    let newSlug
+    if (!matchSlugs && input.slug) {
+      newSlug = await ctx.prisma.slug.create({
+        data: {
+          slug: input.slug,
+          active: true,
+          petition: {
+            connect: {
+              id: input.id
+            }
+          }
+        }
+      })
+      if (!newSlug) {
+        input.slug = undefined
+      }
+    }
     const allowedThemesLimit = petitionAllowed.petitionCampaign?.themes || []
     const allowedThemes = allowedThemesLimit.filter((theme) => {
       return input.themes?.includes(theme.id)
@@ -437,23 +475,12 @@ export const petition = router({
         title: input.title,
         content: input.content ? sanitizeHtml(input.content) : undefined,
         targetName: input.target,
+        slug: input.slug,
         petitionThemes: {
           connect: allowedThemes
         },
-        location: location
-          ? {
-              connect: {
-                id: location.id
-              }
-            }
-          : undefined,
-        image: image?.id
-          ? {
-              connect: {
-                id: image.id
-              }
-            }
-          : undefined
+        locationId: location?.id,
+        imageId: image?.id
       },
       select: selectFieldAuthorised
     })
