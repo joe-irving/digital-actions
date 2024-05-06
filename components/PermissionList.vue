@@ -5,7 +5,7 @@ import type { AppRouter } from '~/server/trpc/routers'
 import type { PermissionType } from '~/types'
 type RouterOutput = inferRouterOutputs<AppRouter>;
 
-type PermissionsList = RouterOutput['petitionCampaignPermission']['list'];
+type PermissionsList = RouterOutput['petitionCampaignPermission']['list'] | RouterOutput['petitionPermission']['list'];
 
 const { t } = useI18n()
 const emit = defineEmits(['create', 'update', 'delete'])

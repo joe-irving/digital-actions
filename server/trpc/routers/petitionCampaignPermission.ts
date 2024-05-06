@@ -2,50 +2,7 @@ import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
 import { publicProcedure, router } from '../trpc'
 import { sendLoginEmail } from '../utils/login'
-import type { PermissionType } from '~/types'
-
-interface PermissionTypeDefinition {
-  type: PermissionType,
-  allowed: PermissionType[]
-}
-
-const permissionTypeList: PermissionTypeDefinition[] = [
-  {
-    type: 'admin',
-    allowed: ['owner', 'admin']
-  },
-  {
-    type: 'read',
-    allowed: ['owner', 'admin']
-  },
-  {
-    type: 'approval',
-    allowed: ['owner', 'admin']
-  },
-  {
-    type: 'admin',
-    allowed: ['owner', 'admin']
-  },
-  {
-    type: 'write',
-    allowed: ['owner', 'admin']
-  }
-]
-
-const permissionsSelect = {
-  id: true,
-  created: true,
-  updated: true,
-  type: true,
-  user: {
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      image: true
-    }
-  }
-}
+import { permissionTypeList, permissionsSelect } from './permissions'
 
 export const petitionCampaignPermission = router({
   me: publicProcedure.input(z.object({
@@ -107,7 +64,7 @@ export const petitionCampaignPermission = router({
     if (!ctx.user?.id) {
       throw new TRPCError({
         code: 'UNAUTHORIZED',
-        message: 'You are not logged in for create permissions'
+        message: 'You are not logged in for updating permissions'
       })
     }
     const neededTypesList = permissionTypeList.filter(definition => definition.type === input.type)

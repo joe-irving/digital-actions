@@ -1,5 +1,4 @@
 <script setup lang="ts">
-// Get and set up petition
 import { useDialog } from 'naive-ui'
 import { h } from 'vue'
 import type { inferRouterOutputs } from '@trpc/server'
@@ -44,6 +43,23 @@ const { data: petitionCampaign } = petition.value?.petitionCampaignId
   })
   : { data: undefined }
 
+const { data: petitionCampaignPermissions } = petition.value?.petitionCampaignId
+  ? await $client.petitionCampaign.getUserPermissions.useQuery({
+    id: petition.value?.petitionCampaignId
+  })
+  : { data: undefined }
+
+const isApprover = petitionCampaignPermissions?.value ? !!petitionCampaignPermissions.value.filter(p => ['approval', 'admin', 'owner'].includes(p.type)).length : false
+
+const { data: petitionPermissions } = petition.value?.id
+  ? await $client.petitionPermission.me.useQuery({
+    id: petition.value?.id
+  })
+  : { data: undefined }
+
+const isAdmin = isApprover || (petitionPermissions?.value ? !!petitionPermissions.value.filter(p => ['admin', 'owner'].includes(p.type)).length : false)
+const isEditor = isApprover || (petitionPermissions?.value ? !!petitionPermissions.value.filter(p => ['admin', 'owner', 'write'].includes(p.type)).length : false)
+
 const shareUrl = ref(siteUrl + localePath(`/${petition.value?.slug}`))
 
 const createShareDialog = () => {
@@ -65,7 +81,7 @@ const createShareDialog = () => {
   <div v-if="petition" class="p-4">
     <n-page-header>
       <PetitionApprovalBanner
-        v-if="petition.petitionCampaignId"
+        v-if="petition.petitionCampaignId && isApprover"
         :status="petition.status"
         :petition-id="petition.id"
         :petition-campaign-id="petition.petitionCampaignId"
@@ -120,13 +136,21 @@ const createShareDialog = () => {
           </n-gi>
         </n-grid>
       </n-tab-pane>
-      <n-tab-pane name="edit" :tab="$t('petition.edit')">
+      <n-tab-pane v-if="isEditor" name="edit" :tab="$t('petition.edit')">
         <EditPetitionForm
           :petition="petition"
           :petition-campaign="petitionCampaign || null"
           @update="(update: PetitionUpdate) => {
             petition = update
           }"
+        />
+      </n-tab-pane>
+      <n-tab-pane v-if="isAdmin" name="admin" :tab="$t('petition.admin')">
+        <PetitionAdminTab
+          :petition="petition"
+          :petition-campaign="petitionCampaign"
+          :petition-campaign-permissions="petitionCampaignPermissions"
+          :petition-permissions="petitionPermissions"
         />
       </n-tab-pane>
     </n-tabs>

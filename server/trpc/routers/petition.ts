@@ -861,5 +861,63 @@ export const petition = router({
         }
       }
     })
+  }),
+  delete: publicProcedure.input(z.object({
+    id: z.number().int()
+  })).mutation(async ({ ctx, input }) => {
+    if (!ctx.user?.id) {
+      throw new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'You are not logged in'
+      })
+    }
+    // Check person is either an admin or owner of the petition or petition campaign
+    const petition = await ctx.prisma.petition.findFirst({
+      where: {
+        id: input.id,
+        OR: [
+          {
+            permissions: {
+              some: {
+                userId: ctx.user.id,
+                type: {
+                  in: ['admin', 'owner']
+                }
+              }
+            }
+          },
+          {
+            petitionCampaign: {
+              permissions: {
+                some: {
+                  userId: ctx.user.id,
+                  type: {
+                    in: ['admin', 'owner']
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    })
+    if (!petition) {
+      throw new TRPCError({
+        code: 'FORBIDDEN',
+        message: 'You do not have admin or owner permission on this petition or its parent petition campaign, so cannot delete it'
+      })
+    }
+    // Delete all permissions
+    await ctx.prisma.userPetitionPermissions.deleteMany({
+      where: {
+        petitionId: input.id
+      }
+    })
+    const deletedPetition = await ctx.prisma.petition.delete({
+      where: {
+        id: input.id
+      }
+    })
+    return deletedPetition
   })
 })
