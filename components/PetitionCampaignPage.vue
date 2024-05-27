@@ -33,14 +33,15 @@ useSeoMeta({
 
     <n-space justify="center" class="">
       <n-grid
+        v-if="petitions && petitions.length >= 1"
         class="p-4"
-        cols="1"
+        cols="3 m:3 s:2 1"
         responsive="screen"
         :x-gap="12"
         :y-gap="8"
-        :layout-shift-disabled="true"
+        :layout-shift-disabled="false"
       >
-        <n-grid-item v-for="petition in petitions" :key="petition.id" class="w-96">
+        <n-grid-item v-for="petition in petitions" :key="petition.id" class="max-w-96">
           <PetitionCard
             :petition="petition"
             :default-image="petitionCampaign?.defaultPetitionImage?.url"
