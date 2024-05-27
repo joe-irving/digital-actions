@@ -100,7 +100,8 @@ export const petition = router({
     themes: z.array(z.number().int()),
     location: z.optional(LocationSchema),
     target: z.string().max(100),
-    sourceCode: z.string().max(1000).optional()
+    sourceCode: z.string().max(1000).optional(),
+    anEndpoint: z.string().max(1000).optional()
   })).mutation(async ({ input, ctx }) => {
     const creatorEmail = !input.creatorEmail || input.creatorEmail === '' ? ctx.user?.email : input.creatorEmail
     if (!creatorEmail) {
@@ -169,7 +170,22 @@ export const petition = router({
 
     // if  location create it
     const location = input.location ? await ctx.prisma.location.upsert(upsertLocationSchema(input.location)) : undefined
-    // TODO add image to petition, include slug.
+    // if AN Endpoint, check validated, error if not
+    if (input.anEndpoint) {
+      const validated = await ctx.prisma.verifiedActionNetworkPetition.findFirst({
+        where: {
+          endpoint: input.anEndpoint,
+          petitionCampaignId: petitionCampaign.id
+        }
+      })
+      if (!validated) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'That Action Network Endpoint has not been validated.'
+        })
+      }
+    }
+    // Create petition
     const petition = await ctx.prisma.petition.create({
       data: {
         title: input.title,
@@ -177,6 +193,7 @@ export const petition = router({
         targetName: input.target,
         status: 'request_approval',
         sourceCode: input.sourceCode,
+        actionNetworkPetitionId: input.anEndpoint,
         sharingInformation: {
           create: {
             whatsappShareText: '',

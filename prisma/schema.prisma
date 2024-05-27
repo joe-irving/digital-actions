@@ -144,6 +144,7 @@ model ActionNetworkCredential {
   name             String
   apiKey           String
   petitionCampaign PetitionCampaign[]
+  verifiedActionNetworkPetitions  VerifiedActionNetworkPetition[]
   owner            User               @relation(fields: [ownerId], references: [id])
   ownerId          String
 }
@@ -176,6 +177,7 @@ model PetitionCampaign {
   actionNetworkAllTag       String
   actionNetworkResponseTag  String
   petitionContentTemplate   String?
+  verifiedActionNetworkPetitions  VerifiedActionNetworkPetition[]
 }
 
 model Petition {
@@ -342,4 +344,19 @@ model Slug {
   petitionCampaign PetitionCampaign?
   tweetCampaign    TweetCampaign?
   active           Boolean           @default(true) // For when slug is updated, keep a record but mark as available for use.
+}
+
+model VerifiedActionNetworkPetition {
+  id      Int @id @default(autoincrement())
+  created      DateTime   @default(now())
+  updated      DateTime   @default(now()) @updatedAt
+  endpoint String
+  actionNetworkCredential   ActionNetworkCredential     @relation(fields: [actionNetworkCredentialId], references: [id])
+  actionNetworkCredentialId Int
+  petitionCampaign PetitionCampaign @relation(fields: [petitionCampaignId], references: [id])
+  petitionCampaignId Int
+  title String?
+  content String?
+  target String?
+  imageUrl String?
 }

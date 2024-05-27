@@ -305,3 +305,28 @@ export const getTaggingCount = cachedFunction(async (key: string, id: string) =>
     return ids[0]
   }
 })
+
+export const getActionNetworkPetition = async ({
+  key,
+  endpoint
+}: {
+  key: string,
+  endpoint: string
+}) => {
+  const apiKey = decryptData(key)
+  const headers = {
+    'OSDI-API-Token': apiKey,
+    'Content-Type': 'application/json'
+  }
+  const ids = endpoint.match(/[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}/)
+  if (!ids?.length) {
+    // return new Error('There is no UUID in the endpoint provided to get action network petition')
+    return
+  }
+  const url = `https://actionnetwork.org/api/v2/petitions/${ids[0]}`
+  const query = await $fetch<ActionNetworkPetition>(url, {
+    method: 'GET',
+    headers
+  })
+  return query
+}
