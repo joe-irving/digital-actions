@@ -59,7 +59,7 @@ const formRules = ref<FormRules>({
               importPetition.value.image = data.imageUrl
                 ? {
                     url: data.imageUrl,
-                    name: data.imageUrl
+                    name: ''
                   }
                 : undefined
               importPetition.value.anEndpoint = data.endpoint
