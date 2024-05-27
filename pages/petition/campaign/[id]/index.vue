@@ -169,6 +169,7 @@ useSeoMeta({
               :tag-prefix="campaign.tagPrefix"
               :action-network-cred-name="campaign.actionNetworkCredential?.name || ''"
               :themes="campaign.themes.map(t => t.title)"
+              :campaign-id="campaign.id"
             />
           </n-tab-pane>
           <n-tab-pane v-if="hasPermissions(['admin', 'owner'])" name="admins" :tab="$t('pc_manage.admins')">
