@@ -216,6 +216,14 @@ export const petitionCampaignRouter = router({
             title: true,
             icon: true
           }
+        },
+        targetName: true,
+        location: {
+          select: {
+            name: true,
+            country: true,
+            display_name: true
+          }
         }
       }
     })
