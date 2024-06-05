@@ -53,7 +53,8 @@ const submission = ref<{
   phoneNumber: string,
   comments: string,
   postalCode: string,
-  country: string | null
+  country: string | null,
+  optIn: boolean | null
 }>({
   firstName: '',
   lastName: '',
@@ -61,7 +62,8 @@ const submission = ref<{
   phoneNumber: '',
   comments: '',
   postalCode: '',
-  country: null
+  country: null,
+  optIn: null
 })
 const formWarningMessages = ref<FormValidationError[]>([])
 
@@ -77,13 +79,23 @@ const formRules = ref<FormRules>({
     trigger: ['blur']
   },
   email: {
-    required: false,
+    required: true,
     trigger: ['blur'],
     validator (_rule: FormItemRule, value: string) {
       if (value === '') {
         return true
       } else if (!/^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i.test(value)) {
         return new Error(i18n.t('petition_form.email_invalid'))
+      }
+      return true
+    }
+  },
+  optIn: {
+    required: false,
+    trigger: ['blur'],
+    validator (_rule: FormItemRule, value: boolean | null) {
+      if (value === null) {
+        return new Error(i18n.t('petition_form.opt_in_required'))
       }
       return true
     }
@@ -119,6 +131,13 @@ const handleSignPetition = () => {
 }
 
 const signPetiton = async () => {
+  const tags = [
+    props.tagName,
+    ...props.tagList
+  ]
+  if (!submission.value.optIn) {
+    tags.push(`[${props.tagPrefix}] Do not subscribe`)
+  }
   const customFields: {
     [key: string]: string
   } = {}
@@ -137,10 +156,7 @@ const signPetiton = async () => {
       phone_numbers: [{ number: submission.value.phoneNumber }],
       custom_fields: customFields
     },
-    add_tags: [
-      props.tagName,
-      ...props.tagList
-    ],
+    add_tags: tags,
     'action_network:referrer_data': sourceCode
       ? {
           source: sourceCode
@@ -195,6 +211,20 @@ const signPetiton = async () => {
     </n-form-item>
     <n-form-item path="comments" :label="$t('petition_form.comment_label')">
       <n-input v-model:value="submission.comments" type="textarea" />
+    </n-form-item>
+    <n-form-item path="optIn">
+      <n-radio-group v-model:value="submission.optIn" name="optIn">
+        <n-space>
+          <n-radio
+            :value="true"
+            :label="$t('petition_form.opt_in_yes')"
+          />
+          <n-radio
+            :value="false"
+            :label="$t('petition_form.opt_in_no')"
+          />
+        </n-space>
+      </n-radio-group>
     </n-form-item>
     <Np class="text-xs">
       {{ $t('petition_form.opt_in_text', {group: groupName}) }}
