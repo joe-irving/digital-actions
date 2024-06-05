@@ -124,7 +124,10 @@
     "add_my_name": "Add my name",
     "error": "There was an error in adding your name to this petition",
     "country_label": "Country",
-    "share": "Now, can you share this petition to 3 other people?"
+    "share": "Now, can you share this petition to 3 other people?",
+    "opt_in_yes": "Yes! Tell me if this petition wins, and how I can help with the campaign",
+    "opt_in_no": "No. I don’t want to hear about this petition’s progress or the rest of the campaign.",
+    "opt_in_required": "Please select an option"
   },
   "creds": {
     "register": "Register",

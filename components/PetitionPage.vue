@@ -19,7 +19,12 @@ const shareUrl = ref(useShareUrl(petition.value?.slug || ''))
 
 const success = ref(false)
 
-const tagList = ref<string[]>([petition.value?.petitionCampaign?.actionNetworkAllTag || '', petition.value?.petitionCampaign?.actionNetworkResponseTag || ''])
+const tagList = ref<string[]>([
+  petition.value?.petitionCampaign?.actionNetworkAllTag || '',
+  petition.value?.petitionCampaign?.actionNetworkResponseTag || ''
+].filter((i) => {
+  return (i.length > 0)
+}))
 
 for (const tagName of (petition.value?.petitionThemes || [])) {
   tagList.value.push(`[${petition.value?.petitionCampaign?.tagPrefix}] Theme - ${tagName.title}`)
