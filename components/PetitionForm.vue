@@ -223,9 +223,6 @@ const signPetiton = async () => {
         </n-space>
       </n-radio-group>
     </n-form-item>
-    <Np class="text-xs">
-      {{ $t('petition_form.opt_in_text', {group: groupName}) }}
-    </Np>
     <n-space justify="center">
       <n-button type="success" size="large" @click.prevent="handleSignPetition">
         {{ $t('petition_form.add_my_name') }}
@@ -234,6 +231,9 @@ const signPetiton = async () => {
     <div v-if="formWarningMessages.length > 0">
       <FormErrorList :errors="formWarningMessages" />
     </div>
+    <Np class="text-xs">
+      {{ $t('petition_form.process_info') }} <a href="https://tippingpointuk.org/privacy" target="_blank">{{ $t('petition_form.privacy_policy') }}</a>.
+    </Np>
   </n-form>
 </template>
 
