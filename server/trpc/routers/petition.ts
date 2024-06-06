@@ -60,6 +60,7 @@ const selectFieldAuthorised = {
       required: true,
       label: true,
       type: true,
+      order: true,
       options: {
         select: {
           id: true,
@@ -614,6 +615,7 @@ export const petition = router({
             required: true,
             label: true,
             type: true,
+            order: true,
             options: {
               select: {
                 id: true,

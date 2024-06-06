@@ -60,7 +60,7 @@ onUnmounted(() => {
   <div @mouseover="() => fieldMouseOver = true" @mouseleave="() => fieldMouseOver = false">
     <n-card v-if="editMode">
       <n-form v-if="field.type === 'checkbox' || field.type === 'text'" v-model="fieldValue" v-click-outside="console.log('clicked outside')">
-        <Nh3>{{ $t('petition.edit_checkbox') }}</Nh3>
+        <Nh3>{{ $t('petition.edit_title', field) }}</Nh3>
         <n-form-item label-placement="left" size="large" path="label" :label="$t('petition.custom_field_label')">
           <n-input v-model:value="fieldValue.label" />
         </n-form-item>
@@ -71,10 +71,10 @@ onUnmounted(() => {
         </n-space>
         <n-switch v-model:value="fieldValue.required">
           <template #checked>
-            Required
+            {{ $t('petition.required') }}
           </template>
           <template #unchecked>
-            Optional
+            {{ $t('petition.optional') }}
           </template>
         </n-switch>
       </n-form>
@@ -83,21 +83,7 @@ onUnmounted(() => {
       </div>
     </n-card>
     <div v-else>
-      <n-space>
-        <n-space vertical>
-          <n-button circle>
-            <template #icon>
-              <NaiveIcon name="material-symbols:arrow-upward" />
-            </template>
-          </n-button>
-          <n-button circle>
-            <template #icon>
-              <NaiveIcon name="material-symbols:arrow-downward" />
-            </template>
-          </n-button>
-        </n-space>
-        <PetitionCustomFields :fields="[field]" />
-      </n-space>
+      <PetitionCustomFields :fields="[field]" />
     </div>
   </div>
 </template>

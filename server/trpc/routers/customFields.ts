@@ -53,7 +53,8 @@ export const customFields = router({
     id: z.number().int(),
     name: z.string().regex(/^[a-z0-9_ -]{3,100}$/, 'Needs to be just numbers, lowercase letters, dashes, underscores or spaces. Max length 100 chars.').optional(),
     label: z.string().max(1000).optional(),
-    required: z.boolean().optional()
+    required: z.boolean().optional(),
+    order: z.number().optional()
   })).mutation(async ({ ctx, input }) => {
     // check if user
     if (!ctx.user?.id) {
@@ -96,7 +97,8 @@ export const customFields = router({
       data: {
         name: input.name,
         label: input.label,
-        required: input.required
+        required: input.required,
+        order: input.order
       }
     })
   })

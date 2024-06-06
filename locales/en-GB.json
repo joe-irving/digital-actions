@@ -105,7 +105,10 @@
     "custom_field_label": "Label on form",
     "custom_field_name": "Name internally:",
     "custom_field_name_description": "The name internally in Action Network",
-    "edit_checkbox": "Edit Checkbox"
+    "edit_checkbox": "Edit Checkbox",
+    "edit_title": "Edit {type}",
+    "optional": "Optional",
+    "required": "Required"
   },
   "share": {
     "twitter": "Twitter",
