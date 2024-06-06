@@ -209,9 +209,6 @@ const signPetiton = async () => {
     <n-form-item path="country" :label="$t('petition_form.country_label')">
       <n-select v-model:value="submission.country" :options="countryOptions" />
     </n-form-item>
-    <n-form-item path="comments" :label="$t('petition_form.comment_label')">
-      <n-input v-model:value="submission.comments" type="textarea" />
-    </n-form-item>
     <n-form-item path="optIn">
       <n-radio-group v-model:value="submission.optIn" name="optIn">
         <n-space>
