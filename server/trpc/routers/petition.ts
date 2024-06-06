@@ -597,7 +597,14 @@ export const petition = router({
             name: true,
             required: true,
             label: true,
-            type: true
+            type: true,
+            options: {
+              select: {
+                id: true,
+                name: true,
+                label: true
+              }
+            }
           }
         }
       }

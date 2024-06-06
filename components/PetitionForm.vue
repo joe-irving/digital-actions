@@ -1,5 +1,11 @@
 <script setup lang="ts">
 import type { FormValidationError, FormRules, FormItemRule, FormInst } from 'naive-ui'
+import type { inferRouterOutputs } from '@trpc/server'
+import type { AppRouter } from '~/server/trpc/routers'
+
+type RouterOutput = inferRouterOutputs<AppRouter>;
+
+type CustomFields = RouterOutput['petition']['getPublic']['customFields'];
 
 const i18n = useI18n()
 const countries = useGetCountryList()
@@ -43,6 +49,10 @@ const props = defineProps({
   url: {
     type: String,
     required: true
+  },
+  customFields: {
+    type: Array as PropType<CustomFields>,
+    default: () => []
   }
 })
 
@@ -54,7 +64,8 @@ const submission = ref<{
   comments: string,
   postalCode: string,
   country: string | null,
-  optIn: boolean | null
+  optIn: boolean | null,
+  customFields: {[key: string]: string}
 }>({
   firstName: '',
   lastName: '',
@@ -63,8 +74,10 @@ const submission = ref<{
   comments: '',
   postalCode: '',
   country: null,
-  optIn: null
+  optIn: null,
+  customFields: {}
 })
+
 const formWarningMessages = ref<FormValidationError[]>([])
 
 const formRules = ref<FormRules>({
@@ -113,6 +126,9 @@ interface CountryCode {
 interface CountryCodeInput {
   country: CountryCode
 }
+interface CustomFieldSubmission {
+  [k: string]: string
+}
 
 const countryChanged = (country: CountryCode) => {
   submission.value.country = country.iso2
@@ -138,11 +154,12 @@ const signPetiton = async () => {
   if (!submission.value.optIn) {
     tags.push(`[${props.tagPrefix}] Do not subscribe`)
   }
-  const customFields: {
+  let customFields: {
     [key: string]: string
   } = {}
   customFields[`${props.tagPrefix}_petition_title`] = props.title
   customFields[`${props.tagPrefix}_petition_url`] = props.url
+  customFields = { ...customFields, ...submission.value.customFields }
   const submissionBody = {
     comments: submission.value.comments,
     person: {
@@ -209,6 +226,7 @@ const signPetiton = async () => {
     <n-form-item path="country" :label="$t('petition_form.country_label')">
       <n-select v-model:value="submission.country" :options="countryOptions" />
     </n-form-item>
+    <PetitionCustomFields :fields="customFields" @update="(fields: CustomFieldSubmission) => submission.customFields = fields" />
     <n-form-item path="optIn">
       <n-radio-group v-model:value="submission.optIn" name="optIn">
         <n-space>

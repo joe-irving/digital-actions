@@ -73,6 +73,7 @@ useSeoMeta({
               :group-name="petition?.petitionCampaign?.groupName || ''"
               :title="petition?.title || ''"
               :url="shareUrl"
+              :custom-fields="petition?.customFields"
               @success="() => success = true"
             />
           </n-space>
