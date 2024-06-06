@@ -7,7 +7,7 @@ export const customFields = router({
     petitionId: z.number().int(),
     name: z.string().regex(/^[a-z0-9_ -]{3,100}$/, 'Needs to be just numbers, lowercase letters, dashes, underscores or spaces. Max length 100 chars.'),
     label: z.string().max(1000),
-    type: z.enum(['checkbox']),
+    type: z.enum(['checkbox', 'radio', 'text']),
     required: z.boolean().optional()
   })).mutation(async ({ ctx, input }) => {
     // check if user
@@ -51,9 +51,8 @@ export const customFields = router({
   }),
   update: publicProcedure.input(z.object({
     id: z.number().int(),
-    name: z.string().regex(/^[a-z0-9_ -]{3,100}$/, 'Needs to be just numbers, lowercase letters, dashes, underscores or spaces. Max length 100 chars.'),
-    label: z.string().max(1000),
-    type: z.enum(['checkbox']),
+    name: z.string().regex(/^[a-z0-9_ -]{3,100}$/, 'Needs to be just numbers, lowercase letters, dashes, underscores or spaces. Max length 100 chars.').optional(),
+    label: z.string().max(1000).optional(),
     required: z.boolean().optional()
   })).mutation(async ({ ctx, input }) => {
     // check if user
@@ -97,7 +96,7 @@ export const customFields = router({
       data: {
         name: input.name,
         label: input.label,
-        type: input.type
+        required: input.required
       }
     })
   })

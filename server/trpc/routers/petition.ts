@@ -52,6 +52,22 @@ const selectFieldAuthorised = {
       lon: true,
       display_name: true
     }
+  },
+  customFields: {
+    select: {
+      id: true,
+      name: true,
+      required: true,
+      label: true,
+      type: true,
+      options: {
+        select: {
+          id: true,
+          name: true,
+          label: true
+        }
+      }
+    }
   }
 }
 

@@ -1,0 +1,103 @@
+<script setup lang="ts">
+import type { inferRouterOutputs } from '@trpc/server'
+import type { AppRouter } from '~/server/trpc/routers'
+
+type RouterOutput = inferRouterOutputs<AppRouter>;
+
+type CustomField = RouterOutput['petition']['getManage']['customFields'][number];
+// This accepts a single custom field
+// It has an edit and view version
+// When you click away, it goes into view version and saves
+// When it edit version you can edit each section of the form
+
+// To save, the update endpoint is called
+const { $client } = useNuxtApp()
+
+const props = defineProps({
+  field: {
+    type: Object as PropType<CustomField>,
+    required: true
+  }
+})
+
+const fieldValue = ref(props.field)
+
+const editMode = ref(false)
+
+const documentMouseDown = ref(false)
+const fieldMouseOver = ref(false)
+
+const markMouseAs = (val: boolean) => {
+  documentMouseDown.value = val
+}
+
+watch(documentMouseDown, () => {
+  if (documentMouseDown.value && fieldMouseOver.value && !editMode.value) {
+    editMode.value = true
+  } else if (documentMouseDown.value && !fieldMouseOver.value && editMode.value) {
+    $client.customFields.update.mutate({
+      id: fieldValue.value.id,
+      label: fieldValue.value.label,
+      name: fieldValue.value.name,
+      required: fieldValue.value.required
+    })
+    editMode.value = false
+  }
+})
+
+onMounted(() => {
+  document.body.addEventListener('mousedown', () => markMouseAs(true))
+  document.body.addEventListener('mouseup', () => markMouseAs(false))
+})
+
+onUnmounted(() => {
+  document.body.removeEventListener('mousedown', () => markMouseAs(true))
+  document.body.removeEventListener('mousedown', () => markMouseAs(false))
+})
+</script>
+
+<template>
+  <div @mouseover="() => fieldMouseOver = true" @mouseleave="() => fieldMouseOver = false">
+    <n-card v-if="editMode">
+      <n-form v-if="field.type === 'checkbox' || field.type === 'text'" v-model="fieldValue" v-click-outside="console.log('clicked outside')">
+        <Nh3>{{ $t('petition.edit_checkbox') }}</Nh3>
+        <n-form-item label-placement="left" size="large" path="label" :label="$t('petition.custom_field_label')">
+          <n-input v-model:value="fieldValue.label" />
+        </n-form-item>
+        <n-space>
+          <n-form-item size="small" label-placement="left" path="name" :label="$t('petition.custom_field_name')">
+            <n-input v-model:value="fieldValue.name" />
+          </n-form-item>
+        </n-space>
+        <n-switch v-model:value="fieldValue.required">
+          <template #checked>
+            Required
+          </template>
+          <template #unchecked>
+            Optional
+          </template>
+        </n-switch>
+      </n-form>
+      <div v-else>
+        <Nh3>Edit Mode!</Nh3>
+      </div>
+    </n-card>
+    <div v-else>
+      <n-space>
+        <n-space vertical>
+          <n-button circle>
+            <template #icon>
+              <NaiveIcon name="material-symbols:arrow-upward" />
+            </template>
+          </n-button>
+          <n-button circle>
+            <template #icon>
+              <NaiveIcon name="material-symbols:arrow-downward" />
+            </template>
+          </n-button>
+        </n-space>
+        <PetitionCustomFields :fields="[field]" />
+      </n-space>
+    </div>
+  </div>
+</template>

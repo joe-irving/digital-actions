@@ -374,6 +374,7 @@ model CustomField {
   options CustomFieldOption[]
   petition Petition @relation(fields: [petitionId], references: [id])
   petitionId Int
+  order Int @default(0)
 }
 
 model CustomFieldOption {

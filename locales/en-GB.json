@@ -100,7 +100,12 @@
     "are_you_sure": "Are you sure?",
     "yes_delete": "Yes, delete",
     "no_back": "No, take me back",
-    "delete_info": "Once this has been deleted, the tag and people stay in the Action Network system. However, the public page will be lost and you won't be able to get it back."
+    "delete_info": "Once this has been deleted, the tag and people stay in the Action Network system. However, the public page will be lost and you won't be able to get it back.",
+    "custom_fields_title": "Custom Fields",
+    "custom_field_label": "Label on form",
+    "custom_field_name": "Name internally:",
+    "custom_field_name_description": "The name internally in Action Network",
+    "edit_checkbox": "Edit Checkbox"
   },
   "share": {
     "twitter": "Twitter",
