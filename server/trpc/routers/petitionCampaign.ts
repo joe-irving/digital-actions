@@ -31,7 +31,8 @@ export const petitionCampaignRouter = router({
     }
     const tags = {
       all: `[${input.tagPrefix}] All signatures`,
-      response: `[${input.tagPrefix}] Auto Response`
+      response: `[${input.tagPrefix}] Auto Response`,
+      unsubscribe: `[${input.tagPrefix}] Do not subscribe`
     }
     const anTag = await createActionNetworkTags(anKeys.apiKey, tags.all)
     const anPetition = await createActionNetworkPetition({
@@ -41,7 +42,8 @@ export const petitionCampaignRouter = router({
       target: input.title,
       description: input.title
     })
-    createActionNetworkTags(anKeys.apiKey, tags.response)
+    await createActionNetworkTags(anKeys.apiKey, tags.response)
+    await createActionNetworkTags(anKeys.apiKey, tags.unsubscribe)
     const petitionCampaign = await ctx.prisma.petitionCampaign.create({
       data: {
         title: input.title,
@@ -87,6 +89,59 @@ export const petitionCampaignRouter = router({
     // })
 
     return petitionCampaign
+  }),
+  createTags: publicProcedure.input(z.number().int()).mutation(async ({ ctx, input }) => {
+    if (!ctx.user?.id) {
+      throw new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'You have to be logged in to manage petition campaigns'
+      })
+    }
+    const campaign = await ctx.prisma.petitionCampaign.findFirst({
+      where: {
+        id: input,
+        permissions: {
+          some: {
+            userId: ctx.user.id,
+            type: {
+              in: ['owner', 'admin']
+            }
+          }
+        }
+      }
+    })
+    if (!campaign) {
+      throw new TRPCError({
+        code: 'FORBIDDEN',
+        message: 'You do not have permissions to manage this petition campaign'
+      })
+    }
+    if (!campaign.actionNetworkCredentialId) {
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: 'No credential attached to this campaign'
+      })
+    }
+    const anKeys = await ctx.prisma.actionNetworkCredential.findFirst({
+      where: {
+        id: campaign.actionNetworkCredentialId
+      }
+    })
+    if (!anKeys) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Could not find the action network key linked to this campaign'
+      })
+    }
+    const tags = [
+      `[${campaign.tagPrefix}] All signatures`,
+      `[${campaign.tagPrefix}] Auto Response`,
+      `[${campaign.tagPrefix}] Do not subscribe`
+    ]
+    for (const tag of tags) {
+      await createActionNetworkTags(anKeys.apiKey, tag)
+    }
+    return tags
   }),
   getPublic: publicProcedure.input(z.object({
     id: z.number().int(),
