@@ -590,6 +590,15 @@ export const petition = router({
               }
             }
           }
+        },
+        customFields: {
+          select: {
+            id: true,
+            name: true,
+            required: true,
+            label: true,
+            type: true
+          }
         }
       }
     })
