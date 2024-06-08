@@ -56,6 +56,7 @@ useSeoMeta({
               :group-name="petition?.petitionCampaign?.groupName || ''"
               :title="petition?.title || ''"
               :url="shareUrl"
+              :custom-fields="petition?.customFields"
               @success="() => success = true"
             />
             <!-- TODO: When time, use the JSON output from tiptap, then store and parse taht -->
