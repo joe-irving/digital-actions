@@ -43,7 +43,12 @@ export const customFields = router({
       })
     }
     // get highest order
-    const highestOrder = petition.customFields.map(f => f.order).reduce((a, b) => Math.max(a, b), -Infinity)
+    let highestOrder: number
+    if (petition.customFields.length > 0) {
+      highestOrder = petition.customFields.map(f => f.order).reduce((a, b) => Math.max(a, b), -Infinity)
+    } else {
+      highestOrder = -1
+    }
     // add custom field
     const newField = await ctx.prisma.customField.create({
       data: {
