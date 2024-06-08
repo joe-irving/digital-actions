@@ -208,6 +208,7 @@ model Petition {
   tagName                 String?
   actionNetworkPetitionId String?
   sourceCode              String?
+  customFields CustomField[]
 }
 
 model UserPetitionPermissions {
@@ -359,4 +360,29 @@ model VerifiedActionNetworkPetition {
   content String?
   target String?
   imageUrl String?
+}
+
+
+model CustomField {
+  id Int @id @default(autoincrement())
+  created      DateTime   @default(now())
+  updated      DateTime   @default(now()) @updatedAt
+  name String
+  label String
+  type String
+  required Boolean @default(false)
+  options CustomFieldOption[]
+  petition Petition @relation(fields: [petitionId], references: [id])
+  petitionId Int
+  order Int @default(0)
+}
+
+model CustomFieldOption {
+  id Int @id @default(autoincrement())
+  created      DateTime   @default(now())
+  updated      DateTime   @default(now()) @updatedAt
+  field CustomField  @relation(fields: [fieldId], references: [id])
+  fieldId Int
+  name String
+  label String
 }

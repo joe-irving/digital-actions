@@ -1,5 +1,11 @@
 <script setup lang="ts">
 import type { FormValidationError, FormRules, FormItemRule, FormInst } from 'naive-ui'
+import type { inferRouterOutputs } from '@trpc/server'
+import type { AppRouter } from '~/server/trpc/routers'
+
+type RouterOutput = inferRouterOutputs<AppRouter>;
+
+type CustomFields = RouterOutput['petition']['getPublic']['customFields'];
 
 const i18n = useI18n()
 const countries = useGetCountryList()
@@ -43,6 +49,10 @@ const props = defineProps({
   url: {
     type: String,
     required: true
+  },
+  customFields: {
+    type: Array as PropType<CustomFields>,
+    default: () => []
   }
 })
 
@@ -53,7 +63,9 @@ const submission = ref<{
   phoneNumber: string,
   comments: string,
   postalCode: string,
-  country: string | null
+  country: string | null,
+  optIn: boolean | null,
+  customFields: {[key: string]: string}
 }>({
   firstName: '',
   lastName: '',
@@ -61,8 +73,11 @@ const submission = ref<{
   phoneNumber: '',
   comments: '',
   postalCode: '',
-  country: null
+  country: null,
+  optIn: null,
+  customFields: {}
 })
+
 const formWarningMessages = ref<FormValidationError[]>([])
 
 const formRules = ref<FormRules>({
@@ -77,13 +92,23 @@ const formRules = ref<FormRules>({
     trigger: ['blur']
   },
   email: {
-    required: false,
+    required: true,
     trigger: ['blur'],
     validator (_rule: FormItemRule, value: string) {
       if (value === '') {
         return true
       } else if (!/^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i.test(value)) {
         return new Error(i18n.t('petition_form.email_invalid'))
+      }
+      return true
+    }
+  },
+  optIn: {
+    required: false,
+    trigger: ['blur'],
+    validator (_rule: FormItemRule, value: boolean | null) {
+      if (value === null) {
+        return new Error(i18n.t('petition_form.opt_in_required'))
       }
       return true
     }
@@ -100,6 +125,9 @@ interface CountryCode {
 
 interface CountryCodeInput {
   country: CountryCode
+}
+interface CustomFieldSubmission {
+  [k: string]: string
 }
 
 const countryChanged = (country: CountryCode) => {
@@ -119,11 +147,19 @@ const handleSignPetition = () => {
 }
 
 const signPetiton = async () => {
-  const customFields: {
+  const tags = [
+    props.tagName,
+    ...props.tagList
+  ]
+  if (!submission.value.optIn) {
+    tags.push(`[${props.tagPrefix}] Do not subscribe`)
+  }
+  let customFields: {
     [key: string]: string
   } = {}
   customFields[`${props.tagPrefix}_petition_title`] = props.title
   customFields[`${props.tagPrefix}_petition_url`] = props.url
+  customFields = { ...customFields, ...submission.value.customFields }
   const submissionBody = {
     comments: submission.value.comments,
     person: {
@@ -137,10 +173,7 @@ const signPetiton = async () => {
       phone_numbers: [{ number: submission.value.phoneNumber }],
       custom_fields: customFields
     },
-    add_tags: [
-      props.tagName,
-      ...props.tagList
-    ],
+    add_tags: tags,
     'action_network:referrer_data': sourceCode
       ? {
           source: sourceCode
@@ -193,12 +226,21 @@ const signPetiton = async () => {
     <n-form-item path="country" :label="$t('petition_form.country_label')">
       <n-select v-model:value="submission.country" :options="countryOptions" />
     </n-form-item>
-    <n-form-item path="comments" :label="$t('petition_form.comment_label')">
-      <n-input v-model:value="submission.comments" type="textarea" />
+    <PetitionCustomFields :fields="customFields" @update="(fields: CustomFieldSubmission) => submission.customFields = fields" />
+    <n-form-item path="optIn">
+      <n-radio-group v-model:value="submission.optIn" name="optIn">
+        <n-space>
+          <n-radio
+            :value="true"
+            :label="$t('petition_form.opt_in_yes')"
+          />
+          <n-radio
+            :value="false"
+            :label="$t('petition_form.opt_in_no')"
+          />
+        </n-space>
+      </n-radio-group>
     </n-form-item>
-    <Np class="text-xs">
-      {{ $t('petition_form.opt_in_text', {group: groupName}) }}
-    </Np>
     <n-space justify="center">
       <n-button type="success" size="large" @click.prevent="handleSignPetition">
         {{ $t('petition_form.add_my_name') }}
@@ -207,6 +249,9 @@ const signPetiton = async () => {
     <div v-if="formWarningMessages.length > 0">
       <FormErrorList :errors="formWarningMessages" />
     </div>
+    <Np class="text-xs">
+      {{ $t('petition_form.process_info') }} <a href="https://tippingpointuk.org/privacy" target="_blank">{{ $t('petition_form.privacy_policy') }}</a>.
+    </Np>
   </n-form>
 </template>
 
