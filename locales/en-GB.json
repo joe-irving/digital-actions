@@ -108,7 +108,9 @@
     "edit_checkbox": "Edit Checkbox",
     "edit_title": "Edit {type}",
     "optional": "Optional",
-    "required": "Required"
+    "required": "Required",
+    "new_text_field": "New text field",
+    "new_checkbox_field": "New checkbox"
   },
   "share": {
     "twitter": "Twitter",

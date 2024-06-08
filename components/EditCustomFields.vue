@@ -10,6 +10,10 @@ type CustomFields = RouterOutput['petition']['getManage']['customFields']
 const { $client } = useNuxtApp()
 
 const props = defineProps({
+  petitionId: {
+    type: Number,
+    required: true
+  },
   fields: {
     type: Array as PropType<CustomFields>,
     required: true
@@ -50,6 +54,23 @@ const moveField = (by: number, index: number) => {
     return a.order - b.order
   })
 }
+
+const createField = async (type: 'text' | 'checkbox') => {
+  const newField = await $client.customFields.create.mutate({
+    type,
+    petitionId: props.petitionId,
+    label: `Label for ${type} field`,
+    name: `${type} field`
+  })
+  fieldValues.value.push(newField)
+}
+
+const fieldDeleted = (field: CustomFields[number]) => {
+  const index = fieldValues.value.indexOf(field)
+  if (index > -1) {
+    fieldValues.value.splice(index, 1)
+  }
+}
 </script>
 
 <template>
@@ -67,7 +88,21 @@ const moveField = (by: number, index: number) => {
           </template>
         </n-button>
       </n-space>
-      <EditCustomField :field="field" />
+      <EditCustomField :field="field" @delete="fieldDeleted" />
+    </n-space>
+    <n-space>
+      <n-button @click="createField('text')">
+        <template #icon>
+          <NaiveIcon name="material-symbols:text-fields-rounded" />
+        </template>
+        {{ $t('petition.new_text_field') }}
+      </n-button>
+      <n-button @click="createField('checkbox')">
+        <template #icon>
+          <NaiveIcon name="material-symbols:check-box-outline" />
+        </template>
+        {{ $t('petition.new_checkbox_field') }}
+      </n-button>
     </n-space>
   </div>
 </template>

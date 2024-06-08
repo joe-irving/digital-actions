@@ -20,6 +20,8 @@ const props = defineProps({
   }
 })
 
+const emit = defineEmits<{(e: 'delete', value: CustomField): void}>()
+
 const fieldValue = ref(props.field)
 
 const editMode = ref(false)
@@ -29,6 +31,10 @@ const fieldMouseOver = ref(false)
 
 const markMouseAs = (val: boolean) => {
   documentMouseDown.value = val
+}
+const deleteField = () => {
+  $client.customFields.delete.mutate({ id: props.field.id })
+  emit('delete', props.field)
 }
 
 watch(documentMouseDown, () => {
@@ -59,7 +65,7 @@ onUnmounted(() => {
 <template>
   <div @mouseover="() => fieldMouseOver = true" @mouseleave="() => fieldMouseOver = false">
     <n-card v-if="editMode">
-      <n-form v-if="field.type === 'checkbox' || field.type === 'text'" v-model="fieldValue" v-click-outside="console.log('clicked outside')">
+      <n-form v-if="field.type === 'checkbox' || field.type === 'text'" v-model="fieldValue">
         <Nh3>{{ $t('petition.edit_title', field) }}</Nh3>
         <n-form-item label-placement="left" size="large" path="label" :label="$t('petition.custom_field_label')">
           <n-input v-model:value="fieldValue.label" />
@@ -69,17 +75,25 @@ onUnmounted(() => {
             <n-input v-model:value="fieldValue.name" />
           </n-form-item>
         </n-space>
-        <n-switch v-model:value="fieldValue.required">
-          <template #checked>
-            {{ $t('petition.required') }}
-          </template>
-          <template #unchecked>
-            {{ $t('petition.optional') }}
-          </template>
-        </n-switch>
+        <n-space justify="space-between">
+          <n-switch v-model:value="fieldValue.required">
+            <template #checked>
+              {{ $t('petition.required') }}
+            </template>
+            <template #unchecked>
+              {{ $t('petition.optional') }}
+            </template>
+          </n-switch>
+
+          <n-button @click="() => deleteField()">
+            <template #icon>
+              <NaiveIcon name="mdi:delete" />
+            </template>
+          </n-button>
+        </n-space>
       </n-form>
       <div v-else>
-        <Nh3>Edit Mode!</Nh3>
+        <Nh3>TODO: edit other types of field</Nh3>
       </div>
     </n-card>
     <div v-else>

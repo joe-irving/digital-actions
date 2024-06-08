@@ -15,6 +15,9 @@ const props = defineProps({
 
 const emit = defineEmits<{(e: 'update', value: {[key: string]: string}): void}>()
 
+const sortedFields = ref(props.fields)
+sortedFields.value.sort((a, b) => a.order - b.order)
+
 const formValue = ref<{
     [key: string]: string | undefined
 }>({})
@@ -44,7 +47,7 @@ watch(formValue.value, () => {
 
 <template>
   <div>
-    <n-form-item v-for="field in fields" :key="field.id" :label="field.type === 'checkbox' ? undefined : field.label" :required="field.type === 'checkbox' ? undefined : field.required">
+    <n-form-item v-for="field in sortedFields" :key="field.id" :label="field.type === 'checkbox' ? undefined : field.label" :required="field.type === 'checkbox' ? undefined : field.required">
       <n-checkbox v-if="field.type === 'checkbox'" v-model:checked="formValue[field.name]" :label="field.label" />
       <n-radio-group v-if="field.type === 'radio' && field.options.length > 0" v-model:value="formValue[field.name]" :name="field.name" :label="field.label" :required="field.required">
         <n-space vertical>

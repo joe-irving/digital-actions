@@ -12,7 +12,7 @@ export const customFields = router({
   })).mutation(async ({ ctx, input }) => {
     // check if user
     if (!ctx.user?.id) {
-      return new TRPCError({
+      throw new TRPCError({
         code: 'UNAUTHORIZED',
         message: 'You need to be logged in to create custom fields'
       })
@@ -31,6 +31,9 @@ export const customFields = router({
             }
           }
         }
+      },
+      select: {
+        customFields: true
       }
     })
     if (!petition) {
@@ -39,15 +42,34 @@ export const customFields = router({
         message: 'You do not have permission to modify that petition, or it does not exist.'
       })
     }
+    // get highest order
+    const highestOrder = petition.customFields.map(f => f.order).reduce((a, b) => Math.max(a, b), -Infinity)
     // add custom field
-    return await ctx.prisma.customField.create({
+    const newField = await ctx.prisma.customField.create({
       data: {
         petitionId: input.petitionId,
         name: input.name,
         label: input.label,
-        type: input.type
+        type: input.type,
+        order: highestOrder + 1
+      },
+      select: {
+        id: true,
+        name: true,
+        required: true,
+        label: true,
+        type: true,
+        order: true,
+        options: {
+          select: {
+            id: true,
+            name: true,
+            label: true
+          }
+        }
       }
     })
+    return newField
   }),
   update: publicProcedure.input(z.object({
     id: z.number().int(),
@@ -99,6 +121,49 @@ export const customFields = router({
         label: input.label,
         required: input.required,
         order: input.order
+      }
+    })
+  }),
+  delete: publicProcedure.input(z.object({
+    id: z.number().int()
+  })).mutation(async ({ ctx, input }) => {
+    // check if user
+    if (!ctx.user?.id) {
+      return new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'You need to be logged in to create custom fields'
+      })
+    }
+    // Check petition okay
+    const petition = await ctx.prisma.petition.findFirst({
+      where: {
+        customFields: {
+          some: {
+            id: input.id
+          }
+        },
+        petitionCampaign: {
+          permissions: {
+            some: {
+              userId: ctx.user.id,
+              type: {
+                in: ['owner', 'admin', 'approval', 'write']
+              }
+            }
+          }
+        }
+      }
+    })
+    if (!petition) {
+      throw new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'You do not have permission to modify that custom field, or it does not exist.'
+      })
+    }
+    // add custom field
+    return await ctx.prisma.customField.delete({
+      where: {
+        id: input.id
       }
     })
   })
