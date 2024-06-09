@@ -23,16 +23,22 @@ const props = defineProps({
   }
 })
 
+const sourcedUrl = (source: string) => {
+  const url = new URL(props.url)
+  url.searchParams.set('source', source)
+  return url.toString()
+}
+
 const shareButtonLinks = ref({
   facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-    props.url
-  )}`,
+    sourcedUrl('facebook')
+  )}&amp;src=sdkpreparse`,
   twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(
     props.tweet || props.description || ''
-  )}&url=${encodeURIComponent(props.url)}`,
+  )}&url=${encodeURIComponent(sourcedUrl('twitter'))}`,
   whatsapp: `https://wa.me/?text=${encodeURIComponent(
     props.whatsapp || props.description || ''
-  )}+${props.url}`
+  )}+${sourcedUrl('whatsapp')}`
 })
 
 const isCopied = ref(false)
