@@ -241,7 +241,7 @@ const signPetiton = async () => {
         </n-space>
       </n-radio-group>
     </n-form-item>
-    <n-space justify="center">
+    <n-space justify="center" class="pt-2">
       <n-button type="success" size="large" @click.prevent="handleSignPetition">
         {{ $t('petition_form.add_my_name') }}
       </n-button>
@@ -258,5 +258,14 @@ const signPetiton = async () => {
 <style>
 .vti__input{
   background-color: var(--n-color);
+}
+.n-form-item .n-form-item-feedback-wrapper {
+  min-height: auto;
+}
+.n-form-item .n-form-item-label {
+  font-size: 12px;
+  padding-top: 7px;
+  padding-bottom: 0px;
+  min-height: auto;
 }
 </style>
