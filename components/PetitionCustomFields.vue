@@ -47,7 +47,13 @@ watch(formValue.value, () => {
 
 <template>
   <div>
-    <n-form-item v-for="field in sortedFields" :key="field.id" :label="field.type === 'checkbox' ? undefined : field.label" :required="field.type === 'checkbox' ? undefined : field.required">
+    <n-form-item
+      v-for="field in sortedFields"
+      :key="field.id"
+      :label="field.type === 'checkbox' ? undefined : field.label"
+      :required="field.type === 'checkbox' ? undefined : field.required"
+      :show-label="field.type !== 'checkbox'"
+    >
       <n-checkbox v-if="field.type === 'checkbox'" v-model:checked="formValue[field.name]" :label="field.label" />
       <n-radio-group v-if="field.type === 'radio' && field.options.length > 0" v-model:value="formValue[field.name]" :name="field.name" :label="field.label" :required="field.required">
         <n-space vertical>
