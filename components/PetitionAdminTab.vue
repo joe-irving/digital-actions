@@ -134,7 +134,7 @@ const deletePressed = () => {
   <div>
     <Nh2>{{ $t('petition.permissions_title') }}</Nh2>
     <PermissionList
-      :permissions="permissions"
+      :permissions="permissions || undefined"
       :types="['read', 'write', 'admin']"
       @update="updatePermission"
       @delete="deletePermission"

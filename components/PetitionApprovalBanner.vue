@@ -15,7 +15,6 @@ const props = defineProps({
   }
 })
 const emit = defineEmits(['update'])
-const localePath = useLocalePath()
 const { $client } = useNuxtApp()
 
 const updateStatus = async (status: 'public' | 'rejected') => {
@@ -31,23 +30,16 @@ const updateStatus = async (status: 'public' | 'rejected') => {
 
 <template>
   <div>
-    <div>
-      <n-alert v-if="status=='request_approval'" type="info">
-        <Nh2>{{ $t('petition.approval_question') }}</Nh2>
-        <n-space>
-          <n-button type="error" @click="updateStatus('rejected')">
-            {{ $t('petition.reject') }}
-          </n-button>
-          <n-button type="success" @click="updateStatus('public')">
-            {{ $t('petition.approve') }}
-          </n-button>
-        </n-space>
-      </n-alert>
-      <div v-else>
-        <NuxtLink :to="localePath(`/petition/campaign/${petitionCampaignId}`)">
-          <n-button>{{ $t('petition.back_to_campaign') }}</n-button>
-        </NuxtLink>
-      </div>
-    </div>
+    <n-alert v-if="status=='request_approval'" type="info">
+      <Nh2>{{ $t('petition.approval_question') }}</Nh2>
+      <n-space>
+        <n-button type="error" @click="updateStatus('rejected')">
+          {{ $t('petition.reject') }}
+        </n-button>
+        <n-button type="success" @click="updateStatus('public')">
+          {{ $t('petition.approve') }}
+        </n-button>
+      </n-space>
+    </n-alert>
   </div>
 </template>
