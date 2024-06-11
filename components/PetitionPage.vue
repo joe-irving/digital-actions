@@ -46,7 +46,7 @@ useSeoMeta({
           <n-space vertical>
             <n-image :src="petition?.image?.url" class="hidden sm:block" />
             <Nh1>{{ petition?.title }}</Nh1>
-            <PetitionSignatureCounter :signatures="signatures" />
+            <PetitionSignatureCounter :signatures="signatures" class="sm:hidden" />
             <PetitionForm
               class="block sm:hidden mb-8"
               :endpoint="(petition?.actionNetworkPetitionId || '') + '/signatures'"
@@ -65,8 +65,9 @@ useSeoMeta({
           </n-space>
         </n-space>
         <div class="hidden sm:flex">
-          <n-space class="max-w-xs border-0 sm:border shadow-none sm:shadow-md rounded p-4">
-            <PetitionSignatureCounter :signatures="signatures" />
+          <div class="max-w-xs w-full border-0 sm:border shadow-none sm:shadow-md rounded p-4">
+            <PetitionSignatureCounter :signatures="signatures" class="w-full" />
+            <Nh2>{{ $t("petition_form.sign_petition") }}</Nh2>
             <PetitionForm
               :endpoint="(petition?.actionNetworkPetitionId || '') + '/signatures'"
               :pc-endpoint="(petition?.petitionCampaign?.petitionEndpointURL || '') + '/signatures'"
@@ -79,7 +80,7 @@ useSeoMeta({
               :custom-fields="petition?.customFields"
               @success="() => success = true"
             />
-          </n-space>
+          </div>
         </div>
       </div>
       <div v-else class="rounded shadow-md p-4 ">
