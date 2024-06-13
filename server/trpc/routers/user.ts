@@ -63,5 +63,27 @@ export const userRouter = router({
         postCode: true
       }
     })
+  }),
+  all: publicProcedure.query(async ({ ctx }) => {
+    if (!ctx.user?.id) {
+      throw new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'You are not logged in'
+      })
+    }
+    if (!ctx.user.superAdmin) {
+      throw new TRPCError({
+        code: 'FORBIDDEN',
+        message: 'You are not a super admin'
+      })
+    }
+    return await ctx.prisma.user.findMany({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        image: true
+      }
+    })
   })
 })
