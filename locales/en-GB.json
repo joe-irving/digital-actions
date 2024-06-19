@@ -245,5 +245,10 @@
     "post_code_label": "Your post code",
     "post_code_invalid": "Please enter a postcode with less than 10 characters",
     "update_button": "Update"
+  },
+  "admin": {
+    "phone": "Phone",
+    "name": "Name",
+    "email": "Email"
   }
 }

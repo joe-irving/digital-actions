@@ -54,6 +54,7 @@ model User {
   PetitionCampaignPermission PetitionCampaignPermission[]
   actionNetworkCredentials   ActionNetworkCredential[]
   styleThemePermissions      StyleThemePermission[]
+  superAdmin                 Boolean @default(false)
 }
 
 model VerificationToken {
