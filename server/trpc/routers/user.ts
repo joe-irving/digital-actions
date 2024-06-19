@@ -82,7 +82,8 @@ export const userRouter = router({
         id: true,
         name: true,
         email: true,
-        image: true
+        image: true,
+        phone: true
       }
     })
   })
