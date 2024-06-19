@@ -12,6 +12,7 @@ import { styleThemeRouter } from './styleTheme'
 import { petitionCampaignPermission } from './petitionCampaignPermission'
 import { petitionPermission } from './petitionPermission'
 import { petitionCampaignActionNetwork } from './petitionCampaignActionNetwork'
+import { customFields } from './customFields'
 
 export const appRouter = router({
   user: userRouter,
@@ -26,7 +27,8 @@ export const appRouter = router({
   styleTheme: styleThemeRouter,
   petitionCampaignPermission,
   petitionPermission,
-  petitionCampaignActionNetwork
+  petitionCampaignActionNetwork,
+  customFields
 })
 
 // export type definition of API

@@ -12,14 +12,19 @@ const { data: petition } = await $client.petition.getPublic.useQuery({
   id: props.id
 })
 const { data: theme } = petition.value?.petitionCampaign?.styleThemeId ? await $client.styleTheme.get.useQuery(petition.value?.petitionCampaign?.styleThemeId) : { data: undefined }
-// const { data: signatures } = $client.petition.signatureCount.useQuery({
-//   id: props.id
-// })
+const { data: signatures } = $client.petition.signatureCount.useQuery({
+  id: props.id
+})
 const shareUrl = ref(useShareUrl(petition.value?.slug || ''))
 
 const success = ref(false)
 
-const tagList = ref<string[]>([petition.value?.petitionCampaign?.actionNetworkAllTag || '', petition.value?.petitionCampaign?.actionNetworkResponseTag || ''])
+const tagList = ref<string[]>([
+  petition.value?.petitionCampaign?.actionNetworkAllTag || '',
+  petition.value?.petitionCampaign?.actionNetworkResponseTag || ''
+].filter((i) => {
+  return (i.length > 0)
+}))
 
 for (const tagName of (petition.value?.petitionThemes || [])) {
   tagList.value.push(`[${petition.value?.petitionCampaign?.tagPrefix}] Theme - ${tagName.title}`)
@@ -41,6 +46,7 @@ useSeoMeta({
           <n-space vertical>
             <n-image :src="petition?.image?.url" class="hidden sm:block" />
             <Nh1>{{ petition?.title }}</Nh1>
+            <PetitionSignatureCounter :signatures="signatures" class="sm:hidden" />
             <PetitionForm
               class="block sm:hidden mb-8"
               :endpoint="(petition?.actionNetworkPetitionId || '') + '/signatures'"
@@ -51,6 +57,7 @@ useSeoMeta({
               :group-name="petition?.petitionCampaign?.groupName || ''"
               :title="petition?.title || ''"
               :url="shareUrl"
+              :custom-fields="petition?.customFields"
               @success="() => success = true"
             />
             <!-- TODO: When time, use the JSON output from tiptap, then store and parse taht -->
@@ -58,7 +65,9 @@ useSeoMeta({
           </n-space>
         </n-space>
         <div class="hidden sm:flex">
-          <n-space class="max-w-xs border-0 sm:border shadow-none sm:shadow-md rounded p-4">
+          <div class="max-w-xs w-full border-0 sm:border shadow-none sm:shadow-md rounded p-4">
+            <PetitionSignatureCounter :signatures="signatures" class="w-full" />
+            <Nh2>{{ $t("petition_form.sign_petition") }}</Nh2>
             <PetitionForm
               :endpoint="(petition?.actionNetworkPetitionId || '') + '/signatures'"
               :pc-endpoint="(petition?.petitionCampaign?.petitionEndpointURL || '') + '/signatures'"
@@ -68,9 +77,10 @@ useSeoMeta({
               :group-name="petition?.petitionCampaign?.groupName || ''"
               :title="petition?.title || ''"
               :url="shareUrl"
+              :custom-fields="petition?.customFields"
               @success="() => success = true"
             />
-          </n-space>
+          </div>
         </div>
       </div>
       <div v-else class="rounded shadow-md p-4 ">

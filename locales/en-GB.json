@@ -100,7 +100,17 @@
     "are_you_sure": "Are you sure?",
     "yes_delete": "Yes, delete",
     "no_back": "No, take me back",
-    "delete_info": "Once this has been deleted, the tag and people stay in the Action Network system. However, the public page will be lost and you won't be able to get it back."
+    "delete_info": "Once this has been deleted, the tag and people stay in the Action Network system. However, the public page will be lost and you won't be able to get it back.",
+    "custom_fields_title": "Custom Fields",
+    "custom_field_label": "Label on form",
+    "custom_field_name": "Name internally:",
+    "custom_field_name_description": "The name internally in Action Network",
+    "edit_checkbox": "Edit Checkbox",
+    "edit_title": "Edit {type}",
+    "optional": "Optional",
+    "required": "Required",
+    "new_text_field": "New text field",
+    "new_checkbox_field": "New checkbox"
   },
   "share": {
     "twitter": "Twitter",
@@ -119,12 +129,20 @@
     "phone_label": "Phone number",
     "phone_invalid": "That doesn't like a valid postcode",
     "comment_label": "Any comments to add?",
-    "opt_in_text": "You don't have to leave your email address or phone number, but if you do, we ({group}) will use these to keep you updated on how you can get involved through petitions, campaigning, volunteering and donating. You can opt out at any time. We take the security of your data seriously. Your information is safe and secure with us – read our privacy policy",
+    "opt_in_text_no_email": "You don't have to leave your email address or phone number, but if you do, we ({group}) will use these to keep you updated on how you can get involved through petitions, campaigning, volunteering and donating. You can opt out at any time. We take the security of your data seriously. Your information is safe and secure with us – read our privacy policy",
+    "privacy_policy": "Privacy Policy",
+    "process_info": "We process all your information in accordance to our",
     "postal_code": "Post code",
     "add_my_name": "Add my name",
     "error": "There was an error in adding your name to this petition",
     "country_label": "Country",
-    "share": "Now, can you share this petition to 3 other people?"
+    "share": "Now, can you share this petition to 3 other people?",
+    "opt_in_yes": "Yes! Tell me if this petition wins, and how I can help with the campaign",
+    "opt_in_no": "No. I don’t want to hear about this petition’s progress or the rest of the campaign.",
+    "opt_in_required": "Please select an option",
+    "signatures": "Signatures",
+    "next_target": "Next Target",
+    "sign_petition": "Sign this petition"
   },
   "creds": {
     "register": "Register",

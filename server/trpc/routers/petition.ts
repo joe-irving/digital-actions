@@ -52,6 +52,23 @@ const selectFieldAuthorised = {
       lon: true,
       display_name: true
     }
+  },
+  customFields: {
+    select: {
+      id: true,
+      name: true,
+      required: true,
+      label: true,
+      type: true,
+      order: true,
+      options: {
+        select: {
+          id: true,
+          name: true,
+          label: true
+        }
+      }
+    }
   }
 }
 
@@ -587,6 +604,23 @@ export const petition = router({
               select: {
                 id: true,
                 url: true
+              }
+            }
+          }
+        },
+        customFields: {
+          select: {
+            id: true,
+            name: true,
+            required: true,
+            label: true,
+            type: true,
+            order: true,
+            options: {
+              select: {
+                id: true,
+                name: true,
+                label: true
               }
             }
           }

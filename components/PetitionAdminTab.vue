@@ -134,12 +134,14 @@ const deletePressed = () => {
   <div>
     <Nh2>{{ $t('petition.permissions_title') }}</Nh2>
     <PermissionList
-      :permissions="permissions"
+      :permissions="permissions || undefined"
       :types="['read', 'write', 'admin']"
       @update="updatePermission"
       @delete="deletePermission"
       @create="addPermission"
     />
+    <Nh2>{{ $t('petition.custom_fields_title') }}</Nh2>
+    <EditCustomFields :petition-id="petition.id" :fields="petition.customFields" />
     <Nh2>{{ $t('petition.action_network') }}</Nh2>
     <p>{{ $t('petition.action_network_explainer') }}</p>
     <ActionNetworkTagExplainer :tag="`[${petitionCampaign?.tagPrefix}]: ${petition.id}`" :description="$t('petition.action_network_tag_explainer')" />

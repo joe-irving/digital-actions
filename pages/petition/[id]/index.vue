@@ -99,6 +99,11 @@ const createShareDialog = () => {
               {{ $t('menu.petition') }}
             </NuxtLink>
           </n-breadcrumb-item>
+          <n-breadcrumb-item v-if="petitionCampaign && isApprover">
+            <NuxtLink :to="localePath('/petition/campaign/' + petitionCampaign.id)">
+              {{ petitionCampaign.title }}
+            </NuxtLink>
+          </n-breadcrumb-item>
           <n-breadcrumb-item>
             <NuxtLink :to="localePath('/petition/' + petition?.id)">
               {{ petition?.title }}
@@ -145,7 +150,7 @@ const createShareDialog = () => {
           }"
         />
       </n-tab-pane>
-      <n-tab-pane v-if="isAdmin" name="admin" :tab="$t('petition.admin')">
+      <n-tab-pane v-if="isAdmin && petitionCampaign && petitionCampaignPermissions && petitionPermissions" name="admin" :tab="$t('petition.admin')">
         <PetitionAdminTab
           :petition="petition"
           :petition-campaign="petitionCampaign"
