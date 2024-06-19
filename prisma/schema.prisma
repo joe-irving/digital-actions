@@ -208,6 +208,7 @@ model Petition {
   tagName                 String?
   actionNetworkPetitionId String?
   sourceCode              String?
+  signatureTotal          Int @default(0)
 }
 
 model UserPetitionPermissions {

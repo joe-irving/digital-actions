@@ -11,11 +11,6 @@ const { data: petitionCampaign } = await $client.petitionCampaign.getPublic.useQ
 const { data: theme } = petitionCampaign.value?.styleThemeId ? await $client.styleTheme.get.useQuery(petitionCampaign.value?.styleThemeId) : { data: undefined }
 const { data: petitions } = $client.petitionCampaign.getPublicList.useQuery({ id: props.id })
 
-definePageMeta({
-  layout: 'public',
-  auth: false
-})
-
 useSeoMeta({
   title: petitionCampaign.value?.title,
   ogTitle: petitionCampaign.value?.title,
@@ -30,25 +25,23 @@ useSeoMeta({
         {{ petitionCampaign?.title }}
       </Nh1>
     </n-space>
-
-    <n-space justify="center" class="">
-      <n-grid
-        v-if="petitions && petitions.length >= 1"
-        class="p-4"
-        cols="3 m:3 s:2 1"
-        responsive="screen"
-        :x-gap="12"
-        :y-gap="8"
-        :layout-shift-disabled="false"
-      >
-        <n-grid-item v-for="petition in petitions" :key="petition.id" class="max-w-96">
-          <PetitionCard
-            :petition="petition"
-            :default-image="petitionCampaign?.defaultPetitionImage?.url"
-          />
-        </n-grid-item>
-      </n-grid>
-    </n-space>
+    <div
+      v-if="petitions && petitions.length >= 1"
+      class="p-4 grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 justify-items-stretch"
+      cols="3 m:3 s:2 1"
+      responsive="screen"
+      :x-gap="12"
+      :y-gap="8"
+      :layout-shift-disabled="false"
+    >
+      <PetitionCard
+        v-for="petition in petitions"
+        :key="petition.id"
+        :petition="petition"
+        :default-image="petitionCampaign?.defaultPetitionImage?.url"
+        class=""
+      />
+    </div>
 
     <n-space justify="center" class="mb-8 mt-8">
       <NuxtLink :to="`/petition/${petitionCampaign?.id}/start?source=bottom_petition_list`">

@@ -6,6 +6,8 @@ const { data: slug } = await $client.slug.get.useQuery({
   slug: route.params.slug.toString()
 })
 
+const exists = !!(slug.value?.petition || slug.value?.petitionCampaign)
+
 // TODO better 404 page
 
 definePageMeta({
@@ -18,7 +20,7 @@ definePageMeta({
   <div>
     <PetitionPage v-if="slug?.petition" :id="slug.petition?.id" />
     <PetitionCampaignPage v-else-if="slug?.petitionCampaign" :id="slug.petitionCampaign?.id" />
-    <div v-else>
+    <div v-else-if="!exists">
       Not found!
     </div>
   </div>

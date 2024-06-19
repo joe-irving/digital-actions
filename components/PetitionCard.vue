@@ -9,7 +9,7 @@ type PetitionListItemManage = RouterOutput['petition']['userList'][number];
 
 type PetitionListItem = PetitionListItemManage & PetitionListItemPublic
 
-defineProps({
+const props = defineProps({
   petition: {
     type: Object as PropType<PetitionListItem>,
     required: true
@@ -17,42 +17,50 @@ defineProps({
   defaultImage: {
     type: String,
     default: ''
+  },
+  class: {
+    type: String,
+    default: ''
   }
 })
+
+const styleClass = ref(props.class)
 </script>
 
 <template>
-  <NuxtLink class="max-w-[250px]" :to="`/${petition?.slug}`">
-    <n-card :title="petition?.title" hoverable>
-      <template #cover>
-        <div
-          :style="{
-            backgroundImage: `url('${petition?.image?.url || defaultImage}')`
-          }"
-          class="w-full h-32 bg-cover bg-no-repeat bg-center"
-        >
-          <n-space class="p-2">
-            <n-tag v-for="theme in petition?.petitionThemes" :key="theme.id" round>
-              {{ theme.title }}
-            </n-tag>
-          </n-space>
-        </div>
-      </template>
-      <n-space>
-        <n-tag v-if="petition?.targetName" round>
-          <template #icon>
-            <NaiveIcon name="mdi:target" />
-          </template>
-          {{ petition.targetName }}
-        </n-tag>
-        <n-tag v-if="petition.location" round>
-          <template #icon>
-            <NaiveIcon name="mdi:map" />
-          </template>
-          <span v-if="petition.location.name">{{ petition.location.name }}</span>
-          <span v-else>{{ petition.location.display_name }}</span>
-        </n-tag>
-      </n-space>
-    </n-card>
+  <NuxtLink :to="`/${petition?.slug}`">
+    <div :class="styleClass">
+      <n-card :title="petition?.title" hoverable>
+        <template #cover>
+          <div
+            :style="{
+              backgroundImage: `url('${petition?.image?.url || defaultImage}')`
+            }"
+            class="w-full h-32 bg-cover bg-no-repeat bg-center"
+          >
+            <n-space class="p-2">
+              <n-tag v-for="theme in petition?.petitionThemes" :key="theme.id" round>
+                {{ theme.title }}
+              </n-tag>
+            </n-space>
+          </div>
+        </template>
+        <n-space>
+          <n-tag v-if="petition?.targetName" round>
+            <template #icon>
+              <NaiveIcon name="mdi:target" />
+            </template>
+            {{ petition.targetName }}
+          </n-tag>
+          <n-tag v-if="petition.location" round>
+            <template #icon>
+              <NaiveIcon name="mdi:map" />
+            </template>
+            <span v-if="petition.location.name">{{ petition.location.name }}</span>
+            <span v-else>{{ petition.location.display_name }}</span>
+          </n-tag>
+        </n-space>
+      </n-card>
+    </div>
   </NuxtLink>
 </template>
