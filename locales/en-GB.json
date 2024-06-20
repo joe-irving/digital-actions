@@ -110,7 +110,9 @@
     "optional": "Optional",
     "required": "Required",
     "new_text_field": "New text field",
-    "new_checkbox_field": "New checkbox"
+    "new_checkbox_field": "New checkbox",
+    "target": "Target",
+    "start_a_campaign": "Start a Campaign"
   },
   "share": {
     "twitter": "Twitter",

@@ -225,7 +225,8 @@ export const petitionCampaignRouter = router({
     return petitionCampaign
   }),
   getPublicList: publicProcedure.input(z.object({
-    id: z.number().int()
+    id: z.number().int(),
+    themes: z.array(z.number().int()).default([])
   })).query(async ({ ctx, input }) => {
     // if petition campaign pubic & petition public & petition approved & has owner (i.e. has been user verified)
     return await ctx.prisma.petition.findMany({
@@ -248,8 +249,22 @@ export const petitionCampaignRouter = router({
               }
             }
           ]
-        }
+        },
+        petitionThemes: input.themes.length > 0
+          ? {
+              some: {
+                id: {
+                  in: input.themes
+                }
+              }
+            }
+          : undefined
       },
+      orderBy: [
+        {
+          signatureTotal: 'desc'
+        }
+      ],
       select: {
         id: true,
         title: true,
@@ -279,7 +294,8 @@ export const petitionCampaignRouter = router({
             country: true,
             display_name: true
           }
-        }
+        },
+        signatureTotal: true
       }
     })
   }),

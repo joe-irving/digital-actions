@@ -78,10 +78,10 @@ onUnmounted(() => {
                 </Nh1>
               </NuxtLink>
             </n-space>
-            <n-space>
+            <div class="flex gap-x-4 content-center">
               <slot name="menu" />
               <ProfileBox />
-            </n-space>
+            </div>
           </div>
         </n-layout-header>
         <n-layout-content class="h-screen" :native-scrollbar="false" @scroll="handleScroll()">
