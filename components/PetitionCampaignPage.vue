@@ -43,7 +43,8 @@ const themeOptions = ref(petitionCampaign.value?.themes.map((t) => {
 }))
 
 const petitionFilter = ref<PetitionFilter>({
-  theme: []
+  theme: [],
+  search: ''
 })
 
 const updateFiltering = async () => {
@@ -55,6 +56,13 @@ const updateFiltering = async () => {
 }
 
 watch(() => petitionFilter.value.theme, updateFiltering)
+
+watch(() => petitionFilter.value.search, () => {
+  if (!petitionFilter.value.search) {
+    return
+  }
+  petitionFilter.value.search = petitionFilter.value.search.replace(/[^ a-zA-Z0-9-]/gm, '')
+})
 
 // Share info
 useSeoMeta({
@@ -82,8 +90,11 @@ useSeoMeta({
       </Nh1>
     </n-space>
     <div class="flex justify-center">
-      <div class="w-96 max-w-full">
-        <n-form-item path="theme" :label="$t('petition.themes')">
+      <div class="w-[600px] max-w-full flex justify-stretch gap-x-4">
+        <n-form-item path="theme" :label="$t('petition.search')" class="w-1/2">
+          <n-input v-model:value="petitionFilter.search" @blur="updateFiltering()" />
+        </n-form-item>
+        <n-form-item path="theme" :label="$t('petition.themes')" class="w-1/2">
           <n-select v-model:value="petitionFilter.theme" :options="themeOptions" multiple clearable @update="updateFiltering()" />
         </n-form-item>
       </div>

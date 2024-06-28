@@ -227,10 +227,9 @@ export const petitionCampaignRouter = router({
   getPublicList: publicProcedure.input(z.object({
     id: z.number().int(),
     filter: z.object({
-      theme: z.array(z.number().int()).default([])
-    }).default({
-      theme: []
-    })
+      theme: z.array(z.number().int()).default([]),
+      search: z.string().regex(/^[ a-zA-Z0-9-]*$/gm).optional()
+    }).optional()
   })).query(async ({ ctx, input }) => {
     // if petition campaign pubic & petition public & petition approved & has owner (i.e. has been user verified)
     return await ctx.prisma.petition.findMany({
@@ -262,6 +261,29 @@ export const petitionCampaignRouter = router({
                 }
               }
             }
+          : undefined,
+        OR: input.filter && input.filter.search && input.filter.search.length > 1
+          ? [
+              {
+                title: {
+                  contains: input.filter.search,
+                  mode: 'insensitive'
+                }
+              },
+              {
+                targetName: {
+                  contains: input.filter.search,
+                  mode: 'insensitive'
+                }
+              },
+              {
+                location: {
+                  display_name: {
+                    contains: input.filter.search
+                  }
+                }
+              }
+            ]
           : undefined
       },
       orderBy: [
