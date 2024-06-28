@@ -11,6 +11,10 @@ const props = defineProps({
   theme: {
     type: Object as PropType<StyleOutput | undefined>,
     default: () => undefined
+  },
+  embed: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -54,7 +58,7 @@ onUnmounted(() => {
     <!-- <n-theme-editor> -->
     <n-space vertical size="large">
       <n-layout @scroll="console.log">
-        <n-layout-header>
+        <n-layout-header v-if="!embed">
           <div
             :class="{
               '-translate-y-16': scrollDown

@@ -19,6 +19,10 @@ const props = defineProps({
 const { $client } = useNuxtApp()
 const localePath = useLocalePath()
 const { t } = useI18n()
+const route = useRoute()
+
+// Is embed mode?
+const embedded = ref(route.query.embed !== undefined && (route.query.embed?.toString() || 'true').toLowerCase() !== 'false')
 
 // Get data from backend
 const { data: petitionCampaign } = await $client.petitionCampaign.getPublic.useQuery({ id: props.id })
@@ -73,7 +77,7 @@ useSeoMeta({
 </script>
 
 <template>
-  <CustomThemeWrapper :theme="theme">
+  <CustomThemeWrapper :theme="theme" :embed="embedded">
     <template #menu>
       <div class="flex content-center justify-center">
         <NuxtLink v-for="item in menuItems" :key="item.link" :to="item.link" class="flex">
@@ -84,7 +88,7 @@ useSeoMeta({
         </NuxtLink>
       </div>
     </template>
-    <n-space class="mt-6 pt-16" vertical>
+    <n-space v-if="!embedded" class="mt-6 pt-16" vertical>
       <Nh1 class="text-center">
         {{ petitionCampaign?.title }}
       </Nh1>
@@ -117,6 +121,6 @@ useSeoMeta({
       />
     </div>
 
-    <n-back-top :right="40" />
+    <n-back-top v-if="!embedded" :right="40" />
   </CustomThemeWrapper>
 </template>
