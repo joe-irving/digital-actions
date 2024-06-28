@@ -703,10 +703,18 @@ export const petition = router({
     }
     // TODO: get signature count for API created petition
     const signatures = await getSignatureCount(petition.petitionCampaign.actionNetworkCredential.apiKey, petition.actionNetworkPetitionId)
+
     if (!signatures) {
       return null
     }
-    // return
+    await ctx.prisma.petition.update({
+      where: {
+        id: input.id
+      },
+      data: {
+        signatureTotal: signatures.total_records
+      }
+    })
     return {
       count: signatures.total_records,
       comments: signatures._embedded['osdi:signatures'].map((sig) => {
