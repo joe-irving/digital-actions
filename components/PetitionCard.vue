@@ -21,6 +21,10 @@ const props = defineProps({
   class: {
     type: String,
     default: ''
+  },
+  embedded: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -30,7 +34,7 @@ const targetTotal = ref(useGetNextTarget(props.petition.signatureTotal))
 </script>
 
 <template>
-  <NuxtLink :to="`/${petition?.slug}`">
+  <NuxtLink :to="`/${petition?.slug}`" :target="embedded ? '_parent' : undefined">
     <div :class="styleClass">
       <n-card :title="petition?.title" hoverable>
         <template #cover>

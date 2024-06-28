@@ -117,7 +117,7 @@ useSeoMeta({
         :key="petition.id"
         :petition="petition"
         :default-image="petitionCampaign?.defaultPetitionImage?.url"
-        class=""
+        :embed="embedded"
       />
     </div>
 
