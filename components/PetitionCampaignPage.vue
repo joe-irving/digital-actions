@@ -1,4 +1,13 @@
 <script setup lang="ts">
+import type { inferRouterInputs } from '@trpc/server'
+import type { AppRouter } from '~/server/trpc/routers'
+
+// Set up types
+type RouterInput = inferRouterInputs<AppRouter>;
+
+type PetitionFilter = NonNullable<RouterInput['petitionCampaign']['getPublicList']['filter']>;
+
+// Define Properties
 const props = defineProps({
   id: {
     type: Number,
@@ -6,14 +15,17 @@ const props = defineProps({
   }
 })
 
+// Import tools
 const { $client } = useNuxtApp()
 const localePath = useLocalePath()
 const { t } = useI18n()
 
+// Get data from backend
 const { data: petitionCampaign } = await $client.petitionCampaign.getPublic.useQuery({ id: props.id })
 const { data: theme } = petitionCampaign.value?.styleThemeId ? await $client.styleTheme.get.useQuery(petitionCampaign.value?.styleThemeId) : { data: undefined }
 const { data: petitions } = $client.petitionCampaign.getPublicList.useQuery({ id: props.id })
 
+// Define menu
 const menuItems = ref([
   {
     title: t('petition.start_a_campaign'),
@@ -22,6 +34,29 @@ const menuItems = ref([
   }
 ])
 
+// Filtering
+const themeOptions = ref(petitionCampaign.value?.themes.map((t) => {
+  return {
+    label: t.title,
+    value: t.id
+  }
+}))
+
+const petitionFilter = ref<PetitionFilter>({
+  theme: []
+})
+
+const updateFiltering = async () => {
+  const { data: filteredPetitions } = await $client.petitionCampaign.getPublicList.useQuery({
+    id: props.id,
+    filter: petitionFilter.value
+  })
+  petitions.value = filteredPetitions.value
+}
+
+watch(() => petitionFilter.value.theme, updateFiltering)
+
+// Share info
 useSeoMeta({
   title: petitionCampaign.value?.title,
   ogTitle: petitionCampaign.value?.title,
@@ -46,6 +81,13 @@ useSeoMeta({
         {{ petitionCampaign?.title }}
       </Nh1>
     </n-space>
+    <div class="flex justify-center">
+      <div class="w-96 max-w-full">
+        <n-form-item path="theme" :label="$t('petition.themes')">
+          <n-select v-model:value="petitionFilter.theme" :options="themeOptions" multiple clearable @update="updateFiltering()" />
+        </n-form-item>
+      </div>
+    </div>
     <div
       v-if="petitions && petitions.length >= 1"
       class="p-4 grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 justify-items-stretch"
