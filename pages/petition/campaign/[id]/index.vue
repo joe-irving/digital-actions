@@ -176,6 +176,7 @@ useSeoMeta({
             <PetitionCampaignAdminSettings
               :id="campaign.id"
               :user-permissions="permissions || []"
+              :slug="campaign.slug"
               @user-permission-update="(permissionsUpdate) => permissions = permissionsUpdate"
             />
           </n-tab-pane>

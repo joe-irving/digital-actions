@@ -221,7 +221,10 @@
     "themes": "Themes",
     "about_petition_campaign": "Here are all your petition campaigns",
     "petition_campaign_template": "Include a template for people to start from for creating petitions",
-    "petition_theme_form_rule": "Theme's must be only letters, numbers and spaces"
+    "petition_theme_form_rule": "Theme's must be only letters, numbers and spaces",
+    "permissions": "Permissions",
+    "embed_code": "Embed Code",
+    "example_display": "Example Display"
   },
   "permission_types": {
     "read": "Read",

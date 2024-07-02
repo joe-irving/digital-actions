@@ -41,30 +41,18 @@ const shareButtonLinks = ref({
   )}+${sourcedUrl('whatsapp')}`
 })
 
-const isCopied = ref(false)
-const copyUrl = () => {
-  navigator.clipboard.writeText(props.url)
-  isCopied.value = true
-}
+// const isCopied = ref(false)
+// const copyUrl = () => {
+//   navigator.clipboard.writeText(props.url)
+//   isCopied.value = true
+// }
 
 // Generate whatsapp share, facebook share and twitter share links
 </script>
 
 <template>
   <n-space vertical>
-    <div class="flex flex-wrap gap-2 justify-center" @click="copyUrl">
-      <div class="rounded p-2 border-2 grow min-w-24">
-        {{ props.url }}
-      </div>
-      <div class="grow-0">
-        <n-button :type="isCopied ? 'success' : undefined">
-          <template #icon>
-            <NaiveIcon :name="isCopied ? 'material-symbols:check-circle-outline' : 'mdi:clipboard'" />
-          </template>
-          {{ isCopied ? $t('share.copied') : $t('share.copy') }}
-        </n-button>
-      </div>
-    </div>
+    <CopyText :copy-text="sourcedUrl('copy')" />
     <n-space justify="space-between">
       <NuxtLink :to="shareButtonLinks.twitter" target="_blank">
         <n-button>

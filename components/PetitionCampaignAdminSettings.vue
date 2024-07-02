@@ -14,6 +14,11 @@ const props = defineProps({
   userPermissions: {
     type: Array as PropType<UserPermissions>,
     default: () => []
+  },
+  slug: {
+    type: String,
+    required: false,
+    default: ''
   }
 })
 
@@ -99,6 +104,7 @@ const addPermission = async (input: PermissionCreate) => {
 
 <template>
   <div>
+    <Nh2>{{ $t('pc_manage.permissions') }}</Nh2>
     <PermissionList
       :permissions="permissions || undefined"
       :types="['read', 'write', 'admin', 'approval']"
@@ -106,5 +112,7 @@ const addPermission = async (input: PermissionCreate) => {
       @delete="deletePermission"
       @create="addPermission"
     />
+    <Nh2>{{ $t('pc_manage.embed_code') }}</Nh2>
+    <EmbedPage :slug="slug" />
   </div>
 </template>

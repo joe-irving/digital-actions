@@ -12,14 +12,14 @@ const props = defineProps({
     type: Object as PropType<StyleOutput | undefined>,
     default: () => undefined
   },
-  embed: {
+  embedded: {
     type: Boolean,
     default: false
   }
 })
 
 // TODO turn theme into Naive Theme
-const overrideTheme = props.theme ? useCreateThemeOverrides(props.theme) : undefined
+const overrideTheme = props.theme && !props.embedded ? useCreateThemeOverrides(props.theme) : undefined
 // console.log(overrideTheme)
 
 const pageContent = ref<HTMLElement | null>(null)
@@ -58,7 +58,7 @@ onUnmounted(() => {
     <!-- <n-theme-editor> -->
     <n-space vertical size="large">
       <n-layout @scroll="console.log">
-        <n-layout-header v-if="!embed">
+        <n-layout-header v-if="!embedded">
           <div
             :class="{
               '-translate-y-16': scrollDown

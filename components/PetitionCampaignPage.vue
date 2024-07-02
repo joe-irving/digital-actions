@@ -77,7 +77,7 @@ useSeoMeta({
 </script>
 
 <template>
-  <CustomThemeWrapper :theme="theme" :embed="embedded">
+  <CustomThemeWrapper :theme="theme" :embedded="embedded">
     <template #menu>
       <div class="flex content-center justify-center">
         <NuxtLink v-for="item in menuItems" :key="item.link" :to="item.link" class="flex">
@@ -117,7 +117,7 @@ useSeoMeta({
         :key="petition.id"
         :petition="petition"
         :default-image="petitionCampaign?.defaultPetitionImage?.url"
-        :embed="embedded"
+        :embedded="embedded"
       />
     </div>
 
