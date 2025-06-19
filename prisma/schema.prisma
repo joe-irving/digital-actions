@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -58,6 +58,7 @@ model User {
 }
 
 model VerificationToken {
+  id         Int      @id @default(autoincrement())
   identifier String
   token      String   @unique
   expires    DateTime
@@ -164,7 +165,7 @@ model PetitionCampaign {
   petitions                 Petition[]
   sharingInformation        SharingInformation?          @relation(fields: [sharingInformationId], references: [id])
   sharingInformationId      Int?                         @unique
-  themes                    Theme[]                      @relation("PetitionCampaignThemes")
+  themes                    PetitionCampaignTheme[]
   permissions               PetitionCampaignPermission[]
   status                    String                       @default("draft")
   defaultPetitionImage      File?                        @relation(fields: [defaultPetitionImageId], references: [id])
@@ -193,7 +194,7 @@ model Petition {
   permissions             UserPetitionPermissions[]
   petitionCampaign        PetitionCampaign?         @relation(fields: [petitionCampaignId], references: [id])
   petitionCampaignId      Int?
-  petitionThemes          Theme[]                   @relation("PetitionThemes")
+  petitionThemes          PetitionTheme[]
   image                   File?                     @relation(fields: [imageId], references: [id])
   imageId                 Int?
   creatorEmail            String?
@@ -211,6 +212,24 @@ model Petition {
   sourceCode              String?
   signatureTotal          Int @default(0)
   customFields CustomField[]
+}
+
+model PetitionTheme {
+  petitionId Int
+  petition Petition @relation(fields: [petitionId], references: [id])
+  themeId Int
+  theme Theme @relation(fields: [themeId], references: [id])
+
+  @@id([petitionId, themeId])
+}
+
+model PetitionCampaignTheme {
+  petitionCampaignId Int
+  petitionCampaign PetitionCampaign @relation(fields: [petitionCampaignId], references: [id])
+  themeId Int
+  theme Theme @relation(fields: [themeId], references: [id])
+
+  @@id([petitionCampaignId, themeId])
 }
 
 model UserPetitionPermissions {
@@ -247,8 +266,8 @@ model Theme {
   title       String
   description String?
   icon        String?
-  petitions   Petition[]         @relation("PetitionThemes")
-  campaign    PetitionCampaign[] @relation("PetitionCampaignThemes")
+  petitions   PetitionTheme[]
+  campaign    PetitionCampaignTheme[]
   status      String             @default("public")
 }
 
