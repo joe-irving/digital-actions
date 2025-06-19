@@ -37,8 +37,8 @@ const menuItems = ref([
 // Filtering
 const themeOptions = ref(petitionCampaign.value?.themes.map((t) => {
   return {
-    label: t.title,
-    value: t.id
+    label: t.theme.title,
+    value: t.theme.id
   }
 }))
 

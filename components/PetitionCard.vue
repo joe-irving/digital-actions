@@ -41,8 +41,8 @@ const targetTotal = ref(useGetNextTarget(props.petition.signatureTotal))
             class="w-full h-32 bg-cover bg-no-repeat bg-center"
           >
             <n-space class="p-2">
-              <n-tag v-for="theme in petition?.petitionThemes" :key="theme.id" round>
-                {{ theme.title }}
+              <n-tag v-for="theme in petition?.petitionThemes" :key="theme.theme.id" round>
+                {{ theme.theme.title }}
               </n-tag>
             </n-space>
           </div>

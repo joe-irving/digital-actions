@@ -64,7 +64,7 @@ const campaignEdit = computed(() => {
         id: campaign.value.id,
         title: campaign.value.title,
         description: campaign.value.description,
-        themes: campaign.value.themes.map(t => t.title),
+        themes: campaign.value.themes.map(t => t.theme.title),
         groupName: campaign.value.groupName,
         defaultImage: campaign.value.defaultPetitionImage,
         limitLocationCountry: campaign.value.limitLocationCountry,
@@ -168,7 +168,7 @@ useSeoMeta({
               :response-tag="campaign.actionNetworkResponseTag"
               :tag-prefix="campaign.tagPrefix"
               :action-network-cred-name="campaign.actionNetworkCredential?.name || ''"
-              :themes="campaign.themes.map(t => t.title)"
+              :themes="campaign.themes.map(t => t.theme.title)"
               :campaign-id="campaign.id"
             />
           </n-tab-pane>

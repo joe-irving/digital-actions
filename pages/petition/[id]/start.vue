@@ -27,7 +27,7 @@ if (!petitionCampaign.value) {
   navigateTo('/')
 }
 
-const themeOptions = ref(petitionCampaign.value?.themes.map((t): SelectOption => { return { label: t.title, value: t.id } }))
+const themeOptions = ref(petitionCampaign.value?.themes.map((t): SelectOption => { return { label: t.theme.title, value: t.theme.id } }))
 
 // This page is for creating a petition through a step by step form
 const petitionInput = ref<PetitionInput>({

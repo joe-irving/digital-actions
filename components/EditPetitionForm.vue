@@ -71,7 +71,7 @@ const emit = defineEmits(['update'])
 
 const formRef = ref<FormInst | null>(null)
 
-const themeOptions = ref((props.petitionCampaign?.themes || []).map((t): SelectOption => { return { label: t.title, value: t.id } }))
+const themeOptions = ref((props.petitionCampaign?.themes || []).map((t): SelectOption => { return { label: t.theme.title, value: t.theme.id } }))
 const formWarningMessages = ref<FormValidationError[]>([])
 const formSuccess = ref(false)
 
@@ -141,7 +141,7 @@ const petitionUpdate = ref<{
   title: props.petition.title,
   content: props.petition.content,
   image: undefined,
-  themes: props.petition.petitionThemes.map(t => t.id),
+  themes: props.petition.petitionThemes.map(t => t.theme.id),
   location: undefined,
   target: props.petition.targetName || '',
   slug: props.petition.slug

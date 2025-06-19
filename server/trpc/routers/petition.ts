@@ -1,13 +1,14 @@
 import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
 import sanitizeHtml from 'sanitize-html'
+import type { Prisma } from '@prisma/client'
 import { publicProcedure, router } from '../trpc'
 import { createActionNetworkTags, createActionNetworkPetition, getSignatureCount } from '../utils/actionNetwork'
 import type { ActionNetworkTag, ActionNetworkPetition } from '../utils/actionNetwork'
 import { LocationSchema } from './location'
 import type { LocationSchemaType } from './location'
 
-const selectFieldAuthorised = {
+const selectFieldAuthorised: Prisma.PetitionSelect = {
   id: true,
   created: true,
   updated: true,
@@ -40,9 +41,13 @@ const selectFieldAuthorised = {
   status: true,
   petitionThemes: {
     select: {
-      id: true,
-      title: true,
-      icon: true
+      theme: {
+        select: {
+          id: true,
+          title: true,
+          icon: true
+        }
+      }
     }
   },
   location: {
@@ -153,7 +158,7 @@ export const petition = router({
         defaultPetitionImageId: true,
         themes: {
           select: {
-            id: true
+            themeId: true
           }
         },
         actionNetworkCredential: {
@@ -172,7 +177,7 @@ export const petition = router({
 
     // Filter themes to ones available in petition campaign
     const allowedThemes = petitionCampaign.themes.filter((theme) => {
-      return input.themes.includes(theme.id)
+      return input.themes.includes(theme.themeId)
     })
     // if image, create it
     const image = input.image
@@ -233,7 +238,7 @@ export const petition = router({
           : undefined,
         creatorEmail,
         petitionThemes: {
-          connect: allowedThemes
+          createMany: { data: allowedThemes }
         },
         petitionCampaign: {
           connect: {
@@ -433,11 +438,13 @@ export const petition = router({
       },
       select: {
         id: true,
+        petitionThemes: true,
         petitionCampaign: {
           select: {
             themes: {
               select: {
-                id: true
+                themeId: true,
+                theme: true
               }
             }
           }
@@ -487,8 +494,26 @@ export const petition = router({
     }
     const allowedThemesLimit = petitionAllowed.petitionCampaign?.themes || []
     const allowedThemes = allowedThemesLimit.filter((theme) => {
-      return input.themes?.includes(theme.id)
+      return input.themes?.includes(theme.theme.id)
+    }).map((theme) => {
+      return { themeId: theme.theme.id, petitionId: petitionAllowed.id }
     })
+    if (input.themes) {
+      await ctx.prisma.petitionTheme.deleteMany({
+        where: {
+          themeId: {
+            in: petitionAllowed.petitionThemes.map(({ themeId }) => themeId)
+          },
+          petitionId: {
+            equals: petitionAllowed.id
+          }
+        }
+      })
+      await ctx.prisma.petitionTheme.createMany({
+        data: allowedThemes
+      })
+    }
+
     // Define or add location
     const location = input.location ? await ctx.prisma.location.upsert(upsertLocationSchema(input.location)) : undefined
     // Define or add image
@@ -510,9 +535,6 @@ export const petition = router({
         content: input.content ? sanitizeHtml(input.content) : undefined,
         targetName: input.target,
         slug: input.slug,
-        petitionThemes: {
-          connect: allowedThemes
-        },
         locationId: location?.id,
         imageId: image?.id
       },
@@ -576,9 +598,13 @@ export const petition = router({
         },
         petitionThemes: {
           select: {
-            id: true,
-            title: true,
-            icon: true
+            theme: {
+              select: {
+                id: true,
+                title: true,
+                icon: true
+              }
+            }
           }
         },
         image: {
@@ -885,9 +911,13 @@ export const petition = router({
         },
         petitionThemes: {
           select: {
-            id: true,
-            title: true,
-            icon: true
+            theme: {
+              select: {
+                id: true,
+                title: true,
+                icon: true
+              }
+            }
           }
         },
         location: {

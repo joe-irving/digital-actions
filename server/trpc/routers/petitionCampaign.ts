@@ -175,9 +175,13 @@ export const petitionCampaignRouter = router({
         tagPrefix: true,
         themes: {
           select: {
-            id: true,
-            title: true,
-            icon: true
+            theme: {
+              select: {
+                id: true,
+                title: true,
+                icon: true
+              }
+            }
           }
         },
         defaultPetitionImage: {
@@ -256,7 +260,7 @@ export const petitionCampaignRouter = router({
         petitionThemes: input.filter && input.filter.theme.length > 0
           ? {
               some: {
-                id: {
+                themeId: {
                   in: input.filter.theme
                 }
               }
@@ -266,14 +270,14 @@ export const petitionCampaignRouter = router({
           ? [
               {
                 title: {
-                  contains: input.filter.search,
-                  mode: 'insensitive'
+                  contains: input.filter.search
+                  // mode: 'insensitive' // remove as postgres only?
                 }
               },
               {
                 targetName: {
-                  contains: input.filter.search,
-                  mode: 'insensitive'
+                  contains: input.filter.search
+                  // mode: 'insensitive' // remove as postgres only?
                 }
               },
               {
@@ -308,9 +312,13 @@ export const petitionCampaignRouter = router({
         },
         petitionThemes: {
           select: {
-            id: true,
-            title: true,
-            icon: true
+            theme: {
+              select: {
+                id: true,
+                title: true,
+                icon: true
+              }
+            }
           }
         },
         targetName: true,
@@ -366,9 +374,13 @@ export const petitionCampaignRouter = router({
         },
         petitionThemes: {
           select: {
-            id: true,
-            title: true,
-            icon: true
+            theme: {
+              select: {
+                id: true,
+                title: true,
+                icon: true
+              }
+            }
           }
         },
         location: {
@@ -422,9 +434,13 @@ export const petitionCampaignRouter = router({
         },
         themes: {
           select: {
-            id: true,
-            title: true,
-            icon: true
+            theme: {
+              select: {
+                id: true,
+                title: true,
+                icon: true
+              }
+            }
           }
         },
         status: true,
@@ -575,8 +591,16 @@ export const petitionCampaignRouter = router({
           }
         }
       },
-      include: {
-        themes: true,
+      select: {
+        id: true,
+        slug: true,
+        tagPrefix: true,
+        themes: {
+          select: {
+            themeId: true,
+            theme: true
+          }
+        },
         actionNetworkCredential: true
       }
     })
@@ -631,7 +655,21 @@ export const petitionCampaignRouter = router({
         await createActionNetworkTags(oldCampaign.actionNetworkCredential?.apiKey, `[${oldCampaign.tagPrefix}] Theme - ${newlyConnectedTheme.title}`)
       }
     }
-
+    if (input.themes) {
+      await ctx.prisma.petitionCampaignTheme.deleteMany({
+        where: {
+          themeId: {
+            in: oldCampaign.themes.map(({ themeId }) => themeId)
+          },
+          petitionCampaignId: {
+            equals: oldCampaign.id
+          }
+        }
+      })
+      await ctx.prisma.petitionCampaignTheme.createMany({
+        data: themeConnect.map((t) => { return { themeId: t.id, petitionCampaignId: oldCampaign.id } })
+      })
+    }
     // Sort out image
     const image = input.image
       ? await ctx.prisma.file.create({
@@ -667,12 +705,6 @@ export const petitionCampaignRouter = router({
         title: input.title,
         description: input.description,
         groupName: input.groupName,
-        themes: input.themes
-          ? {
-              disconnect: oldCampaign.themes.map(({ id }) => { return { id } }),
-              connect: themeConnect.map(({ id }) => { return { id } })
-            }
-          : undefined,
         limitLocationCountry: input.limitLocationCountry ? input.limitLocationCountry.join(',') : undefined,
         defaultPetitionImageId: image ? image.id : undefined,
         status: input.status,
