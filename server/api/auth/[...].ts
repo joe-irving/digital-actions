@@ -2,6 +2,7 @@ import GithubProvider from 'next-auth/providers/github'
 import Google from 'next-auth/providers/google'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import { PrismaClient } from '@prisma/client'
+import Mailgun from 'mailgun.js' // mailgun.js v11.1.0
 import { NuxtAuthHandler } from '#auth'
 
 const prisma = new PrismaClient()
@@ -53,42 +54,23 @@ export default NuxtAuthHandler({
       allowDangerousEmailAccountLinking: true
     }),
     {
-      id: 'sendgrid',
+      id: 'mailgun',
       type: 'email',
       allowDangerousEmailAccountLinking: true,
       async sendVerificationRequest ({ identifier: email, url }) {
-        // Call the cloud Email provider API for sending emails
-        // See https://docs.sendgrid.com/api-reference/mail-send/mail-send
-        const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
-          // The body format will vary depending on provider, please see their documentation
-          // for further details.
-          body: JSON.stringify({
-            personalizations: [{ to: [{ email }] }],
-            from: { email: runtimeConfig.sendgridEmail },
-            subject: `Sign in link for ${runtimeConfig.siteName}`,
-            content: [
-              {
-                type: 'text/plain',
-                value: `${loginEmailText()}\n\n${url}`
-              },
-              {
-                type: 'text/html',
-                value: makeHtmlEmail(url)
-              }
-            ]
-          }),
-          headers: {
-            // Authentication will also vary from provider to provider, please see their docs.
-            Authorization: `Bearer ${runtimeConfig.sendgridApiKey}`,
-            'Content-Type': 'application/json'
-          },
-          method: 'POST'
+        const mailgun = new Mailgun(FormData)
+        const mg = mailgun.client({
+          username: 'api',
+          key: `${runtimeConfig.mailgunApiKey}`,
+          url: 'https://api.eu.mailgun.net'
         })
-
-        if (!response.ok) {
-          const { errors } = await response.json()
-          throw new Error(JSON.stringify(errors))
-        }
+        await mg.messages.create(`${runtimeConfig.mailgunDomain}`, {
+          from: `${runtimeConfig.siteName} <${runtimeConfig.mailgunEmail}>`,
+          to: [email],
+          subject: `Sign in link for ${runtimeConfig.siteName}`,
+          text: `${loginEmailText()}\n\n${url}`,
+          html: makeHtmlEmail(url)
+        })
       }
     }
   ]
