@@ -68,6 +68,7 @@
     "@vue/compiler-core": "^3.3",
     "@vue/compiler-sfc": ">= 3",
     "h3-formidable": "^1.0.0",
+    "mailgun.js": "^12.1.1",
     "next-auth": "4.21.1",
     "postcss": "^8.4.21",
     "sanitize-html": "^2.11.0",
